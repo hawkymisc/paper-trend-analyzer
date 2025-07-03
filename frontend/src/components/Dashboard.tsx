@@ -1,14 +1,35 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Card, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import WordCloud from 'wordcloud';
-import { DashboardSummary, WordData } from '../types';
+import { DashboardSummary, WordData, TrendResult } from '../types';
 
 const Dashboard: React.FC = () => {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [trendingKeywords, setTrendingKeywords] = useState<WordData[]>([]);
+  const [trendData, setTrendData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const wordCloudRef = useRef<HTMLDivElement>(null);
+
+  // Transform trend data for Recharts
+  const transformTrendData = (trendsData: TrendResult[]) => {
+    const dateMap: { [key: string]: any } = {};
+    
+    trendsData.forEach(trend => {
+      trend.data.forEach(point => {
+        if (!dateMap[point.date]) {
+          dateMap[point.date] = { date: point.date };
+        }
+        dateMap[point.date][trend.keyword] = point.count;
+      });
+    });
+    
+    return Object.values(dateMap).sort((a: any, b: any) => a.date.localeCompare(b.date));
+  };
+
+  // Color palette for trend lines
+  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +50,26 @@ const Dashboard: React.FC = () => {
         const keywordsData: WordData[] = await keywordsResponse.json();
         setTrendingKeywords(Array.isArray(keywordsData) ? keywordsData : []);
 
+        // Fetch Trend Data for Top Keywords (for the trend graph)
+        const topKeywords = ['LLM', 'Fine-tuning', 'AI', 'Multimodal', 'Attention'];
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setMonth(endDate.getMonth() - 6); // Last 6 months
+
+        const params = new URLSearchParams();
+        topKeywords.forEach(kw => params.append('keywords', kw));
+        params.append('start_date', startDate.toISOString().split('T')[0]);
+        params.append('end_date', endDate.toISOString().split('T')[0]);
+
+        const trendsResponse = await fetch(`/api/v1/trends?${params.toString()}`);
+        if (trendsResponse.ok) {
+          const trendsData: TrendResult[] = await trendsResponse.json();
+          
+          // Transform data for Recharts
+          const transformedData = transformTrendData(trendsData);
+          setTrendData(transformedData);
+        }
+
       } catch (e: any) {
         setError(e.message);
       } finally {
@@ -41,19 +82,28 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (wordCloudRef.current && trendingKeywords.length > 0) {
-      WordCloud(wordCloudRef.current, {
-        list: trendingKeywords.map(word => [word.text, word.value]),
-        gridSize: 18, // size of the grid in pixels
-        weightFactor: 10, // number to multiply for size of each word in the cloud
-        fontFamily: 'Finger Paint, cursive, sans-serif', // font to use
-        color: 'random-dark', // color of the words
-        backgroundColor: '#fff', // color of the background
-        rotateRatio: 0.5, // probability for the word to be rotated. 1 means all words are rotated
-        minRotation: -60, // minimum rotation angle
-        maxRotation: 60, // maximum rotation angle
-        drawOutOfBound: false, // if set to true, words will be drawn out of bound
-        shrinkToFit: true, // if set to true, will try to fit all words into the given size
-      });
+      // Clear previous content
+      wordCloudRef.current.innerHTML = '';
+      
+      const wordList = trendingKeywords.map(word => [word.text, word.value]);
+      
+      try {
+        WordCloud(wordCloudRef.current, {
+          list: wordList as any,
+          gridSize: 16,
+          weightFactor: 4,
+          fontFamily: 'Arial, sans-serif',
+          color: 'random-dark',
+          backgroundColor: 'transparent',
+          rotateRatio: 0.3,
+          minRotation: -45,
+          maxRotation: 45,
+          drawOutOfBound: false,
+          shrinkToFit: true,
+        });
+      } catch (error) {
+        console.error('WordCloud rendering error:', error);
+      }
     }
   }, [trendingKeywords]);
 
@@ -127,14 +177,48 @@ const Dashboard: React.FC = () => {
       {/* Trending Keywords (Word Cloud) */}
       <h2 className="mt-4">Trending Keywords (Word Cloud)</h2>
       {trendingKeywords.length > 0 ? (
-        <div ref={wordCloudRef} style={{ height: '400px', width: '100%', border: '1px solid #ccc', display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
+        <Card className="mb-4">
+          <Card.Body>
+            <div 
+              ref={wordCloudRef} 
+              style={{ 
+                height: '400px', 
+                width: '100%',
+                position: 'relative',
+                backgroundColor: '#fff'
+              }} 
+            />
+          </Card.Body>
+        </Card>
       ) : (
         <p>No trending keywords available.</p>
       )}
 
-      {/* Paper Count Trend Graph - To be implemented */}
+      {/* Paper Count Trend Graph */}
       <h2 className="mt-4">Paper Count Trend Graph</h2>
-      <p>This section will display the trend of paper counts over time for selected keywords.</p>
+      {trendData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart data={trendData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {['LLM', 'Fine-tuning', 'AI', 'Multimodal', 'Attention'].map((keyword, index) => (
+              <Line 
+                key={keyword}
+                type="monotone" 
+                dataKey={keyword} 
+                stroke={colors[index % colors.length]} 
+                strokeWidth={2}
+                connectNulls={false}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <p>Loading trend data...</p>
+      )}
     </div>
   );
 };

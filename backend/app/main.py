@@ -31,17 +31,36 @@ app.add_middleware(
 @app.get("/api/v1/trends", response_model=list[schemas.TrendResult])
 def get_trends(
     keywords: list[str] = Query(..., description="分析したいキーワードのリスト"),
-    start_date: datetime | None = Query(None, description="開始日 (YYYY-MM-DD)"),
-    end_date: datetime | None = Query(None, description="終了日 (YYYY-MM-DD)"),
+    start_date: str | None = Query(None, description="開始日 (YYYY-MM-DD)"),
+    end_date: str | None = Query(None, description="終了日 (YYYY-MM-DD)"),
     db: Session = Depends(get_db)
 ):
     if not keywords:
         raise HTTPException(status_code=400, detail="キーワードは少なくとも1つ指定してください。")
 
-    if start_date and end_date and start_date > end_date:
+    # 日付文字列をdatetimeオブジェクトに変換
+    start_datetime = None
+    end_datetime = None
+    
+    try:
+        if start_date:
+            # ISO 8601形式 (YYYY-MM-DDTHH:MM:SSZ) または YYYY-MM-DD形式をサポート
+            if 'T' in start_date:
+                start_datetime = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
+            else:
+                start_datetime = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        if end_date:
+            if 'T' in end_date:
+                end_datetime = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
+            else:
+                end_datetime = datetime.strptime(end_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59, tzinfo=timezone.utc)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="日付フォーマットが正しくありません。YYYY-MM-DD または YYYY-MM-DDTHH:MM:SSZ形式で入力してください。")
+
+    if start_datetime and end_datetime and start_datetime > end_datetime:
         raise HTTPException(status_code=400, detail="開始日は終了日より前に設定してください。")
 
-    return services.get_trends_data(db, keywords, start_date, end_date)
+    return services.get_trends_data(db, keywords, start_datetime, end_datetime)
 
 @app.get("/api/v1/dashboard/trending-keywords", response_model=schemas.DashboardTrendingKeywords)
 def get_trending_keywords(db: Session = Depends(get_db)):
