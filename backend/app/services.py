@@ -206,3 +206,69 @@ def get_word_cloud_data(db: Session) -> list[schemas.WordData]:
     cache[cache_key] = {"data": word_cloud_data, "timestamp": time.time()}
     logging.info(f"Fetched word cloud data in {time.time() - start_time:.2f} seconds.")
     return word_cloud_data
+
+def get_weekly_rankings_data(db: Session) -> list[schemas.WeeklyRanking]:
+    cache_key = "weekly_rankings"
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < CACHE_TTL:
+        logging.info("Returning weekly rankings data from cache.")
+        return cache[cache_key]["data"]
+
+    start_time = time.time()
+    logging.info("Fetching weekly rankings data from DB...")
+
+    four_weeks_ago = get_time_ago(days=4*7)  # 4 weeks
+    
+    # 各週のキーワード頻度を取得
+    weekly_data = (
+        db.query(
+            func.date(models.Paper.published_at, 'weekday 1', '-6 days').label('week_start'),
+            models.Keyword.name.label('keyword'),
+            func.count(models.PaperKeyword.paper_id).label('count')
+        )
+        .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+        .join(models.Paper, models.PaperKeyword.paper_id == models.Paper.id)
+        .filter(models.Paper.published_at >= four_weeks_ago)
+        .group_by('week_start', 'keyword')
+        .order_by('week_start', func.count(models.PaperKeyword.paper_id).desc())
+        .all()
+    )
+
+    # 週ごとにランキングを作成
+    weekly_rankings = {}
+    for row in weekly_data:
+        week = row.week_start
+        keyword = row.keyword
+        count = row.count
+        
+        if week not in weekly_rankings:
+            weekly_rankings[week] = []
+        
+        weekly_rankings[week].append({
+            'keyword': keyword,
+            'count': count
+        })
+    
+    # 各週でトップ20のランキングを作成
+    result = []
+    for week in sorted(weekly_rankings.keys()):
+        # 週のデータをカウント順でソート
+        week_data = sorted(weekly_rankings[week], key=lambda x: x['count'], reverse=True)[:20]
+        
+        # ランクを付与
+        rankings = [
+            schemas.WeeklyKeywordRank(
+                keyword=item['keyword'],
+                rank=rank + 1,
+                count=item['count']
+            )
+            for rank, item in enumerate(week_data)
+        ]
+        
+        result.append(schemas.WeeklyRanking(
+            week=week,
+            rankings=rankings
+        ))
+    
+    cache[cache_key] = {"data": result, "timestamp": time.time()}
+    logging.info(f"Fetched weekly rankings data in {time.time() - start_time:.2f} seconds.")
+    return result

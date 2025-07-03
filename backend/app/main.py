@@ -108,3 +108,7 @@ def search_papers(
 @app.get("/api/v1/keywords/word-cloud", response_model=list[schemas.WordData])
 def get_word_cloud(db: Session = Depends(get_db)):
     return services.get_word_cloud_data(db)
+
+@app.get("/api/v1/keywords/weekly-rankings", response_model=list[schemas.WeeklyRanking])
+def get_weekly_rankings(db: Session = Depends(get_db)):
+    return services.get_weekly_rankings_data(db)

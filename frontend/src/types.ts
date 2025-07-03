@@ -36,3 +36,14 @@ export interface PaperSearchResponse {
   papers: Paper[];
   total_count: number;
 }
+
+export interface WeeklyKeywordRank {
+  keyword: string;
+  rank: number;
+  count: number;
+}
+
+export interface WeeklyRanking {
+  week: string; // Format: YYYY-MM-DD (Monday of the week)
+  rankings: WeeklyKeywordRank[];
+}
