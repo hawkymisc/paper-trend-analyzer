@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, Row, Col, Spinner, Alert } from 'react-bootstrap';
-import WordCloud from 'react-wordcloud';
+import WordCloud from 'wordcloud';
 import { DashboardSummary, WordData } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -8,6 +8,7 @@ const Dashboard: React.FC = () => {
   const [trendingKeywords, setTrendingKeywords] = useState<WordData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const wordCloudRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,6 +39,24 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (wordCloudRef.current && trendingKeywords.length > 0) {
+      WordCloud(wordCloudRef.current, {
+        list: trendingKeywords.map(word => [word.text, word.value]),
+        gridSize: 18, // size of the grid in pixels
+        weightFactor: 10, // number to multiply for size of each word in the cloud
+        fontFamily: 'Finger Paint, cursive, sans-serif', // font to use
+        color: 'random-dark', // color of the words
+        backgroundColor: '#fff', // color of the background
+        rotateRatio: 0.5, // probability for the word to be rotated. 1 means all words are rotated
+        minRotation: -60, // minimum rotation angle
+        maxRotation: 60, // maximum rotation angle
+        drawOutOfBound: false, // if set to true, words will be drawn out of bound
+        shrinkToFit: true, // if set to true, will try to fit all words into the given size
+      });
+    }
+  }, [trendingKeywords]);
+
   if (loading) {
     return <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner>;
   }
@@ -45,12 +64,6 @@ const Dashboard: React.FC = () => {
   if (error) {
     return <Alert variant="danger">Error: {error}</Alert>;
   }
-
-  const wordCloudOptions = {
-    rotations: 2,
-    rotationAngles: [-90, 0] as [number, number],
-    fontSizes: [20, 60] as [number, number],
-  };
 
   return (
     <div>
@@ -114,10 +127,7 @@ const Dashboard: React.FC = () => {
       {/* Trending Keywords (Word Cloud) */}
       <h2 className="mt-4">Trending Keywords (Word Cloud)</h2>
       {trendingKeywords.length > 0 ? (
-        <div style={{ height: '400px', width: '100%', border: '1px solid #ccc', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {/* <WordCloud words={trendingKeywords} options={wordCloudOptions} /> */}
-          <p>Word Cloud Placeholder</p>
-        </div>
+        <div ref={wordCloudRef} style={{ height: '400px', width: '100%', border: '1px solid #ccc', display: 'flex', justifyContent: 'center', alignItems: 'center' }} />
       ) : (
         <p>No trending keywords available.</p>
       )}
