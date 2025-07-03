@@ -1,16 +1,39 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Card, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Card, Row, Col, Spinner, Alert, OverlayTrigger, Tooltip as BootstrapTooltip } from 'react-bootstrap';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import WordCloud from 'wordcloud';
+import { useNavigate } from 'react-router-dom';
 import { DashboardSummary, WordData, TrendResult } from '../types';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [trendingKeywords, setTrendingKeywords] = useState<WordData[]>([]);
   const [trendData, setTrendData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const wordCloudRef = useRef<HTMLDivElement>(null);
+
+  // 8週間前の日付を計算
+  const getDateRange = () => {
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - (8 * 7)); // 8 weeks ago
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    };
+  };
+
+  // キーワードクリック時にPaper Searchに遷移
+  const handleKeywordClick = (keyword: string) => {
+    const { startDate, endDate } = getDateRange();
+    // URLパラメータとしてクエリ情報を渡す
+    const searchParams = new URLSearchParams({
+      query: keyword,
+      startDate,
+      endDate
+    });
+    navigate(`/paper-search?${searchParams.toString()}`);
+  };
 
   // Transform trend data for Recharts
   const transformTrendData = (trendsData: TrendResult[]) => {
@@ -84,32 +107,33 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (wordCloudRef.current && trendingKeywords.length > 0) {
-      // Clear previous content
-      wordCloudRef.current.innerHTML = '';
-      
-      const wordList = trendingKeywords.map(word => [word.text, word.value]);
-      
-      try {
-        WordCloud(wordCloudRef.current, {
-          list: wordList as any,
-          gridSize: 16,
-          weightFactor: 4,
-          fontFamily: 'Arial, sans-serif',
-          color: 'random-dark',
-          backgroundColor: 'transparent',
-          rotateRatio: 0.3,
-          minRotation: -45,
-          maxRotation: 45,
-          drawOutOfBound: false,
-          shrinkToFit: true,
-        });
-      } catch (error) {
-        console.error('WordCloud rendering error:', error);
-      }
-    }
-  }, [trendingKeywords]);
+  // 文字サイズを計算するヘルパー関数（複数のアプローチを組み合わせ）
+  const calculateFontSize = (value: number, maxValue: number, minValue: number, index: number) => {
+    // 方法1: 対数スケール
+    const logValue = Math.log10(value + 1);
+    const logMax = Math.log10(maxValue + 1);
+    const logMin = Math.log10(minValue + 1);
+    const logNormalized = logMax > logMin ? (logValue - logMin) / (logMax - logMin) : 0.5;
+    
+    // 方法2: 平方根スケール（より緩やかな変化）
+    const sqrtNormalized = Math.sqrt(value / maxValue);
+    
+    // 方法3: 線形スケール
+    const linearNormalized = (value - minValue) / (maxValue - minValue);
+    
+    // 複数スケールの重み付き平均（対数重視）
+    const combined = (logNormalized * 0.6) + (sqrtNormalized * 0.3) + (linearNormalized * 0.1);
+    
+    // より大きな範囲でフォントサイズを設定
+    const baseSize = 16;
+    const maxSize = 48;
+    const fontSize = baseSize + (combined * (maxSize - baseSize));
+    
+    // 上位キーワードにボーナス
+    const positionBonus = index < 5 ? 1.2 : index < 10 ? 1.1 : 1.0;
+    
+    return Math.max(14, Math.min(maxSize, fontSize * positionBonus));
+  };
 
   if (loading) {
     return <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner>;
@@ -184,14 +208,106 @@ const Dashboard: React.FC = () => {
         <Card className="mb-4">
           <Card.Body>
             <div 
-              ref={wordCloudRef} 
               style={{ 
                 height: '400px', 
                 width: '100%',
-                position: 'relative',
-                backgroundColor: '#fff'
+                padding: '20px',
+                backgroundColor: '#fff',
+                border: '1px solid #ddd',
+                overflow: 'hidden',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px'
               }} 
-            />
+            >
+              {trendingKeywords.slice(0, 30).map((keyword, index) => {
+                const maxValue = Math.max(...trendingKeywords.map(k => k.value));
+                const minValue = Math.min(...trendingKeywords.map(k => k.value));
+                const fontSize = calculateFontSize(keyword.value, maxValue, minValue, index);
+                
+                // ランクに基づく色の濃淡
+                const hue = (index * 47) % 360; // より分散した色相
+                const saturation = Math.max(40, 90 - (index * 2)); // 上位ほど鮮やか
+                const lightness = Math.max(25, 55 - (index * 1)); // 上位ほど濃い
+                
+                const { startDate, endDate } = getDateRange();
+                
+                const tooltipContent = (
+                  <div style={{ textAlign: 'left' }}>
+                    <strong>{keyword.text}</strong><br/>
+                    <small>期間: 直近8週間 ({startDate} ~ {endDate})</small><br/>
+                    <small>論文数: {keyword.value.toLocaleString()}件</small><br/>
+                    <small>ランク: #{index + 1}</small><br/>
+                    <em style={{ color: '#007bff' }}>クリックして論文検索</em>
+                  </div>
+                );
+                
+                return (
+                  <OverlayTrigger
+                    key={keyword.text}
+                    placement="top"
+                    delay={{ show: 300, hide: 150 }}
+                    overlay={
+                      <BootstrapTooltip id={`tooltip-${keyword.text}`}>
+                        {tooltipContent}
+                      </BootstrapTooltip>
+                    }
+                  >
+                    <span
+                      style={{
+                        fontSize: `${fontSize}px`,
+                        color: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
+                        fontWeight: index < 10 ? '900' : index < 20 ? 'bold' : '600',
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        lineHeight: '1.0',
+                        textAlign: 'center',
+                        margin: '3px 6px',
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        transition: 'all 0.3s ease',
+                        textShadow: index < 5 ? '1px 1px 2px rgba(0,0,0,0.3)' : 'none',
+                        display: 'inline-block',
+                        border: '2px solid transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.15) rotate(1deg)';
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.9)';
+                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.3)';
+                        e.currentTarget.style.border = '2px solid #007bff';
+                        e.currentTarget.style.color = '#007bff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.boxShadow = 'none';
+                        e.currentTarget.style.border = '2px solid transparent';
+                        e.currentTarget.style.color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                      }}
+                      onClick={() => handleKeywordClick(keyword.text)}
+                    >
+                      {keyword.text}
+                    </span>
+                  </OverlayTrigger>
+                );
+              })}
+            </div>
+            
+            {/* Statistics */}
+            <div className="mt-3" style={{ fontSize: '12px', color: '#666' }}>
+              <strong>Top Keywords ({trendingKeywords.length} total):</strong><br/>
+              {trendingKeywords.slice(0, 8).map((k, i) => {
+                const maxValue = Math.max(...trendingKeywords.map(kw => kw.value));
+                const minValue = Math.min(...trendingKeywords.map(kw => kw.value));
+                const fontSize = Math.round(calculateFontSize(k.value, maxValue, minValue, i));
+                return `${k.text}(${k.value}→${fontSize}px)`;
+              }).join(', ')}
+              {trendingKeywords.length > 8 && '...'}
+              <br/>
+              <small>Range: {Math.min(...trendingKeywords.map(k => k.value))} - {Math.max(...trendingKeywords.map(k => k.value))} papers</small>
+            </div>
           </Card.Body>
         </Card>
       ) : (

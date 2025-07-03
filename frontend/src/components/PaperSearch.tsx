@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, ListGroup, Pagination, Spinner, Alert } from 'react-bootstrap';
+import { useSearchParams } from 'react-router-dom';
 import { PaperSearchResponse, Paper } from '../types';
 
 const PaperSearch: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [query, setQuery] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -11,11 +13,38 @@ const PaperSearch: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedAbstracts, setExpandedAbstracts] = useState<Set<number>>(new Set());
 
-  const papersPerPage = 10; // Adjust as needed
+  const papersPerPage = 20; // Show more papers per page since abstracts are longer
 
-  const handleSearch = async (page: number = 1) => {
-    if (query.trim() === '') {
+  // URLパラメータから初期値を設定
+  useEffect(() => {
+    const queryParam = searchParams.get('query');
+    const startDateParam = searchParams.get('startDate');
+    const endDateParam = searchParams.get('endDate');
+    
+    if (queryParam) {
+      setQuery(queryParam);
+    }
+    if (startDateParam) {
+      setStartDate(startDateParam);
+    }
+    if (endDateParam) {
+      setEndDate(endDateParam);
+    }
+    
+    // パラメータがある場合は自動的に検索実行
+    if (queryParam) {
+      // 少し遅延させてstateが更新されるのを待つ
+      setTimeout(() => {
+        handleSearchWithParams(queryParam, startDateParam, endDateParam);
+      }, 100);
+    }
+  }, [searchParams]);
+
+  // パラメータ付きでの検索実行
+  const handleSearchWithParams = async (queryText: string, startDateParam: string | null, endDateParam: string | null, page: number = 1) => {
+    if (queryText.trim() === '') {
       setError('Please enter a search query.');
       return;
     }
@@ -28,11 +57,11 @@ const PaperSearch: React.FC = () => {
 
     try {
       const params = new URLSearchParams();
-      params.append('query', query);
+      params.append('query', queryText);
       params.append('skip', skip.toString());
       params.append('limit', limit.toString());
-      if (startDate) params.append('start_date', startDate);
-      if (endDate) params.append('end_date', endDate);
+      if (startDateParam) params.append('start_date', startDateParam);
+      if (endDateParam) params.append('end_date', endDateParam);
 
       const response = await fetch(`/api/v1/papers/search?${params.toString()}`);
       if (!response.ok) {
@@ -48,11 +77,46 @@ const PaperSearch: React.FC = () => {
     }
   };
 
+  const handleSearch = async (page: number = 1) => {
+    // 新しい検索時は折りたたみ状態をリセット
+    setExpandedAbstracts(new Set());
+    await handleSearchWithParams(query, startDate || null, endDate || null, page);
+  };
+
+  // Abstract の展開/折りたたみを切り替える
+  const toggleAbstractExpanded = (paperId: number) => {
+    setExpandedAbstracts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(paperId)) {
+        newSet.delete(paperId);
+      } else {
+        newSet.add(paperId);
+      }
+      return newSet;
+    });
+  };
+
+  // Abstract を切り詰めるヘルパー関数
+  const getTruncatedAbstract = (text: string, maxLength: number = 200) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength);
+  };
+
   const totalPages = Math.ceil(totalCount / papersPerPage);
 
   return (
     <div>
       <h1>Paper Search</h1>
+
+      {/* ダッシュボードからの遷移の場合はメッセージを表示 */}
+      {searchParams.get('query') && (
+        <Alert variant="info" className="mb-4">
+          <strong>ダッシュボードから検索:</strong> キーワード「{searchParams.get('query')}」
+          {searchParams.get('startDate') && searchParams.get('endDate') && (
+            <span> (期間: {searchParams.get('startDate')} 〜 {searchParams.get('endDate')})</span>
+          )}
+        </Alert>
+      )}
 
       <Card className="mb-4">
         <Card.Body>
@@ -103,14 +167,96 @@ const PaperSearch: React.FC = () => {
       {searchResults.length > 0 && (
         <Card>
           <Card.Body>
-            <Card.Title>Search Results ({totalCount} papers found)</Card.Title>
+            <Card.Title>
+              Search Results 
+              <span className="badge bg-primary ms-2">{totalCount.toLocaleString()} papers found</span>
+            </Card.Title>
             <ListGroup variant="flush">
               {searchResults.map((paper) => (
-                <ListGroup.Item key={paper.id}>
-                  <h5><a href={paper.arxiv_url} target="_blank" rel="noopener noreferrer">{paper.title}</a></h5>
-                  <p><strong>Authors:</strong> {paper.authors.join(', ')}</p>
-                  <p><strong>Published:</strong> {new Date(paper.published_at).toLocaleDateString()}</p>
-                  <p>{paper.summary.substring(0, 200)}...</p>
+                <ListGroup.Item key={paper.id} className="py-4">
+                  <div className="mb-3">
+                    <h5 className="mb-2">
+                      <a 
+                        href={paper.arxiv_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none', color: '#0d6efd' }}
+                        onMouseOver={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseOut={(e) => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        {paper.title}
+                      </a>
+                    </h5>
+                    <div className="mb-2">
+                      <div className="row">
+                        <div className="col-md-8">
+                          <small className="text-muted">
+                            <strong>Authors:</strong> {paper.authors.join(', ')}
+                          </small>
+                        </div>
+                        <div className="col-md-4 text-md-end">
+                          <small className="text-muted">
+                            <strong>Published:</strong> {new Date(paper.published_at).toLocaleDateString()}
+                          </small>
+                        </div>
+                      </div>
+                      <div className="mt-1">
+                        <small className="text-muted">
+                          <strong>arXiv ID:</strong> 
+                          <a 
+                            href={paper.arxiv_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="ms-1 text-decoration-none"
+                          >
+                            {paper.arxiv_id}
+                          </a>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h6 className="mb-2 text-secondary">Abstract</h6>
+                    <div>
+                      <p 
+                        style={{ 
+                          textAlign: 'justify', 
+                          lineHeight: '1.6',
+                          marginBottom: '8px',
+                          fontSize: '0.95rem'
+                        }}
+                      >
+                        {expandedAbstracts.has(paper.id) 
+                          ? paper.summary 
+                          : getTruncatedAbstract(paper.summary)
+                        }
+                        {paper.summary.length > 200 && !expandedAbstracts.has(paper.id) && (
+                          <span>...</span>
+                        )}
+                      </p>
+                      
+                      {paper.summary.length > 200 && (
+                        <button
+                          className="btn btn-link btn-sm p-0 text-decoration-none"
+                          onClick={() => toggleAbstractExpanded(paper.id)}
+                          style={{ 
+                            fontSize: '0.85rem',
+                            color: '#6c757d',
+                            border: 'none',
+                            background: 'none'
+                          }}
+                          onMouseOver={(e) => e.currentTarget.style.color = '#007bff'}
+                          onMouseOut={(e) => e.currentTarget.style.color = '#6c757d'}
+                        >
+                          {expandedAbstracts.has(paper.id) 
+                            ? '▲ 折りたたむ (Show less)' 
+                            : '▼ 続きを読む (Show more)'
+                          }
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </ListGroup.Item>
               ))}
             </ListGroup>
