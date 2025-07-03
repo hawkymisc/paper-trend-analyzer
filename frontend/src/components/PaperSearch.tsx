@@ -4,6 +4,8 @@ import { PaperSearchResponse, Paper } from '../types';
 
 const PaperSearch: React.FC = () => {
   const [query, setQuery] = useState<string>('');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [searchResults, setSearchResults] = useState<Paper[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -25,7 +27,14 @@ const PaperSearch: React.FC = () => {
     const limit = papersPerPage;
 
     try {
-      const response = await fetch(`/api/v1/papers/search?query=${encodeURIComponent(query)}&skip=${skip}&limit=${limit}`);
+      const params = new URLSearchParams();
+      params.append('query', query);
+      params.append('skip', skip.toString());
+      params.append('limit', limit.toString());
+      if (startDate) params.append('start_date', startDate);
+      if (endDate) params.append('end_date', endDate);
+
+      const response = await fetch(`/api/v1/papers/search?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -50,6 +59,7 @@ const PaperSearch: React.FC = () => {
           <Card.Title>Search Papers</Card.Title>
           <Form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
             <Form.Group className="mb-3">
+              <Form.Label>Search Keywords</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter keywords to search for papers"
@@ -57,6 +67,30 @@ const PaperSearch: React.FC = () => {
                 onChange={(e) => setQuery(e.target.value)}
               />
             </Form.Group>
+            
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>Start Date (Optional)</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </Form.Group>
+              </div>
+              <div className="col-md-6">
+                <Form.Group>
+                  <Form.Label>End Date (Optional)</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </Form.Group>
+              </div>
+            </div>
+            
             <Button type="submit" disabled={loading}>
               {loading ? <Spinner animation="border" size="sm" /> : 'Search'}
             </Button>

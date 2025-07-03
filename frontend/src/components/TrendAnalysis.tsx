@@ -182,7 +182,7 @@ const TrendAnalysis: React.FC = () => {
                 {keywords.map((keyword, index) => (
                   <Line
                     key={keyword}
-                    type="monotone"
+                    type="linear"
                     dataKey={keyword}
                     name={keyword}
                     stroke={colors[index % colors.length]}

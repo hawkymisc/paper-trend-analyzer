@@ -18,14 +18,18 @@ const Dashboard: React.FC = () => {
     
     trendsData.forEach(trend => {
       trend.data.forEach(point => {
-        if (!dateMap[point.date]) {
-          dateMap[point.date] = { date: point.date };
+        // Format date as YYYY-M-D (remove leading zeros from month and day)
+        const date = new Date(point.date);
+        const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        
+        if (!dateMap[formattedDate]) {
+          dateMap[formattedDate] = { date: formattedDate };
         }
-        dateMap[point.date][trend.keyword] = point.count;
+        dateMap[formattedDate][trend.keyword] = point.count;
       });
     });
     
-    return Object.values(dateMap).sort((a: any, b: any) => a.date.localeCompare(b.date));
+    return Object.values(dateMap).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
   // Color palette for trend lines
@@ -50,11 +54,11 @@ const Dashboard: React.FC = () => {
         const keywordsData: WordData[] = await keywordsResponse.json();
         setTrendingKeywords(Array.isArray(keywordsData) ? keywordsData : []);
 
-        // Fetch Trend Data for Top Keywords (for the trend graph)
+        // Fetch Trend Data for Top Keywords (for the trend graph) - Last 8 weeks
         const topKeywords = ['LLM', 'Fine-tuning', 'AI', 'Multimodal', 'Attention'];
         const endDate = new Date();
         const startDate = new Date();
-        startDate.setMonth(endDate.getMonth() - 6); // Last 6 months
+        startDate.setDate(endDate.getDate() - (8 * 7)); // Last 8 weeks
 
         const params = new URLSearchParams();
         topKeywords.forEach(kw => params.append('keywords', kw));
@@ -175,7 +179,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Trending Keywords (Word Cloud) */}
-      <h2 className="mt-4">Trending Keywords (Word Cloud)</h2>
+      <h2 className="mt-4">Trending Keywords (Word Cloud, Last 8 Weeks)</h2>
       {trendingKeywords.length > 0 ? (
         <Card className="mb-4">
           <Card.Body>
@@ -195,7 +199,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Paper Count Trend Graph */}
-      <h2 className="mt-4">Paper Count Trend Graph</h2>
+      <h2 className="mt-4">Paper Count Trend Graph (Weekly, Last 8 Weeks)</h2>
       {trendData.length > 0 ? (
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={trendData}>
@@ -207,7 +211,7 @@ const Dashboard: React.FC = () => {
             {['LLM', 'Fine-tuning', 'AI', 'Multimodal', 'Attention'].map((keyword, index) => (
               <Line 
                 key={keyword}
-                type="monotone" 
+                type="linear" 
                 dataKey={keyword} 
                 stroke={colors[index % colors.length]} 
                 strokeWidth={2}

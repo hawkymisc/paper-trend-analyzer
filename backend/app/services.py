@@ -9,8 +9,8 @@ import time
 # 定数
 MIN_RECENT_COUNT = 2
 TRENDING_KEYWORDS_LIMIT = 10
-RECENT_DAYS = 90
-PREVIOUS_DAYS = 180
+RECENT_DAYS = 8 * 7  # 8 weeks
+PREVIOUS_DAYS = 16 * 7  # 16 weeks (for comparison)
 
 # シンプルなインメモリキャッシュ
 cache = {}
@@ -99,9 +99,10 @@ def get_trends_data(db: Session, keywords: list[str], start_date: datetime | Non
             logging.info(f"Keyword '{keyword_name}' not found. Took {time.time() - start_time_keyword:.2f} seconds.")
             continue
 
+        # Week-based grouping: Get Monday of each week as the date label
         query = (
             db.query(
-                func.strftime('%Y-%m', models.Paper.published_at).label('month'),
+                func.date(models.Paper.published_at, 'weekday 1', '-6 days').label('week_start'),
                 func.count(models.Paper.id).label('count')
             )
             .join(models.PaperKeyword, models.Paper.id == models.PaperKeyword.paper_id)
@@ -117,11 +118,11 @@ def get_trends_data(db: Session, keywords: list[str], start_date: datetime | Non
                 end_date = end_date.replace(tzinfo=timezone.utc)
             query = query.filter(models.Paper.published_at <= end_date)
 
-        query = query.group_by('month').order_by('month')
+        query = query.group_by('week_start').order_by('week_start')
         
         trend_data = []
         for row in query.all():
-            trend_data.append(schemas.TrendDataPoint(date=row.month, count=row.count))
+            trend_data.append(schemas.TrendDataPoint(date=row.week_start, count=row.count))
         
         results.append(schemas.TrendResult(keyword=keyword_name, data=trend_data))
         logging.info(f"Fetched trend data for keyword '{keyword_name}' in {time.time() - start_time_keyword:.2f} seconds.")
@@ -147,13 +148,19 @@ def get_summary_data(db: Session) -> schemas.DashboardSummary:
         recent_papers_30d=recent_papers_30d,
     )
 
-def search_papers(db: Session, query: str, skip: int = 0, limit: int = 100) -> schemas.PaperSearchResponse:
+def search_papers(db: Session, query: str, skip: int = 0, limit: int = 100, start_date: datetime = None, end_date: datetime = None) -> schemas.PaperSearchResponse:
     search_query = f"%{query.lower()}%"
     
     base_query = db.query(models.Paper).filter(
         (func.lower(models.Paper.title).like(search_query)) |
         (func.lower(models.Paper.summary).like(search_query))
     )
+    
+    # 日付範囲フィルターを追加
+    if start_date:
+        base_query = base_query.filter(models.Paper.published_at >= start_date)
+    if end_date:
+        base_query = base_query.filter(models.Paper.published_at <= end_date)
     
     total_count = base_query.count()
     papers = base_query.offset(skip).limit(limit).all()
@@ -181,13 +188,13 @@ def get_word_cloud_data(db: Session) -> list[schemas.WordData]:
     start_time = time.time()
     logging.info("Fetching word cloud data from DB...")
 
-    seven_days_ago = get_time_ago(days=7)
+    eight_weeks_ago = get_time_ago(days=8*7)  # 8 weeks
 
     results = (
         db.query(models.Keyword.name, func.count(models.PaperKeyword.paper_id).label('count'))
         .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
         .join(models.Paper, models.PaperKeyword.paper_id == models.Paper.id)
-        .filter(models.Paper.published_at >= seven_days_ago)
+        .filter(models.Paper.published_at >= eight_weeks_ago)
         .group_by(models.Keyword.name)
         .order_by(func.count(models.PaperKeyword.paper_id).desc())
         .limit(50)
