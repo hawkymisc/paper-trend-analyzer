@@ -3,6 +3,12 @@
 ## Project Overview
 This is a Paper Trend Analyzer application that helps analyze trends in academic papers. It provides search functionality, trend analysis, and a dashboard for visualizing academic paper data sourced from arXiv API.
 
+## Important Instruction
+
+This is a **FULLY FUNCTIONAL MVP**. Do not break existing functionality. Focus on enhancements, bug fixes, or filling identified gaps. The system is designed with high code quality standards and comprehensive testing.
+
+**speak in Japanese** when providing error messages or user-facing text in the API responses.
+
 ## Current Implementation Status
 
 ### Phase 1 (MVP) - ✅ COMPLETED
