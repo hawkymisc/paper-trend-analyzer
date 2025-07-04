@@ -62,3 +62,12 @@ class PaperSearchResponse(BaseModel):
 class WordData(BaseModel):
     text: str
     value: int
+
+class WeeklyKeywordRank(BaseModel):
+    keyword: str
+    rank: int
+    count: int
+
+class WeeklyRanking(BaseModel):
+    week: str  # Format: YYYY-MM-DD (Monday of the week)
+    rankings: list[WeeklyKeywordRank]
