@@ -1,0 +1,66 @@
+{
+  "appName": "論文トレンド解析",
+  "navigation": {
+    "dashboard": "ダッシュボード",
+    "paperSearch": "論文検索",
+    "languageSwitch": "言語"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "summaryTitle": "概要情報",
+    "keywordsTitle": "トレンドキーワード (ワードクラウド, 直近16週間)",
+    "noKeywords": "トレンドキーワードがありません。",
+    "summary": {
+      "totalPapers": "総論文数",
+      "papers24h": "過去24時間の論文",
+      "papers7d": "過去7日間の論文",
+      "papers30d": "過去30日間の論文",
+      "totalKeywords": "総キーワード数",
+      "latestPaperDate": "最新論文日付"
+    },
+    "wordCloud": {
+      "previous10": "↑ 前の10件",
+      "next10": "次の10件 ↓",
+      "showing": "{{start}}-{{end}} / {{total}}件",
+      "currentKeywords": "現在表示中のキーワード ({{total}}件中):",
+      "overallRange": "全体範囲: {{min}} - {{max}} 論文",
+      "displayRange": "表示中範囲: {{start}}位 - {{end}}位",
+      "period": "期間: 直近16週間 ({{startDate}} ~ {{endDate}})",
+      "paperCount": "論文数: {{count}}件",
+      "rank": "ランク: #{{rank}}",
+      "clickToSearch": "クリックして論文検索"
+    }
+  },
+  "paperSearch": {
+    "title": "論文検索",
+    "searchPlaceholder": "検索キーワードを入力してください（タイトル、概要、キーワード）...",
+    "searchButton": "検索",
+    "dateRange": "日付範囲",
+    "startDate": "開始日",
+    "endDate": "終了日",
+    "resultsCount": "{{count}}件の論文が見つかりました",
+    "noResults": "検索条件に一致する論文が見つかりませんでした。",
+    "loading": "検索中...",
+    "showAbstract": "概要を表示",
+    "hideAbstract": "概要を非表示",
+    "viewOnArxiv": "arXivで見る",
+    "pagination": {
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "{{current}}ページ / {{total}}ページ"
+    }
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "notAvailable": "N/A",
+    "search": "検索",
+    "clear": "クリア",
+    "apply": "適用",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "close": "閉じる"
+  }
+}

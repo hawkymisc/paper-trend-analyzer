@@ -1,0 +1,66 @@
+{
+  "appName": "Paper-Trend-Analyzer",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "paperSearch": "Paper-Suche",
+    "languageSwitch": "Sprache"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "summaryTitle": "Zusammenfassungsinfo",
+    "keywordsTitle": "Trend-Schlüsselwörter (Wortwolke, letzte 16 Wochen)",
+    "noKeywords": "Keine Trend-Schlüsselwörter verfügbar.",
+    "summary": {
+      "totalPapers": "Gesamt Papers",
+      "papers24h": "Papers letzte 24h",
+      "papers7d": "Papers letzte 7d",
+      "papers30d": "Papers letzte 30d",
+      "totalKeywords": "Gesamt Schlüsselwörter",
+      "latestPaperDate": "Neuestes Paper-Datum"
+    },
+    "wordCloud": {
+      "previous10": "↑ Vorherige 10",
+      "next10": "Nächste 10 ↓",
+      "showing": "{{start}}-{{end}} / {{total}} Elemente",
+      "currentKeywords": "Aktuell angezeigte Schlüsselwörter ({{total}} gesamt):",
+      "overallRange": "Gesamtbereich: {{min}} - {{max}} Papers",
+      "displayRange": "Anzeigebereich: {{start}} - {{end}} Rang",
+      "period": "Zeitraum: Letzte 16 Wochen ({{startDate}} ~ {{endDate}})",
+      "paperCount": "Papers: {{count}} Papers",
+      "rank": "Rang: #{{rank}}",
+      "clickToSearch": "Klicken Sie, um Papers zu suchen"
+    }
+  },
+  "paperSearch": {
+    "title": "Paper-Suche",
+    "searchPlaceholder": "Suchbegriffe eingeben (Titel, Zusammenfassung, Schlüsselwörter)...",
+    "searchButton": "Suchen",
+    "dateRange": "Datumsbereich",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "resultsCount": "{{count}} Papers gefunden",
+    "noResults": "Keine Papers gefunden, die Ihren Suchkriterien entsprechen.",
+    "loading": "Suche läuft...",
+    "showAbstract": "Zusammenfassung anzeigen",
+    "hideAbstract": "Zusammenfassung verbergen",
+    "viewOnArxiv": "Auf arXiv anzeigen",
+    "pagination": {
+      "previous": "Vorherige",
+      "next": "Nächste",
+      "page": "Seite {{current}} von {{total}}"
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "notAvailable": "N/V",
+    "search": "Suchen",
+    "clear": "Löschen",
+    "apply": "Anwenden",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen"
+  }
+}

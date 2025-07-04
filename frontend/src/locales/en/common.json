@@ -1,0 +1,66 @@
+{
+  "appName": "Paper Trend Analyzer",
+  "navigation": {
+    "dashboard": "Dashboard",
+    "paperSearch": "Paper Search",
+    "languageSwitch": "Language"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "summaryTitle": "Summary Information",
+    "keywordsTitle": "Trending Keywords (Word Cloud, Last 16 Weeks)",
+    "noKeywords": "No trending keywords available.",
+    "summary": {
+      "totalPapers": "Total Papers",
+      "papers24h": "Papers Last 24h",
+      "papers7d": "Papers Last 7d",
+      "papers30d": "Papers Last 30d",
+      "totalKeywords": "Total Keywords",
+      "latestPaperDate": "Latest Paper Date"
+    },
+    "wordCloud": {
+      "previous10": "↑ Previous 10",
+      "next10": "Next 10 ↓",
+      "showing": "{{start}}-{{end}} / {{total}} items",
+      "currentKeywords": "Currently displayed keywords ({{total}} total):",
+      "overallRange": "Overall range: {{min}} - {{max}} papers",
+      "displayRange": "Display range: {{start}} - {{end}} rank",
+      "period": "Period: Last 16 weeks ({{startDate}} ~ {{endDate}})",
+      "paperCount": "Papers: {{count}} papers",
+      "rank": "Rank: #{{rank}}",
+      "clickToSearch": "Click to search papers"
+    }
+  },
+  "paperSearch": {
+    "title": "Paper Search",
+    "searchPlaceholder": "Enter search terms (title, summary, keywords)...",
+    "searchButton": "Search",
+    "dateRange": "Date Range",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "resultsCount": "Found {{count}} papers",
+    "noResults": "No papers found matching your search criteria.",
+    "loading": "Searching...",
+    "showAbstract": "Show Abstract",
+    "hideAbstract": "Hide Abstract",
+    "viewOnArxiv": "View on arXiv",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{current}} of {{total}}"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "notAvailable": "N/A",
+    "search": "Search",
+    "clear": "Clear",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  }
+}

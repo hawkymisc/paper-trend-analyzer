@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Spinner, Alert, OverlayTrigger, Tooltip as BootstrapTooltip } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { DashboardSummary, WordData } from '../types';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [trendingKeywords, setTrendingKeywords] = useState<WordData[]>([]);
@@ -107,25 +109,25 @@ const Dashboard: React.FC = () => {
   };
 
   if (loading) {
-    return <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner>;
+    return <Spinner animation="border" role="status"><span className="visually-hidden">{t('common.loading')}</span></Spinner>;
   }
 
   if (error) {
-    return <Alert variant="danger">Error: {error}</Alert>;
+    return <Alert variant="danger">{t('common.error')}: {error}</Alert>;
   }
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>{t('dashboard.title')}</h1>
 
       {/* Summary Information */}
-      <h2 className="mt-4">Summary Information</h2>
+      <h2 className="mt-4">{t('dashboard.summaryTitle')}</h2>
       {summary && (
         <Row>
           <Col md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Total Papers</Card.Title>
+                <Card.Title>{t('dashboard.summary.totalPapers')}</Card.Title>
                 <Card.Text>{summary.total_papers}</Card.Text>
               </Card.Body>
             </Card>
@@ -133,7 +135,7 @@ const Dashboard: React.FC = () => {
           <Col md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Papers Last 24h</Card.Title>
+                <Card.Title>{t('dashboard.summary.papers24h')}</Card.Title>
                 <Card.Text>{summary.recent_papers_24h}</Card.Text>
               </Card.Body>
             </Card>
@@ -141,7 +143,7 @@ const Dashboard: React.FC = () => {
           <Col md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Papers Last 7d</Card.Title>
+                <Card.Title>{t('dashboard.summary.papers7d')}</Card.Title>
                 <Card.Text>{summary.recent_papers_7d}</Card.Text>
               </Card.Body>
             </Card>
@@ -149,7 +151,7 @@ const Dashboard: React.FC = () => {
           <Col md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Papers Last 30d</Card.Title>
+                <Card.Title>{t('dashboard.summary.papers30d')}</Card.Title>
                 <Card.Text>{summary.recent_papers_30d}</Card.Text>
               </Card.Body>
             </Card>
@@ -157,7 +159,7 @@ const Dashboard: React.FC = () => {
           <Col md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Total Keywords</Card.Title>
+                <Card.Title>{t('dashboard.summary.totalKeywords')}</Card.Title>
                 <Card.Text>{summary.total_keywords}</Card.Text>
               </Card.Body>
             </Card>
@@ -165,8 +167,8 @@ const Dashboard: React.FC = () => {
           <Col md={4}>
             <Card className="mb-3">
               <Card.Body>
-                <Card.Title>Latest Paper Date</Card.Title>
-                <Card.Text>{summary.latest_paper_date ? new Date(summary.latest_paper_date).toLocaleDateString() : 'N/A'}</Card.Text>
+                <Card.Title>{t('dashboard.summary.latestPaperDate')}</Card.Title>
+                <Card.Text>{summary.latest_paper_date ? new Date(summary.latest_paper_date).toLocaleDateString() : t('common.notAvailable')}</Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -174,7 +176,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Trending Keywords (Word Cloud) */}
-      <h2 className="mt-4 mb-3">Trending Keywords (Word Cloud, Last 16 Weeks)</h2>
+      <h2 className="mt-4 mb-3">{t('dashboard.keywordsTitle')}</h2>
       {trendingKeywords.length > 0 ? (
         <Card className="mb-4">
           <Card.Body>
@@ -189,10 +191,14 @@ const Dashboard: React.FC = () => {
                   }}
                   disabled={wordCloudStartIndex === 0}
                 >
-                  ↑ 前の10件
+                  {t('dashboard.wordCloud.previous10')}
                 </button>
                 <span className="text-muted small">
-                  {wordCloudStartIndex + 1}-{Math.min(wordCloudStartIndex + 20, trendingKeywords.length)} / {trendingKeywords.length}件
+                  {t('dashboard.wordCloud.showing', {
+                    start: wordCloudStartIndex + 1,
+                    end: Math.min(wordCloudStartIndex + 20, trendingKeywords.length),
+                    total: trendingKeywords.length
+                  })}
                 </span>
                 <button 
                   className="btn btn-outline-primary btn-sm"
@@ -202,7 +208,7 @@ const Dashboard: React.FC = () => {
                   }}
                   disabled={wordCloudStartIndex + 20 >= trendingKeywords.length}
                 >
-                  次の10件 ↓
+                  {t('dashboard.wordCloud.next10')}
                 </button>
               </div>
             )}
@@ -237,10 +243,10 @@ const Dashboard: React.FC = () => {
                 const tooltipContent = (
                   <div style={{ textAlign: 'left' }}>
                     <strong>{keyword.text}</strong><br/>
-                    <small>期間: 直近16週間 ({startDate} ~ {endDate})</small><br/>
-                    <small>論文数: {keyword.value.toLocaleString()}件</small><br/>
-                    <small>ランク: #{index + 1}</small><br/>
-                    <em style={{ color: '#007bff' }}>クリックして論文検索</em>
+                    <small>{t('dashboard.wordCloud.period', { startDate, endDate })}</small><br/>
+                    <small>{t('dashboard.wordCloud.paperCount', { count: keyword.value.toLocaleString() })}</small><br/>
+                    <small>{t('dashboard.wordCloud.rank', { rank: index + 1 })}</small><br/>
+                    <em style={{ color: '#007bff' }}>{t('dashboard.wordCloud.clickToSearch')}</em>
                   </div>
                 );
                 
@@ -297,7 +303,7 @@ const Dashboard: React.FC = () => {
             
             {/* Statistics */}
             <div className="mt-3" style={{ fontSize: '12px', color: '#666' }}>
-              <strong>現在表示中のキーワード ({trendingKeywords.length}件中):</strong><br/>
+              <strong>{t('dashboard.wordCloud.currentKeywords', { total: trendingKeywords.length })}:</strong><br/>
               {trendingKeywords.slice(wordCloudStartIndex, wordCloudStartIndex + 8).map((k, i) => {
                 const maxValue = Math.max(...trendingKeywords.map(kw => kw.value));
                 const minValue = Math.min(...trendingKeywords.map(kw => kw.value));
@@ -306,15 +312,21 @@ const Dashboard: React.FC = () => {
               }).join(', ')}
               {trendingKeywords.slice(wordCloudStartIndex, wordCloudStartIndex + 20).length > 8 && '...'}
               <br/>
-              <small>全体範囲: {Math.min(...trendingKeywords.map(k => k.value))} - {Math.max(...trendingKeywords.map(k => k.value))} papers</small>
+              <small>{t('dashboard.wordCloud.overallRange', { 
+                min: Math.min(...trendingKeywords.map(k => k.value)), 
+                max: Math.max(...trendingKeywords.map(k => k.value)) 
+              })}</small>
               {trendingKeywords.length > 20 && (
-                <small> | 表示中範囲: {wordCloudStartIndex + 1}位 - {Math.min(wordCloudStartIndex + 20, trendingKeywords.length)}位</small>
+                <small> | {t('dashboard.wordCloud.displayRange', {
+                  start: wordCloudStartIndex + 1,
+                  end: Math.min(wordCloudStartIndex + 20, trendingKeywords.length)
+                })}</small>
               )}
             </div>
           </Card.Body>
         </Card>
       ) : (
-        <p>No trending keywords available.</p>
+        <p>{t('dashboard.noKeywords')}</p>
       )}
 
     </div>

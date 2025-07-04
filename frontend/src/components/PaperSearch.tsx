@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, ListGroup, Pagination, Spinner, Alert } from 'react-bootstrap';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PaperSearchResponse, Paper } from '../types';
 
 const PaperSearch: React.FC = () => {
+  const { t } = useTranslation('common');
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
@@ -45,7 +47,7 @@ const PaperSearch: React.FC = () => {
   // パラメータ付きでの検索実行
   const handleSearchWithParams = async (queryText: string, startDateParam: string | null, endDateParam: string | null, page: number = 1) => {
     if (queryText.trim() === '') {
-      setError('Please enter a search query.');
+      setError(t('paperSearch.searchPlaceholder'));
       return;
     }
     setLoading(true);
@@ -106,27 +108,27 @@ const PaperSearch: React.FC = () => {
 
   return (
     <div>
-      <h1>Paper Search</h1>
+      <h1>{t('paperSearch.title')}</h1>
 
       {/* ダッシュボードからの遷移の場合はメッセージを表示 */}
       {searchParams.get('query') && (
         <Alert variant="info" className="mb-4">
-          <strong>ダッシュボードから検索:</strong> キーワード「{searchParams.get('query')}」
+          <strong>Dashboard Search:</strong> Keyword「{searchParams.get('query')}」
           {searchParams.get('startDate') && searchParams.get('endDate') && (
-            <span> (期間: {searchParams.get('startDate')} 〜 {searchParams.get('endDate')})</span>
+            <span> (Period: {searchParams.get('startDate')} 〜 {searchParams.get('endDate')})</span>
           )}
         </Alert>
       )}
 
       <Card className="mb-4">
         <Card.Body>
-          <Card.Title>Search Papers</Card.Title>
+          <Card.Title>{t('paperSearch.title')}</Card.Title>
           <Form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
             <Form.Group className="mb-3">
-              <Form.Label>Search Keywords</Form.Label>
+              <Form.Label>{t('common.search')} Keywords</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter keywords to search for papers"
+                placeholder={t('paperSearch.searchPlaceholder')}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -135,7 +137,7 @@ const PaperSearch: React.FC = () => {
             <div className="row mb-3">
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>Start Date (Optional)</Form.Label>
+                  <Form.Label>{t('paperSearch.startDate')}</Form.Label>
                   <Form.Control
                     type="date"
                     value={startDate}
@@ -145,7 +147,7 @@ const PaperSearch: React.FC = () => {
               </div>
               <div className="col-md-6">
                 <Form.Group>
-                  <Form.Label>End Date (Optional)</Form.Label>
+                  <Form.Label>{t('paperSearch.endDate')}</Form.Label>
                   <Form.Control
                     type="date"
                     value={endDate}
@@ -156,7 +158,7 @@ const PaperSearch: React.FC = () => {
             </div>
             
             <Button type="submit" disabled={loading}>
-              {loading ? <Spinner animation="border" size="sm" /> : 'Search'}
+              {loading ? <Spinner animation="border" size="sm" /> : t('paperSearch.searchButton')}
             </Button>
           </Form>
         </Card.Body>
@@ -168,8 +170,8 @@ const PaperSearch: React.FC = () => {
         <Card>
           <Card.Body>
             <Card.Title>
-              Search Results 
-              <span className="badge bg-primary ms-2">{totalCount.toLocaleString()} papers found</span>
+              {t('paperSearch.title')} 
+              <span className="badge bg-primary ms-2">{t('paperSearch.resultsCount', { count: totalCount.toLocaleString() })}</span>
             </Card.Title>
             <ListGroup variant="flush">
               {searchResults.map((paper) => (
@@ -250,8 +252,8 @@ const PaperSearch: React.FC = () => {
                           onMouseOut={(e) => e.currentTarget.style.color = '#6c757d'}
                         >
                           {expandedAbstracts.has(paper.id) 
-                            ? '▲ 折りたたむ (Show less)' 
-                            : '▼ 続きを読む (Show more)'
+                            ? `▲ ${t('paperSearch.hideAbstract')}` 
+                            : `▼ ${t('paperSearch.showAbstract')}`
                           }
                         </button>
                       )}
@@ -279,7 +281,7 @@ const PaperSearch: React.FC = () => {
       )}
 
       {searchResults.length === 0 && !loading && query.trim() !== '' && !error && (
-        <p>No papers found for your query.</p>
+        <p>{t('paperSearch.noResults')}</p>
       )}
     </div>
   );

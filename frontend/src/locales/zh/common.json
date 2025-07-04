@@ -1,0 +1,66 @@
+{
+  "appName": "论文趋势分析器",
+  "navigation": {
+    "dashboard": "仪表板",
+    "paperSearch": "论文搜索",
+    "languageSwitch": "语言"
+  },
+  "dashboard": {
+    "title": "仪表板",
+    "summaryTitle": "摘要信息",
+    "keywordsTitle": "趋势关键词 (词云, 最近16周)",
+    "noKeywords": "没有可用的趋势关键词。",
+    "summary": {
+      "totalPapers": "论文总数",
+      "papers24h": "过去24小时论文",
+      "papers7d": "过去7天论文",
+      "papers30d": "过去30天论文",
+      "totalKeywords": "关键词总数",
+      "latestPaperDate": "最新论文日期"
+    },
+    "wordCloud": {
+      "previous10": "↑ 前10项",
+      "next10": "后10项 ↓",
+      "showing": "{{start}}-{{end}} / {{total}}项",
+      "currentKeywords": "当前显示的关键词 (总共{{total}}项):",
+      "overallRange": "整体范围: {{min}} - {{max}} 论文",
+      "displayRange": "显示范围: 第{{start}} - {{end}}名",
+      "period": "期间: 最近16周 ({{startDate}} ~ {{endDate}})",
+      "paperCount": "论文数: {{count}}篇",
+      "rank": "排名: #{{rank}}",
+      "clickToSearch": "点击搜索论文"
+    }
+  },
+  "paperSearch": {
+    "title": "论文搜索",
+    "searchPlaceholder": "输入搜索词（标题、摘要、关键词）...",
+    "searchButton": "搜索",
+    "dateRange": "日期范围",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "resultsCount": "找到{{count}}篇论文",
+    "noResults": "没有找到符合搜索条件的论文。",
+    "loading": "搜索中...",
+    "showAbstract": "显示摘要",
+    "hideAbstract": "隐藏摘要",
+    "viewOnArxiv": "在arXiv上查看",
+    "pagination": {
+      "previous": "上一页",
+      "next": "下一页",
+      "page": "第{{current}}页 / 共{{total}}页"
+    }
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "错误",
+    "notAvailable": "N/A",
+    "search": "搜索",
+    "clear": "清除",
+    "apply": "应用",
+    "cancel": "取消",
+    "save": "保存",
+    "delete": "删除",
+    "edit": "编辑",
+    "close": "关闭"
+  }
+}

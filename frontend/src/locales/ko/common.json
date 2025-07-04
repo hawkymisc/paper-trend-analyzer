@@ -1,0 +1,66 @@
+{
+  "appName": "논문 트렌드 분석기",
+  "navigation": {
+    "dashboard": "대시보드",
+    "paperSearch": "논문 검색",
+    "languageSwitch": "언어"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "summaryTitle": "요약 정보",
+    "keywordsTitle": "트렌드 키워드 (워드클라우드, 최근 16주)",
+    "noKeywords": "사용 가능한 트렌드 키워드가 없습니다.",
+    "summary": {
+      "totalPapers": "총 논문 수",
+      "papers24h": "지난 24시간 논문",
+      "papers7d": "지난 7일 논문",
+      "papers30d": "지난 30일 논문",
+      "totalKeywords": "총 키워드 수",
+      "latestPaperDate": "최신 논문 날짜"
+    },
+    "wordCloud": {
+      "previous10": "↑ 이전 10개",
+      "next10": "다음 10개 ↓",
+      "showing": "{{start}}-{{end}} / {{total}}개",
+      "currentKeywords": "현재 표시된 키워드 (총 {{total}}개):",
+      "overallRange": "전체 범위: {{min}} - {{max}} 논문",
+      "displayRange": "표시 범위: {{start}}위 - {{end}}위",
+      "period": "기간: 최근 16주 ({{startDate}} ~ {{endDate}})",
+      "paperCount": "논문 수: {{count}}편",
+      "rank": "순위: #{{rank}}",
+      "clickToSearch": "클릭하여 논문 검색"
+    }
+  },
+  "paperSearch": {
+    "title": "논문 검색",
+    "searchPlaceholder": "검색어를 입력하세요 (제목, 요약, 키워드)...",
+    "searchButton": "검색",
+    "dateRange": "날짜 범위",
+    "startDate": "시작 날짜",
+    "endDate": "종료 날짜",
+    "resultsCount": "{{count}}편의 논문을 찾았습니다",
+    "noResults": "검색 조건에 맞는 논문을 찾을 수 없습니다.",
+    "loading": "검색 중...",
+    "showAbstract": "요약 보기",
+    "hideAbstract": "요약 숨기기",
+    "viewOnArxiv": "arXiv에서 보기",
+    "pagination": {
+      "previous": "이전",
+      "next": "다음",
+      "page": "{{current}}페이지 / {{total}}페이지"
+    }
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류",
+    "notAvailable": "N/A",
+    "search": "검색",
+    "clear": "지우기",
+    "apply": "적용",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "close": "닫기"
+  }
+}
