@@ -1,26 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Spinner, Alert, OverlayTrigger, Tooltip as BootstrapTooltip } from 'react-bootstrap';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
-import { DashboardSummary, WordData, TrendResult } from '../types';
+import { DashboardSummary, WordData } from '../types';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [trendingKeywords, setTrendingKeywords] = useState<WordData[]>([]);
-  const [trendData, setTrendData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [wordCloudStartIndex, setWordCloudStartIndex] = useState<number>(0);
 
-  // 8週間前の日付を計算
+  // 16週間前の日付を計算
   const getDateRange = () => {
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(endDate.getDate() - (8 * 7)); // 8 weeks ago
+    startDate.setDate(endDate.getDate() - (16 * 7)); // 16 weeks ago
     return {
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0]
     };
+  };
+
+
+  // キーワードデータ取得を別関数に分離
+  const fetchKeywords = async () => {
+    setLoading(true);
+    try {
+      const keywordsResponse = await fetch('/api/v1/keywords/word-cloud');
+      if (!keywordsResponse.ok) {
+        throw new Error(`HTTP error! status: ${keywordsResponse.status}`);
+      }
+      const keywordsData: WordData[] = await keywordsResponse.json();
+      setTrendingKeywords(Array.isArray(keywordsData) ? keywordsData : []);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // キーワードクリック時にPaper Searchに遷移
@@ -35,28 +52,6 @@ const Dashboard: React.FC = () => {
     navigate(`/paper-search?${searchParams.toString()}`);
   };
 
-  // Transform trend data for Recharts
-  const transformTrendData = (trendsData: TrendResult[]) => {
-    const dateMap: { [key: string]: any } = {};
-    
-    trendsData.forEach(trend => {
-      trend.data.forEach(point => {
-        // Format date as YYYY-M-D (remove leading zeros from month and day)
-        const date = new Date(point.date);
-        const formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-        
-        if (!dateMap[formattedDate]) {
-          dateMap[formattedDate] = { date: formattedDate };
-        }
-        dateMap[formattedDate][trend.keyword] = point.count;
-      });
-    });
-    
-    return Object.values(dateMap).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  };
-
-  // Color palette for trend lines
-  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,32 +65,8 @@ const Dashboard: React.FC = () => {
         setSummary(summaryData);
 
         // Fetch Trending Keywords for Word Cloud
-        const keywordsResponse = await fetch('/api/v1/keywords/word-cloud');
-        if (!keywordsResponse.ok) {
-          throw new Error(`HTTP error! status: ${keywordsResponse.status}`);
-        }
-        const keywordsData: WordData[] = await keywordsResponse.json();
-        setTrendingKeywords(Array.isArray(keywordsData) ? keywordsData : []);
+        await fetchKeywords();
 
-        // Fetch Trend Data for Top Keywords (for the trend graph) - Last 8 weeks
-        const topKeywords = ['LLM', 'Fine-tuning', 'AI', 'Multimodal', 'Attention'];
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - (8 * 7)); // Last 8 weeks
-
-        const params = new URLSearchParams();
-        topKeywords.forEach(kw => params.append('keywords', kw));
-        params.append('start_date', startDate.toISOString().split('T')[0]);
-        params.append('end_date', endDate.toISOString().split('T')[0]);
-
-        const trendsResponse = await fetch(`/api/v1/trends?${params.toString()}`);
-        if (trendsResponse.ok) {
-          const trendsData: TrendResult[] = await trendsResponse.json();
-          
-          // Transform data for Recharts
-          const transformedData = transformTrendData(trendsData);
-          setTrendData(transformedData);
-        }
 
       } catch (e: any) {
         setError(e.message);
@@ -203,10 +174,38 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Trending Keywords (Word Cloud) */}
-      <h2 className="mt-4">Trending Keywords (Word Cloud, Last 8 Weeks)</h2>
+      <h2 className="mt-4 mb-3">Trending Keywords (Word Cloud, Last 16 Weeks)</h2>
       {trendingKeywords.length > 0 ? (
         <Card className="mb-4">
           <Card.Body>
+            {/* スクロールボタン */}
+            {trendingKeywords.length > 20 && (
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <button 
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => {
+                    console.log('Previous button clicked, current index:', wordCloudStartIndex);
+                    setWordCloudStartIndex(Math.max(0, wordCloudStartIndex - 10));
+                  }}
+                  disabled={wordCloudStartIndex === 0}
+                >
+                  ↑ 前の10件
+                </button>
+                <span className="text-muted small">
+                  {wordCloudStartIndex + 1}-{Math.min(wordCloudStartIndex + 20, trendingKeywords.length)} / {trendingKeywords.length}件
+                </span>
+                <button 
+                  className="btn btn-outline-primary btn-sm"
+                  onClick={() => {
+                    console.log('Next button clicked, current index:', wordCloudStartIndex);
+                    setWordCloudStartIndex(Math.min(trendingKeywords.length - 20, wordCloudStartIndex + 10));
+                  }}
+                  disabled={wordCloudStartIndex + 20 >= trendingKeywords.length}
+                >
+                  次の10件 ↓
+                </button>
+              </div>
+            )}
             <div 
               style={{ 
                 height: '400px', 
@@ -222,7 +221,8 @@ const Dashboard: React.FC = () => {
                 gap: '10px'
               }} 
             >
-              {trendingKeywords.slice(0, 30).map((keyword, index) => {
+              {trendingKeywords.slice(wordCloudStartIndex, wordCloudStartIndex + 20).map((keyword, relativeIndex) => {
+                const index = wordCloudStartIndex + relativeIndex; // 全体でのインデックス
                 const maxValue = Math.max(...trendingKeywords.map(k => k.value));
                 const minValue = Math.min(...trendingKeywords.map(k => k.value));
                 const fontSize = calculateFontSize(keyword.value, maxValue, minValue, index);
@@ -237,7 +237,7 @@ const Dashboard: React.FC = () => {
                 const tooltipContent = (
                   <div style={{ textAlign: 'left' }}>
                     <strong>{keyword.text}</strong><br/>
-                    <small>期間: 直近8週間 ({startDate} ~ {endDate})</small><br/>
+                    <small>期間: 直近16週間 ({startDate} ~ {endDate})</small><br/>
                     <small>論文数: {keyword.value.toLocaleString()}件</small><br/>
                     <small>ランク: #{index + 1}</small><br/>
                     <em style={{ color: '#007bff' }}>クリックして論文検索</em>
@@ -297,16 +297,19 @@ const Dashboard: React.FC = () => {
             
             {/* Statistics */}
             <div className="mt-3" style={{ fontSize: '12px', color: '#666' }}>
-              <strong>Top Keywords ({trendingKeywords.length} total):</strong><br/>
-              {trendingKeywords.slice(0, 8).map((k, i) => {
+              <strong>現在表示中のキーワード ({trendingKeywords.length}件中):</strong><br/>
+              {trendingKeywords.slice(wordCloudStartIndex, wordCloudStartIndex + 8).map((k, i) => {
                 const maxValue = Math.max(...trendingKeywords.map(kw => kw.value));
                 const minValue = Math.min(...trendingKeywords.map(kw => kw.value));
-                const fontSize = Math.round(calculateFontSize(k.value, maxValue, minValue, i));
+                const fontSize = Math.round(calculateFontSize(k.value, maxValue, minValue, wordCloudStartIndex + i));
                 return `${k.text}(${k.value}→${fontSize}px)`;
               }).join(', ')}
-              {trendingKeywords.length > 8 && '...'}
+              {trendingKeywords.slice(wordCloudStartIndex, wordCloudStartIndex + 20).length > 8 && '...'}
               <br/>
-              <small>Range: {Math.min(...trendingKeywords.map(k => k.value))} - {Math.max(...trendingKeywords.map(k => k.value))} papers</small>
+              <small>全体範囲: {Math.min(...trendingKeywords.map(k => k.value))} - {Math.max(...trendingKeywords.map(k => k.value))} papers</small>
+              {trendingKeywords.length > 20 && (
+                <small> | 表示中範囲: {wordCloudStartIndex + 1}位 - {Math.min(wordCloudStartIndex + 20, trendingKeywords.length)}位</small>
+              )}
             </div>
           </Card.Body>
         </Card>
@@ -314,31 +317,6 @@ const Dashboard: React.FC = () => {
         <p>No trending keywords available.</p>
       )}
 
-      {/* Paper Count Trend Graph */}
-      <h2 className="mt-4">Paper Count Trend Graph (Weekly, Last 8 Weeks)</h2>
-      {trendData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={trendData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            {['LLM', 'Fine-tuning', 'AI', 'Multimodal', 'Attention'].map((keyword, index) => (
-              <Line 
-                key={keyword}
-                type="linear" 
-                dataKey={keyword} 
-                stroke={colors[index % colors.length]} 
-                strokeWidth={2}
-                connectNulls={false}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
-      ) : (
-        <p>Loading trend data...</p>
-      )}
     </div>
   );
 };

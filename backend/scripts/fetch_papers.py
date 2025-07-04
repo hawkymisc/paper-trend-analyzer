@@ -16,6 +16,7 @@ if backend_dir not in sys.path:
 
 from app.database import SessionLocal
 from app.models import Paper, Keyword, PaperKeyword
+from app.services import extract_technical_terms_from_text, cleanup_low_quality_keywords
 
 
 from datetime import datetime, timedelta, timezone
@@ -41,21 +42,9 @@ ARXIV_BASE_URL = "http://export.arxiv.org/api/query?"
 
 
 
-LLM_KEYWORDS = [
-    "LLM", "Large Language Model", "Transformer", "Attention", "Generative AI",
-    "GPT", "BERT", "T5", "Llama", "Mixtral", "Mistral", "Gemini", "Claude",
-    "RAG", "Retrieval Augmented Generation", "Fine-tuning", "Prompt Engineering",
-    "Reinforcement Learning from Human Feedback", "RLHF", "Multimodal",
-    "Neural Network", "Deep Learning", "Machine Learning", "AI", "Artificial Intelligence"
-]
-
 def extract_keywords(text: str) -> list[str]:
-    extracted = []
-    text_lower = text.lower()
-    for keyword in LLM_KEYWORDS:
-        if re.search(r'\b' + re.escape(keyword.lower()) + r'\b', text_lower):
-            extracted.append(keyword)
-    return list(set(extracted)) # 重複を排除
+    """改良された技術用語抽出システムを使用"""
+    return extract_technical_terms_from_text(text)
 
 @retry(wait=wait_exponential(multiplier=1, min=4, max=10), stop=stop_after_attempt(5), retry=retry_if_exception_type(requests.exceptions.RequestException))
 def fetch_papers_from_arxiv(search_query: str, max_results: int, start: int = 0) -> Optional[Any]:
@@ -149,6 +138,15 @@ def save_papers_to_db(db: Session, papers: list) -> None:
     
     db.commit()
     logging.info(f"Successfully added {added_count} new papers and their keywords to the database.")
+    
+    # 新しい論文を追加した後、低品質キーワードを自動クリーンアップ
+    if added_count > 0:
+        logging.info("Running automatic keyword quality cleanup...")
+        try:
+            cleaned_count = cleanup_low_quality_keywords(db)
+            logging.info(f"Automatic cleanup completed. Removed/merged {cleaned_count} keywords.")
+        except Exception as e:
+            logging.error(f"Automatic cleanup failed: {e}")
 
 
 if __name__ == "__main__":

@@ -108,3 +108,14 @@ def search_papers(
 @app.get("/api/v1/keywords/word-cloud", response_model=list[schemas.WordData])
 def get_word_cloud(db: Session = Depends(get_db)):
     return services.get_word_cloud_data(db)
+
+@app.get("/api/v1/keywords/stats")
+def get_keyword_stats(db: Session = Depends(get_db)):
+    """キーワード統計情報"""
+    total_keywords = db.query(func.count(models.Keyword.id)).scalar()
+    total_associations = db.query(func.count(models.PaperKeyword.paper_id)).scalar()
+    
+    return {
+        "total_keywords": total_keywords,
+        "total_associations": total_associations
+    }
