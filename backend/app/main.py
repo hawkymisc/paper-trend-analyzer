@@ -79,6 +79,7 @@ def search_papers(
     limit: int = Query(100, ge=1, le=200, description="取得する最大件数"),
     start_date: str | None = Query(None, description="開始日 (YYYY-MM-DD)"),
     end_date: str | None = Query(None, description="終了日 (YYYY-MM-DD)"),
+    sort_by: str = Query("date", regex="^(date|relevance)$", description="並び順 (date: 新しい順, relevance: 関連度順)"),
     db: Session = Depends(get_db)
 ):
     # 日付文字列をdatetimeオブジェクトに変換
@@ -103,7 +104,7 @@ def search_papers(
     if start_datetime and end_datetime and start_datetime > end_datetime:
         raise HTTPException(status_code=400, detail="開始日は終了日より前に設定してください。")
 
-    return services.search_papers(db, query, skip, limit, start_datetime, end_datetime)
+    return services.search_papers(db, query, skip, limit, start_datetime, end_datetime, sort_by)
 
 @app.get("/api/v1/keywords/word-cloud", response_model=list[schemas.WordData])
 def get_word_cloud(db: Session = Depends(get_db)):

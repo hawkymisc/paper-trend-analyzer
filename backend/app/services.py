@@ -152,7 +152,7 @@ def get_summary_data(db: Session) -> schemas.DashboardSummary:
         recent_papers_30d=recent_papers_30d,
     )
 
-def search_papers(db: Session, query: str, skip: int = 0, limit: int = 100, start_date: datetime = None, end_date: datetime = None) -> schemas.PaperSearchResponse:
+def search_papers(db: Session, query: str, skip: int = 0, limit: int = 100, start_date: datetime = None, end_date: datetime = None, sort_by: str = "date") -> schemas.PaperSearchResponse:
     search_query = f"%{query.lower()}%"
     
     base_query = db.query(models.Paper).filter(
@@ -165,6 +165,22 @@ def search_papers(db: Session, query: str, skip: int = 0, limit: int = 100, star
         base_query = base_query.filter(models.Paper.published_at >= start_date)
     if end_date:
         base_query = base_query.filter(models.Paper.published_at <= end_date)
+    
+    # 並び順を適用
+    if sort_by == "date":
+        # 新しい順 (published_at降順)
+        base_query = base_query.order_by(models.Paper.published_at.desc())
+    elif sort_by == "relevance":
+        # 関連度順 - タイトルマッチを優先し、その後日付順
+        base_query = base_query.order_by(
+            # タイトルに検索語が含まれる論文を上位に
+            func.lower(models.Paper.title).like(search_query).desc(),
+            # その後は新しい順
+            models.Paper.published_at.desc()
+        )
+    else:
+        # デフォルトは日付順
+        base_query = base_query.order_by(models.Paper.published_at.desc())
     
     total_count = base_query.count()
     papers = base_query.offset(skip).limit(limit).all()
