@@ -86,6 +86,9 @@ i18n
     react: {
       useSuspense: false, // Disable suspense for better error handling
     },
+    
+    // TypeScript support
+    returnNull: false,
   });
 
 export default i18n;

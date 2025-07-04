@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { DashboardSummary, WordData } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [trendingKeywords, setTrendingKeywords] = useState<WordData[]>([]);

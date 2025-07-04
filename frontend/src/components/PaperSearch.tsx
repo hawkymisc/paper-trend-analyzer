@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { PaperSearchResponse, Paper } from '../types';
 
 const PaperSearch: React.FC = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
@@ -42,6 +42,7 @@ const PaperSearch: React.FC = () => {
         handleSearchWithParams(queryParam, startDateParam, endDateParam);
       }, 100);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   // パラメータ付きでの検索実行

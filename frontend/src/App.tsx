@@ -11,7 +11,7 @@ import PaperSearch from './components/PaperSearch';
 import LanguageSwitcher from './components/LanguageSwitcher';
 
 function App() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation();
 
   return (
     <Router>
