@@ -10,6 +10,7 @@ const PaperSearch: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('date');
   const [searchResults, setSearchResults] = useState<Paper[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -63,6 +64,7 @@ const PaperSearch: React.FC = () => {
       params.append('query', queryText);
       params.append('skip', skip.toString());
       params.append('limit', limit.toString());
+      params.append('sort_by', sortBy);
       if (startDateParam) params.append('start_date', startDateParam);
       if (endDateParam) params.append('end_date', endDateParam);
 
@@ -136,7 +138,7 @@ const PaperSearch: React.FC = () => {
             </Form.Group>
             
             <div className="row mb-3">
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group>
                   <Form.Label>{t('paperSearch.startDate')}</Form.Label>
                   <Form.Control
@@ -146,7 +148,7 @@ const PaperSearch: React.FC = () => {
                   />
                 </Form.Group>
               </div>
-              <div className="col-md-6">
+              <div className="col-md-4">
                 <Form.Group>
                   <Form.Label>{t('paperSearch.endDate')}</Form.Label>
                   <Form.Control
@@ -154,6 +156,19 @@ const PaperSearch: React.FC = () => {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                   />
+                </Form.Group>
+              </div>
+              <div className="col-md-4">
+                <Form.Group>
+                  <Form.Label>{t('paperSearch.sortOrder')}</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="date">{t('paperSearch.sortByDate')}</option>
+                    <option value="relevance">{t('paperSearch.sortByRelevance')}</option>
+                  </Form.Control>
                 </Form.Group>
               </div>
             </div>
