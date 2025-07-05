@@ -83,6 +83,24 @@ const ReadingListItemComponent: React.FC<ReadingListItemProps> = ({
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bi-check-circle';
+      case 'reading': return 'bi-play-circle';
+      case 'unread': return 'bi-circle';
+      default: return 'bi-circle';
+    }
+  };
+
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bi-flag-fill';
+      case 'medium': return 'bi-flag';
+      case 'low': return 'bi-flag';
+      default: return 'bi-flag';
+    }
+  };
+
   // Removed unused truncateText function
 
   return (
@@ -191,8 +209,8 @@ const ReadingListItemComponent: React.FC<ReadingListItemProps> = ({
               <div className="btn-group" role="group">
                 <Dropdown>
                   <Dropdown.Toggle size="sm" variant="outline-primary">
-                    <i className="bi bi-check-circle" />
-                    {t('readingList.status.unread')}
+                    <i className={`bi ${getStatusIcon(item.readStatus)}`} />
+                    {t(`readingList.status.${item.readStatus}`)}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => handleStatusChange('unread')}>
@@ -212,8 +230,8 @@ const ReadingListItemComponent: React.FC<ReadingListItemProps> = ({
 
                 <Dropdown>
                   <Dropdown.Toggle size="sm" variant="outline-warning">
-                    <i className="bi bi-flag" />
-                    {t('readingList.filters.priority')}
+                    <i className={`bi ${getPriorityIcon(item.priority)}`} />
+                    {t(`readingList.priority.${item.priority}`)}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     <Dropdown.Item onClick={() => handlePriorityChange('low')}>

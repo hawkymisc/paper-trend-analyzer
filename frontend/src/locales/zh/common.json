@@ -109,6 +109,7 @@
       "editNotes": "编辑笔记",
       "remove": "移除"
     },
+    "editNotes": "编辑笔记",
     "quickAccess": "阅读清单快速访问",
     "viewAll": "查看全部",
     "showAbstract": "显示摘要",
@@ -122,7 +123,7 @@
     "loading": "加载中...",
     "error": "错误",
     "notAvailable": "N/A",
-    "search": "搜索",
+    "search": "筛选",
     "clear": "清除",
     "apply": "应用",
     "cancel": "取消",

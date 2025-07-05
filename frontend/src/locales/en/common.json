@@ -108,6 +108,7 @@
       "editNotes": "Edit Notes",
       "remove": "Remove"
     },
+    "editNotes": "Edit Notes",
     "quickAccess": "Reading List Quick Access",
     "viewAll": "View All",
     "showAbstract": "Show Abstract",
@@ -127,7 +128,7 @@
     "loading": "Loading...",
     "error": "Error",
     "notAvailable": "N/A",
-    "search": "Search",
+    "search": "Filter",
     "clear": "Clear",
     "apply": "Apply",
     "cancel": "Cancel",

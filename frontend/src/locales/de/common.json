@@ -109,6 +109,7 @@
       "editNotes": "Notizen bearbeiten",
       "remove": "Entfernen"
     },
+    "editNotes": "Notizen bearbeiten",
     "quickAccess": "Leseliste Schnellzugriff",
     "viewAll": "Alle anzeigen",
     "showAbstract": "Zusammenfassung anzeigen",
@@ -122,7 +123,7 @@
     "loading": "Laden...",
     "error": "Fehler",
     "notAvailable": "N/V",
-    "search": "Suchen",
+    "search": "Filtern",
     "clear": "Löschen",
     "apply": "Anwenden",
     "cancel": "Abbrechen",

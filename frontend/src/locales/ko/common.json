@@ -109,6 +109,7 @@
       "editNotes": "노트 편집",
       "remove": "제거"
     },
+    "editNotes": "노트 편집",
     "quickAccess": "읽기 목록 빠른 접근",
     "viewAll": "전체 보기",
     "showAbstract": "요약 보기",
@@ -122,7 +123,7 @@
     "loading": "로딩 중...",
     "error": "오류",
     "notAvailable": "N/A",
-    "search": "검색",
+    "search": "필터",
     "clear": "지우기",
     "apply": "적용",
     "cancel": "취소",

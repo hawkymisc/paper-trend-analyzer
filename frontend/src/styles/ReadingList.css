@@ -4,6 +4,9 @@
 .reading-list-button {
   transition: all 0.3s ease;
   position: relative;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent text wrapping in CJK languages */
+  min-width: fit-content;
 }
 
 .reading-list-button:hover {
@@ -11,20 +14,126 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Improved contrast for outline-primary button (未追加状態) */
+.reading-list-button.btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(13, 110, 253, 0.2);
+}
+
+.reading-list-button.btn-outline-primary:focus {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Success button (追加済み状態) with better contrast */
 .reading-list-button.btn-success {
   background-color: #198754;
   border-color: #198754;
+  color: #ffffff;
+  border-width: 2px;
 }
 
 .reading-list-button.btn-success:hover {
   background-color: #157347;
   border-color: #146c43;
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(25, 135, 84, 0.2);
+}
+
+.reading-list-button.btn-success:focus {
+  background-color: #157347;
+  border-color: #146c43;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
 }
 
 .reading-list-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* High contrast button styles for better accessibility */
+.reading-list-button.btn-reading-list-add {
+  background-color: #ffffff;
+  border: 3px solid #0d6efd;
+  color: #0d6efd;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.reading-list-button.btn-reading-list-add:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.reading-list-button.btn-reading-list-add:focus {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.5);
+  outline: none;
+}
+
+.reading-list-button.btn-reading-list-saved {
+  background-color: #198754;
+  border: 3px solid #198754;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.reading-list-button.btn-reading-list-saved:hover {
+  background-color: #157347;
+  border-color: #157347;
+  color: #ffffff;
+}
+
+.reading-list-button.btn-reading-list-saved:focus {
+  background-color: #157347;
+  border-color: #157347;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.5);
+  outline: none;
+}
+
+/* Alternative light theme button styles (for future use) */
+.reading-list-button.btn-light-primary {
+  background-color: #e7f1ff;
+  border-color: #b6d7ff;
+  color: #0056b3;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-light-primary:hover {
+  background-color: #cce4ff;
+  border-color: #8dc4ff;
+  color: #003d82;
+}
+
+.reading-list-button.btn-light-success {
+  background-color: #d1e7dd;
+  border-color: #a3cfbb;
+  color: #0f5132;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-light-success:hover {
+  background-color: #badbcc;
+  border-color: #86c7a1;
+  color: #0a3622;
 }
 
 /* Success pulse animation */
@@ -89,6 +198,20 @@
   15%, 85% { 
     opacity: 1; 
     transform: translateX(-50%) translateY(0); 
+  }
+}
+
+/* Card body background fix for better readability */
+.card-body {
+  background-color: #ffffff !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Dark mode card body support */
+@media (prefers-color-scheme: dark) {
+  .card-body {
+    background-color: #ffffff !important;
+    color: #212529 !important;
   }
 }
 
@@ -168,6 +291,90 @@
   background-color: #198754 !important;
 }
 
+/* Navigation badge and text improvements */
+.navbar .badge {
+  font-weight: 700;
+  font-size: 0.7em;
+  padding: 0.35em 0.65em;
+  border-radius: 10rem;
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.navbar-light .nav-link {
+  color: #212529 !important;
+  font-weight: 500;
+}
+
+.navbar-light .nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.navbar-dark .nav-link {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.navbar-dark .nav-link:hover {
+  color: #86b7fe !important;
+}
+
+/* Navigation and dark background compatibility */
+.navbar-light .reading-list-button.btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.navbar-dark .reading-list-button.btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .reading-list-button.btn-outline-primary {
+    background-color: #ffffff;
+    border-color: #000000;
+    color: #000000;
+    border-width: 3px;
+  }
+  
+  .reading-list-button.btn-success {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+    border-width: 3px;
+  }
+}
+
+/* Improved text contrast for all states */
+.reading-list-button {
+  text-shadow: none;
+  min-contrast: 4.5;
+}
+
+/* CJK language specific button styling to prevent text wrapping */
+.reading-list-button:lang(ja),
+.reading-list-button:lang(zh),
+.reading-list-button:lang(ko) {
+  word-break: keep-all;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  min-width: max-content;
+}
+
+.reading-list-button.btn-outline-primary {
+  font-weight: 600;
+}
+
+.reading-list-button.btn-success {
+  font-weight: 600;
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .reading-list-item .btn-group {
@@ -195,12 +402,24 @@
     left: 50%;
     transform: translateX(-50%);
   }
+
+  /* Enhanced button contrast on mobile */
+  .reading-list-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px; /* Touch target size */
+    white-space: nowrap; /* Prevent text wrapping in buttons */
+  }
 }
 
 @media (max-width: 576px) {
   .reading-list-button {
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
+    white-space: nowrap; /* Prevent text wrapping in buttons on small screens */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px; /* Limit width on very small screens */
   }
   
   .reading-list-item h5 {

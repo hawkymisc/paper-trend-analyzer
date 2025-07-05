@@ -105,6 +105,17 @@ const ReadingListButton: React.FC<ReadingListButtonProps> = ({
     return isInList ? 'success' : 'outline-primary';
   };
 
+  const getButtonClassName = () => {
+    const baseClass = `reading-list-button ${feedback?.type === 'success' ? 'btn-success-pulse' : ''} ${className}`;
+    
+    // Add high contrast class for better accessibility
+    if (isInList) {
+      return `${baseClass} btn-reading-list-saved`;
+    } else {
+      return `${baseClass} btn-reading-list-add`;
+    }
+  };
+
   return (
     <div className="position-relative">
       <Button
@@ -112,7 +123,7 @@ const ReadingListButton: React.FC<ReadingListButtonProps> = ({
         size={size}
         onClick={handleClick}
         disabled={isLoading}
-        className={`reading-list-button ${feedback?.type === 'success' ? 'btn-success-pulse' : ''} ${className}`}
+        className={getButtonClassName()}
         title={t(isInList ? 'readingList.removeFromList' : 'readingList.addToList')}
       >
         {getButtonContent()}
