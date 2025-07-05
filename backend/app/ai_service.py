@@ -147,7 +147,12 @@ Summary:"""
             logger.error(f"Gemini summary generation failed: {e}")
             raise
     
-    async def analyze_hot_topics(self, papers_data: List[Dict[str, Any]], language: str = "auto") -> List[HotTopic]:
+    async def analyze_hot_topics(
+        self, 
+        papers_data: List[Dict[str, Any]], 
+        language: str = "auto",
+        system_prompt: Optional[str] = None
+    ) -> List[HotTopic]:
         """Analyze hot topics using Gemini"""
         try:
             language_instruction = self._get_language_instruction(language)
@@ -155,10 +160,14 @@ Summary:"""
             # Prepare papers text for analysis
             papers_text = self._format_papers_for_analysis(papers_data)
             
+            # Use custom system prompt if provided
+            base_instruction = system_prompt if system_prompt else "Analyze the following academic papers and identify the top trending topics or research trends."
+            
             prompt = f"""
+{base_instruction}
+
 {language_instruction}
 
-Analyze the following academic papers and identify the top {settings.hot_topics_max_topics} hot topics or research trends.
 For each topic, provide:
 1. Topic name
 2. Number of related papers
@@ -318,23 +327,31 @@ Keywords: {', '.join(paper.get('keywords', []))}
         
         return hot_topics
     
-    async def generate_weekly_trend_overview(self, papers_data: List[Dict[str, Any]], language: str = "auto") -> str:
+    async def generate_weekly_trend_overview(
+        self, 
+        papers_data: List[Dict[str, Any]], 
+        language: str = "auto",
+        system_prompt: Optional[str] = None
+    ) -> str:
         """Generate weekly trend overview using Gemini"""
         try:
             language_instruction = self._get_language_instruction(language)
             papers_text = self._format_papers_for_analysis(papers_data[:30])  # Limit for overview
             
-            prompt = f"""
-{language_instruction}
-
-Analyze the following academic papers from the past week and provide a comprehensive overview of the research trends. 
+            # Use custom system prompt if provided
+            base_instruction = system_prompt if system_prompt else """Analyze the following academic papers from the past week and provide a comprehensive overview of the research trends. 
 Focus on:
 1. Main research themes and directions
-2. Emerging technologies or methodologies
+2. Emerging technologies or methodologies  
 3. Popular application domains
 4. Notable shifts or new developments
 
-Please write a coherent narrative overview (300-500 words) that captures the essence of this week's research landscape.
+Please write a coherent narrative overview (300-500 words) that captures the essence of this week's research landscape."""
+            
+            prompt = f"""
+{base_instruction}
+
+{language_instruction}
 
 Papers data:
 {papers_text}
@@ -360,16 +377,20 @@ Weekly Trend Overview:"""
             # Fallback overview
             return f"This week's research shows activity across {len(papers_data)} papers covering diverse topics including machine learning, AI applications, and emerging technologies."
     
-    async def extract_topic_keywords(self, papers_data: List[Dict[str, Any]], language: str = "auto", max_keywords: int = 30) -> List[Dict[str, Any]]:
+    async def extract_topic_keywords(
+        self, 
+        papers_data: List[Dict[str, Any]], 
+        language: str = "auto", 
+        max_keywords: int = 30,
+        system_prompt: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
         """Extract trending topic keywords using Gemini"""
         try:
             language_instruction = self._get_language_instruction(language)
             papers_text = self._format_papers_for_analysis(papers_data[:50])
             
-            prompt = f"""
-{language_instruction}
-
-Analyze the following academic papers and extract the most trending and relevant topic keywords.
+            # Use custom system prompt if provided
+            base_instruction = system_prompt if system_prompt else f"""Analyze the following academic papers and extract the most trending and relevant topic keywords.
 For each keyword, provide:
 1. The keyword/topic name
 2. Number of related papers (estimate)
@@ -384,7 +405,12 @@ Return exactly {max_keywords} keywords in JSON format:
       "relevance_score": 95
     }}
   ]
-}}
+}}"""
+            
+            prompt = f"""
+{base_instruction}
+
+{language_instruction}
 
 Papers data:
 {papers_text}
@@ -409,7 +435,13 @@ Topic Keywords:"""
             logger.error(f"Gemini keyword extraction failed: {e}")
             return self._generate_fallback_keywords(papers_data, max_keywords)
     
-    async def generate_topic_summary(self, keywords: List[str], papers_data: List[Dict[str, Any]], language: str = "auto") -> Dict[str, Any]:
+    async def generate_topic_summary(
+        self, 
+        keywords: List[str], 
+        papers_data: List[Dict[str, Any]], 
+        language: str = "auto",
+        system_prompt: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Generate summary for specific topic keywords using Gemini"""
         try:
             language_instruction = self._get_language_instruction(language)
@@ -421,10 +453,8 @@ Topic Keywords:"""
             keywords_str = ", ".join(keywords)
             topic_name = " & ".join(keywords) if len(keywords) > 1 else keywords[0]
             
-            prompt = f"""
-{language_instruction}
-
-Generate a comprehensive summary for the research topic: "{topic_name}"
+            # Use custom system prompt if provided
+            base_instruction = system_prompt if system_prompt else f"""Generate a comprehensive summary for the research topic: "{topic_name}"
 
 Based on the following papers related to keywords: {keywords_str}
 
@@ -440,7 +470,12 @@ Format as JSON:
   "summary": "Detailed summary text...",
   "key_findings": ["Finding 1", "Finding 2", "Finding 3"],
   "related_paper_count": {len(related_papers)}
-}}
+}}"""
+            
+            prompt = f"""
+{base_instruction}
+
+{language_instruction}
 
 Papers data:
 {papers_text}

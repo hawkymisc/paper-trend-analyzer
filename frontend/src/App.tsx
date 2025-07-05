@@ -15,8 +15,10 @@ import PaperSearch from './components/PaperSearch';
 import ReadingList from './components/ReadingList';
 import HotTopics from './components/HotTopics';
 import WeeklyTrendAnalysis from './components/WeeklyTrendAnalysis';
+import Settings from './components/Settings';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { ReadingListProvider, useReadingList } from './contexts/ReadingListContext';
+import { SettingsProvider } from './contexts/SettingsContext';
 
 // Navigation component that uses reading list context
 const AppNavigation: React.FC = () => {
@@ -41,6 +43,10 @@ const AppNavigation: React.FC = () => {
                 <Badge bg="primary" className="ms-1">{stats.total}</Badge>
               )}
             </Nav.Link>
+            <Nav.Link as={Link} to="/settings">
+              <i className="bi bi-gear me-1"></i>
+              Settings
+            </Nav.Link>
           </Nav>
           <Nav className="ms-auto">
             <LanguageSwitcher />
@@ -54,18 +60,20 @@ const AppNavigation: React.FC = () => {
 function App() {
   return (
     <Router>
-      <ReadingListProvider>
-        <AppNavigation />
-        <Container className="mt-4">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/trend-analysis" element={<TrendAnalysis />} />
-            <Route path="/paper-search" element={<PaperSearch />} />
-            <Route path="/hot-topics" element={<HotTopics />} />
-            <Route path="/weekly-trends" element={<WeeklyTrendAnalysis />} />
-            <Route path="/reading-list" element={<ReadingList />} />
-          </Routes>
-        </Container>
+      <SettingsProvider>
+        <ReadingListProvider>
+          <AppNavigation />
+          <Container className="mt-4">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/trend-analysis" element={<TrendAnalysis />} />
+              <Route path="/paper-search" element={<PaperSearch />} />
+              <Route path="/hot-topics" element={<HotTopics />} />
+              <Route path="/weekly-trends" element={<WeeklyTrendAnalysis />} />
+              <Route path="/reading-list" element={<ReadingList />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </Container>
         
         {/* Toast notification container */}
         <ToastContainer
@@ -80,7 +88,8 @@ function App() {
           pauseOnHover
           theme="light"
         />
-      </ReadingListProvider>
+        </ReadingListProvider>
+      </SettingsProvider>
     </Router>
   );
 }

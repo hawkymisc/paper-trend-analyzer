@@ -155,6 +155,65 @@
     "readingList": "Reading List",
     "languageSwitch": "Language"
   },
+  "settings": {
+    "title": "System Settings",
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "saved": "Saved!",
+    "saveError": "Save Failed",
+    "reset": "Reset to Default",
+    "confirmReset": "Are you sure you want to reset all settings to default? This action cannot be undone.",
+    "aiProvider": {
+      "title": "AI Provider Settings",
+      "provider": "AI Provider",
+      "description": "Select the AI service for analysis and summaries",
+      "thinkingBudget": "Thinking Budget (tokens)",
+      "thinkingBudgetDescription": "Higher values improve analysis quality but increase processing time",
+      "timeout": "Analysis Timeout",
+      "timeoutDescription": "Maximum time to wait for AI analysis completion",
+      "minute": "minute",
+      "minutes": "minutes"
+    },
+    "systemPrompt": {
+      "title": "System Prompt Settings",
+      "prompt": "System Prompt",
+      "placeholder": "Enter the system prompt for AI analysis...",
+      "description": "This prompt guides how the AI analyzes and summarizes research papers",
+      "resetToDefault": "Reset to Default"
+    },
+    "theme": {
+      "title": "UI Theme",
+      "mode": "Theme Mode",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Auto",
+      "description": "Choose your preferred interface theme"
+    },
+    "language": {
+      "title": "Language Settings",
+      "interface": "Interface Language",
+      "description": "Change the application interface language"
+    },
+    "rendering": {
+      "title": "Content Rendering",
+      "enableMarkdown": "Enable Markdown Rendering",
+      "markdownDescription": "Automatically render Markdown formatting in AI-generated content",
+      "codeHighlighting": "Enable Code Highlighting",
+      "codeDescription": "Syntax highlighting for code blocks in analysis results"
+    },
+    "usage": {
+      "title": "Usage Statistics",
+      "apiCalls": "API Calls",
+      "analysisGenerated": "Analysis Generated",
+      "cacheHits": "Cache Hits",
+      "costSaved": "Cost Saved",
+      "thisMonth": "This Month",
+      "thisWeek": "This Week",
+      "total": "Total",
+      "estimated": "Estimated",
+      "note": "Usage statistics help you monitor AI service consumption and cost efficiency."
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",

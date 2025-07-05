@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { WeeklyTrendService } from '../services/WeeklyTrendService';
+import { useSettings } from '../contexts/SettingsContext';
+import MarkdownRenderer from './MarkdownRenderer';
 import { 
   WeeklyTrendResponse, 
   TopicKeywordsResponse, 
@@ -8,6 +10,7 @@ import {
 } from '../types';
 
 const WeeklyTrendAnalysis: React.FC = () => {
+  const { settings } = useSettings();
   const [isLoadingOverview, setIsLoadingOverview] = useState(false);
   const [isLoadingKeywords, setIsLoadingKeywords] = useState(false);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
@@ -236,9 +239,12 @@ const WeeklyTrendAnalysis: React.FC = () => {
                       Generated: {WeeklyTrendService.getRelativeTime(weeklyOverview.generated_at)}
                     </small>
                   </div>
-                  <div className="overview-text" style={{ lineHeight: '1.6', fontSize: '1.05rem' }}>
-                    {weeklyOverview.trend_overview}
-                  </div>
+                  <MarkdownRenderer
+                    content={weeklyOverview.trend_overview}
+                    enableMarkdown={settings.enableMarkdownRendering}
+                    enableCodeHighlighting={settings.enableCodeHighlighting}
+                    className="overview-text"
+                  />
                   <div className="mt-3">
                     <button
                       type="button"
@@ -386,9 +392,12 @@ const WeeklyTrendAnalysis: React.FC = () => {
                   </small>
                 </div>
                 
-                <div className="summary-text mb-4" style={{ lineHeight: '1.6', fontSize: '1.05rem' }}>
-                  {topicSummary.summary}
-                </div>
+                <MarkdownRenderer
+                  content={topicSummary.summary}
+                  enableMarkdown={settings.enableMarkdownRendering}
+                  enableCodeHighlighting={settings.enableCodeHighlighting}
+                  className="summary-text mb-4"
+                />
 
                 {topicSummary.key_findings.length > 0 && (
                   <div>

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Spinner, Alert, Row, Col, Form, Badge, Accordion, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
+import { useSettings } from '../contexts/SettingsContext';
+import MarkdownRenderer from './MarkdownRenderer';
 import { HotTopicsResponse, HotTopicsRequest, HotTopic, HotTopicsFilters } from '../types';
 import { HotTopicsService } from '../services/HotTopicsService';
 
 const HotTopics: React.FC = () => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
   const [hotTopics, setHotTopics] = useState<HotTopicsResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -253,7 +256,12 @@ const HotTopics: React.FC = () => {
                         {t('hotTopics.paperCount', { count: topic.paper_count })}
                       </p>
 
-                      <p className="card-text">{topic.summary}</p>
+                      <MarkdownRenderer
+                        content={topic.summary}
+                        enableMarkdown={settings.enableMarkdownRendering}
+                        enableCodeHighlighting={settings.enableCodeHighlighting}
+                        className="card-text"
+                      />
 
                       <div className="mb-3">
                         {topic.keywords.slice(0, 3).map((keyword, kidx) => (
@@ -314,7 +322,11 @@ const HotTopics: React.FC = () => {
 
               <div className="mb-4">
                 <h6>{t('hotTopics.summary')}</h6>
-                <p>{selectedTopic.summary}</p>
+                <MarkdownRenderer
+                  content={selectedTopic.summary}
+                  enableMarkdown={settings.enableMarkdownRendering}
+                  enableCodeHighlighting={settings.enableCodeHighlighting}
+                />
               </div>
 
               <div className="mb-4">

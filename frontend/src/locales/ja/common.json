@@ -150,6 +150,65 @@
       "description": "選択した期間と条件でトレンドとなっているトピックがありませんでした。フィルター条件を調整してお試しください。"
     }
   },
+  "settings": {
+    "title": "システム設定",
+    "save": "設定を保存",
+    "saving": "保存中...",
+    "saved": "保存完了！",
+    "saveError": "保存に失敗しました",
+    "reset": "デフォルトに戻す",
+    "confirmReset": "すべての設定をデフォルトに戻しますか？この操作は元に戻せません。",
+    "aiProvider": {
+      "title": "AI プロバイダー設定",
+      "provider": "AI プロバイダー",
+      "description": "分析とサマリー生成に使用するAIサービスを選択",
+      "thinkingBudget": "思考予算 (トークン)",
+      "thinkingBudgetDescription": "値を高くすると分析品質が向上しますが、処理時間が長くなります",
+      "timeout": "分析タイムアウト",
+      "timeoutDescription": "AI分析完了まで待機する最大時間",
+      "minute": "分",
+      "minutes": "分"
+    },
+    "systemPrompt": {
+      "title": "システムプロンプト設定",
+      "prompt": "システムプロンプト",
+      "placeholder": "AI分析用のシステムプロンプトを入力...",
+      "description": "このプロンプトはAIが研究論文を分析・要約する方法を指示します",
+      "resetToDefault": "デフォルトに戻す"
+    },
+    "theme": {
+      "title": "UIテーマ",
+      "mode": "テーマモード",
+      "light": "ライト",
+      "dark": "ダーク",
+      "auto": "自動",
+      "description": "お好みのインターフェーステーマを選択"
+    },
+    "language": {
+      "title": "言語設定",
+      "interface": "インターフェース言語",
+      "description": "アプリケーションの表示言語を変更"
+    },
+    "rendering": {
+      "title": "コンテンツレンダリング",
+      "enableMarkdown": "Markdownレンダリングを有効化",
+      "markdownDescription": "AI生成コンテンツのMarkdown形式を自動的にレンダリング",
+      "codeHighlighting": "コードハイライトを有効化",
+      "codeDescription": "分析結果のコードブロックにシンタックスハイライトを適用"
+    },
+    "usage": {
+      "title": "使用統計",
+      "apiCalls": "API呼び出し",
+      "analysisGenerated": "分析生成数",
+      "cacheHits": "キャッシュヒット",
+      "costSaved": "節約コスト",
+      "thisMonth": "今月",
+      "thisWeek": "今週",
+      "total": "合計",
+      "estimated": "推定",
+      "note": "使用統計はAIサービスの消費量とコスト効率を監視するのに役立ちます。"
+    }
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラー",

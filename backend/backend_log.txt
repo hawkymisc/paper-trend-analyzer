@@ -8,3 +8,35 @@ INFO:     127.0.0.1:52893 - "OPTIONS /api/v1/weekly-trend/latest?language=en HTT
 INFO:     127.0.0.1:52893 - "GET /api/v1/weekly-trend/latest?language=en HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:52893 - "GET /api/v1/weekly-trend/latest?language=ja HTTP/1.1" 200 OK
 INFO:     127.0.0.1:52901 - "GET /api/v1/weekly-trend/latest?language=en HTTP/1.1" 404 Not Found
+WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [73577]
+INFO:     Started server process [74019]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [74019]
+INFO:     Started server process [74031]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [74031]
+INFO:     Started server process [74039]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [74039]
+INFO:     Started server process [74077]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
