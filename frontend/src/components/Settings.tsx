@@ -135,11 +135,10 @@ const Settings: React.FC = () => {
                         type="number"
                         id="thinking-budget"
                         className="form-control"
-                        min="1000"
-                        max="100000"
-                        step="1000"
+                        min="-1"
+                        max="1000000"
                         value={settings.geminiThinkingBudget}
-                        onChange={(e) => handleSettingChange('geminiThinkingBudget', parseInt(e.target.value))}
+                        onChange={(e) => handleSettingChange('geminiThinkingBudget', parseInt(e.target.value) || 0)}
                       />
                       <div className="form-text">
                         {t('settings.aiProvider.thinkingBudgetDescription')}

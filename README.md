@@ -1,48 +1,137 @@
-# Paper Trend Analyzer
+# 📊 Paper Trend Analyzer
 
-An intelligent system for analyzing trends in academic papers, with a focus on Large Language Models (LLMs) and Artificial Intelligence research. This application provides real-time insights into trending keywords, automated paper analysis, and comprehensive search capabilities with multi-language support.
+A comprehensive research paper trend analysis platform that provides insights into emerging research topics, trending keywords, and paper summaries using advanced AI analysis.
 
-## Features
+## 🚀 Features
 
-- **Dashboard**: Summary statistics and trending keywords with interactive word cloud visualization
-- **Automated Paper Analysis**: Fully automated keyword extraction and trend analysis
-- **Multi-language Support**: Full internationalization (i18n) support for English, Japanese, Chinese, Korean, and German
-- **Advanced Search**: Paper search with relevance and date sorting options
-- **Real-time Trends**: Dynamic trend analysis with customizable date ranges
-- **Responsive Design**: Bootstrap-based UI that works on all devices
+### 📈 Dashboard & Analytics
+- **Real-time Statistics**: Track total papers, recent submissions, and trending keywords
+- **Interactive Word Cloud**: Visualize trending keywords from the last 16 weeks
+- **Comprehensive Summaries**: Get insights about research landscape
 
-## Quick Start
+### 🔍 Paper Search & Management
+- **Advanced Search**: Full-text search across titles, abstracts, and keywords
+- **Smart Filtering**: Date range, relevance, and sorting options
+- **Reading List**: Personal paper management with priority levels and notes
+- **Multi-language Support**: Interface available in English, Japanese, Chinese, Korean, and German
+
+### 🔥 AI-Powered Analysis
+- **Hot Topics Detection**: Automatically identify trending research areas
+- **Weekly Trend Analysis**: Get AI-generated summaries of research trends
+- **Topic Keywords Extraction**: Extract and rank relevant research keywords
+- **Topic Summaries**: Generate detailed summaries for selected topics
+
+### ⚙️ Advanced Configuration
+- **Multiple AI Providers**: Support for Google Gemini, OpenAI, and Anthropic Claude
+- **Custom System Prompts**: Personalize AI analysis behavior
+- **Thinking Budget Control**: Fine-tune AI reasoning depth (-1 for unlimited, 0 to disable)
+- **Theme Management**: Light, dark, and auto themes
+- **Markdown Rendering**: Beautiful formatting with syntax highlighting
+
+### 📄 Smart Content Features
+- **Paper Reference Linking**: Automatic detection of "Paper N" references with hover tooltips
+- **Cached Analysis**: Efficient database caching to reduce API costs
+- **Manual Triggers**: Cost-effective analysis generation on demand
+
+## 🛠️ Technology Stack
+
+### Backend
+- **FastAPI**: Modern, fast web framework for building APIs
+- **SQLAlchemy**: SQL toolkit and ORM
+- **Pydantic**: Data validation using Python type annotations
+- **Google Generative AI**: Advanced AI analysis capabilities
+- **asyncio**: Asynchronous programming support
+
+### Frontend
+- **React 18**: Modern UI library with hooks
+- **TypeScript**: Type-safe JavaScript
+- **Bootstrap 5**: Responsive design framework
+- **React Markdown**: Markdown rendering with syntax highlighting
+- **i18next**: Internationalization framework
+- **React Router**: Client-side routing
+
+### Database
+- **SQLite**: Lightweight, file-based database
+- **Caching System**: Efficient result storage for cost optimization
+
+## 📦 Installation
 
 ### Prerequisites
-- Python 3.9+
-- Node.js 14+
-- Git
+- Python 3.11+
+- Node.js 18+
+- npm or yarn
 
-### Installation
+### Backend Setup
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd paper-trend-analyzer
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/hawkymisc/paper-trend-analyzer.git
+   cd paper-trend-analyzer/backend
+   ```
 
-2. Start the development environment:
-```bash
-# Make the startup script executable
-chmod +x start_dev.sh
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-# Run both backend and frontend
-./start_dev.sh
-```
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-3. Access the application:
+4. **Environment configuration**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` and configure your settings:
+   ```env
+   # AI Provider Settings
+   GEMINI_API_KEY=your_gemini_api_key_here
+   OPENAI_API_KEY=your_openai_key_here  # Optional
+   ANTHROPIC_API_KEY=your_anthropic_key_here  # Optional
+   
+   # AI Configuration
+   AI_PROVIDER=gemini
+   GEMINI_MODEL=gemini-1.5-pro
+   GEMINI_MAX_TOKENS=4000
+   GEMINI_TEMPERATURE=0.3
+   GEMINI_THINKING_BUDGET=20000
+   GEMINI_TIMEOUT=120
+   
+   # Analysis Settings
+   HOT_TOPICS_MAX_TOPICS=10
+   HOT_TOPICS_MIN_PAPERS=3
+   HOT_TOPICS_TIMEOUT=180
+   ```
+
+5. **Run the backend**
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+### Frontend Setup
+
+1. **Navigate to frontend directory**
+   ```bash
+   cd ../frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+3. **Start development server**
+   ```bash
+   npm start
+   ```
+
+The application will be available at:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
 - API Documentation: http://localhost:8000/docs
-
-### Manual Setup
-
-For detailed setup instructions, see [docs/setup.md](docs/setup.md).
 
 ## Multi-language Support
 

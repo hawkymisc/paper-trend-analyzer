@@ -19,10 +19,10 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
-interface PaperReference {
-  paperNum: number;
-  paper: Paper | null;
-}
+// interface PaperReference {
+//   paperNum: number;
+//   paper: Paper | null;
+// }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
@@ -98,6 +98,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
       const paperMatch = href?.match(/^#paper-(\d+)$/);
       if (paperMatch) {
         const paperNum = parseInt(paperMatch[1]);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const paper = paperReferences.get(paperNum);
         
         return (
@@ -161,7 +162,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     .markdown-content h4,
     .markdown-content h5,
     .markdown-content h6 {
-      color: var(--bs-heading-color);
+      color: var(--bs-body-color);
       margin-top: 1.5rem;
       margin-bottom: 0.5rem;
     }
@@ -182,18 +183,18 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     }
     
     .markdown-content blockquote {
-      border-left: 4px solid var(--bs-primary);
+      border-left: 4px solid #0d6efd;
       padding-left: 1rem;
       margin: 1rem 0;
       font-style: italic;
-      background-color: var(--bs-light);
+      background-color: rgba(13, 110, 253, 0.1);
       padding: 0.75rem 1rem;
       border-radius: 0.25rem;
     }
     
     .markdown-content pre {
-      background-color: var(--bs-gray-100);
-      border: 1px solid var(--bs-border-color);
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
       border-radius: 0.375rem;
       padding: 1rem;
       overflow-x: auto;
@@ -201,7 +202,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     }
     
     .markdown-content code {
-      background-color: var(--bs-gray-100);
+      background-color: #f8f9fa;
+      color: #d63384;
       padding: 0.2rem 0.4rem;
       border-radius: 0.25rem;
       font-size: 0.875rem;
@@ -209,6 +211,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     
     .markdown-content pre code {
       background-color: transparent;
+      color: inherit;
       padding: 0;
     }
     
@@ -220,13 +223,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     
     .markdown-content th,
     .markdown-content td {
-      border: 1px solid var(--bs-border-color);
+      border: 1px solid #dee2e6;
       padding: 0.5rem;
       text-align: left;
     }
     
     .markdown-content th {
-      background-color: var(--bs-gray-100);
+      background-color: #f8f9fa;
       font-weight: 600;
     }
     
@@ -238,8 +241,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     
     .paper-tooltip {
       position: fixed;
-      background: var(--bs-body-bg);
-      border: 1px solid var(--bs-border-color);
+      background: #ffffff;
+      border: 1px solid #dee2e6;
       border-radius: 0.5rem;
       padding: 0.75rem;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -251,36 +254,92 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     .paper-tooltip-title {
       font-weight: 600;
       margin-bottom: 0.25rem;
-      color: var(--bs-heading-color);
+      color: #212529;
       font-size: 0.9rem;
       line-height: 1.3;
     }
     
     .paper-tooltip-authors {
       font-size: 0.8rem;
-      color: var(--bs-secondary-color);
+      color: #6c757d;
       margin-bottom: 0.25rem;
     }
     
     .paper-tooltip-arxiv {
       font-size: 0.75rem;
-      color: var(--bs-primary);
+      color: #0d6efd;
       font-family: monospace;
     }
 
     /* Dark theme adjustments */
-    [data-bs-theme="dark"] .markdown-content blockquote {
-      background-color: var(--bs-dark);
+    [data-bs-theme="dark"] .markdown-content {
+      color: #dee2e6;
     }
     
-    [data-bs-theme="dark"] .markdown-content pre,
+    [data-bs-theme="dark"] .markdown-content h1,
+    [data-bs-theme="dark"] .markdown-content h2,
+    [data-bs-theme="dark"] .markdown-content h3,
+    [data-bs-theme="dark"] .markdown-content h4,
+    [data-bs-theme="dark"] .markdown-content h5,
+    [data-bs-theme="dark"] .markdown-content h6 {
+      color: #dee2e6;
+    }
+    
+    [data-bs-theme="dark"] .markdown-content blockquote {
+      background-color: rgba(13, 110, 253, 0.15);
+      border-left-color: #0d6efd;
+    }
+    
+    [data-bs-theme="dark"] .markdown-content pre {
+      background-color: #495057;
+      border-color: #6c757d;
+      color: #dee2e6;
+    }
+    
     [data-bs-theme="dark"] .markdown-content code {
-      background-color: var(--bs-gray-800);
-      color: var(--bs-gray-100);
+      background-color: #495057;
+      color: #f783ac;
+    }
+    
+    [data-bs-theme="dark"] .markdown-content pre code {
+      background-color: transparent;
+      color: inherit;
+    }
+    
+    [data-bs-theme="dark"] .markdown-content th,
+    [data-bs-theme="dark"] .markdown-content td {
+      border-color: #6c757d;
     }
     
     [data-bs-theme="dark"] .markdown-content th {
-      background-color: var(--bs-gray-800);
+      background-color: #495057;
+      color: #dee2e6;
+    }
+    
+    [data-bs-theme="dark"] .markdown-content td {
+      color: #dee2e6;
+    }
+    
+    [data-bs-theme="dark"] .paper-reference:hover {
+      background-color: rgba(13, 110, 253, 0.2);
+    }
+    
+    [data-bs-theme="dark"] .paper-tooltip {
+      background: #343a40;
+      border-color: #6c757d;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+    }
+    
+    [data-bs-theme="dark"] .paper-tooltip-title {
+      color: #dee2e6;
+    }
+    
+    [data-bs-theme="dark"] .paper-tooltip-authors {
+      color: #adb5bd;
+    }
+    
+    [data-bs-theme="dark"] .paper-tooltip-arxiv {
+      color: #6ea8fe;
     }
   `;
 

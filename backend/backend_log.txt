@@ -1,42 +1,55 @@
 INFO:     Will watch for changes in these directories: ['/Users/hwaka/Projects/paper-trend-analyzer/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [73545] using WatchFiles
-INFO:     Started server process [73577]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     127.0.0.1:52893 - "OPTIONS /api/v1/weekly-trend/latest?language=en HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52893 - "GET /api/v1/weekly-trend/latest?language=en HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:52893 - "GET /api/v1/weekly-trend/latest?language=ja HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52901 - "GET /api/v1/weekly-trend/latest?language=en HTTP/1.1" 404 Not Found
-WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
-INFO:     Shutting down
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [74722] using WatchFiles
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/usr/local/var/pyenv/versions/3.11.10/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/local/var/pyenv/versions/3.11.10/lib/python3.11/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/hwaka/Projects/paper-trend-analyzer/backend/venv/lib/python3.11/site-packages/uvicorn/_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+  File "/Users/hwaka/Projects/paper-trend-analyzer/backend/venv/lib/python3.11/site-packages/uvicorn/server.py", line 67, in run
+    return asyncio.run(self.serve(sockets=sockets))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/var/pyenv/versions/3.11.10/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/var/pyenv/versions/3.11.10/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+  File "/Users/hwaka/Projects/paper-trend-analyzer/backend/venv/lib/python3.11/site-packages/uvicorn/server.py", line 71, in serve
+    await self._serve(sockets)
+  File "/Users/hwaka/Projects/paper-trend-analyzer/backend/venv/lib/python3.11/site-packages/uvicorn/server.py", line 78, in _serve
+    config.load()
+  File "/Users/hwaka/Projects/paper-trend-analyzer/backend/venv/lib/python3.11/site-packages/uvicorn/config.py", line 436, in load
+    self.loaded_app = import_from_string(self.app)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hwaka/Projects/paper-trend-analyzer/backend/venv/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
+    raise exc from None
+  File "/UWARNING:  WatchFiles detected changes in 'venv/lib/python3.11/site-packages/pydantic_settings/sources/utils.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/secrets.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/__init__.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/env.py', 'venv/lib/python3.11/site-packages/pydantic_settings/utils.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/cli.py', 'venv/lib/python3.11/site-packages/pydantic_settings/version.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/azure.py', 'venv/lib/python3.11/site-packages/pydantic_settings/__init__.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/toml.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/types.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/dotenv.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/pyproject.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/base.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/aws.py', 'venv/lib/python3.11/site-packages/pydantic_settings/main.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/yaml.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/gcp.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/__init__.py', 'venv/lib/python3.11/site-WARNING:  WatchFiles detected changes in 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/secrets.py', 'venv/lib/pyINFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
-INFO:     Finished server process [73577]
-INFO:     Started server process [74019]
+INFO:     Finished server process [74077]
+INFO:     Started server process [75028]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [74019]
-INFO:     Started server process [74031]
+ttings/__init__.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/types.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/base.py', 'venv/lib/python3.11/site-packages/pydantic_settings/version.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/pyproject.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/__init__.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/gcp.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/toml.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/__init__.py', 'venv/lib/python3.11/site-packages/pydantic_settings/exceptions.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/dotenv.py', 'venv/lib/python3.11/site-packages/pydantic_settings/utils.py', 'venv/lib/python3.11/site-packages/pydantic_settings/main.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/azure.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/env.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/providers/json.py', 'venv/lib/python3.11/site-packages/pydantic_settings/sources/utils.py'. Reloading...
+INFO:     Started server process [75024]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [74031]
-INFO:     Started server process [74039]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'app/ai_service.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [74039]
-INFO:     Started server process [74077]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
+INFO:     127.0.0.1:53826 - "GET /api/v1/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53830 - "GET /api/v1/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53834 - "GET /api/v1/keywords/word-cloud HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53852 - "GET /api/v1/keywords/word-cloud HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53858 - "OPTIONS /api/v1/hot-topics/summary?language=auto&days=30&max_topics=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53859 - "OPTIONS /api/v1/hot-topics/summary?language=auto&days=30&max_topics=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53858 - "OPTIONS /api/v1/weekly-trend/latest?language=auto HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53861 - "OPTIONS /api/v1/weekly-trend/latest?language=auto HTTP/1.1" 200 OK
+ERROR:root:Failed to generate hot topics summary: google-generativeai package not installed
+INFO:     127.0.0.1:53859 - "GET /api/v1/hot-topics/summary?language=auto&days=30&max_topics=10 HTTP/1.1" 200 OK
+ERROR:root:Failed to generate hot topics summary: google-generativeai package not installed
+INFO:     127.0.0.1:53858 - "GET /api/v1/hot-topics/summary?language=auto&days=30&max_topics=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53861 - "GET /api/v1/weekly-trend/latest?language=auto HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:53858 - "GET /api/v1/weekly-trend/latest?language=auto HTTP/1.1" 404 Not Found

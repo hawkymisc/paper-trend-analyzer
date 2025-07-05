@@ -163,7 +163,7 @@
       "provider": "AI プロバイダー",
       "description": "分析とサマリー生成に使用するAIサービスを選択",
       "thinkingBudget": "思考予算 (トークン)",
-      "thinkingBudgetDescription": "値を高くすると分析品質が向上しますが、処理時間が長くなります",
+      "thinkingBudgetDescription": "AI思考プロセス用のトークン予算。値が高いほど品質向上。-1で無制限、0で思考無効化。",
       "timeout": "分析タイムアウト",
       "timeoutDescription": "AI分析完了まで待機する最大時間",
       "minute": "分",

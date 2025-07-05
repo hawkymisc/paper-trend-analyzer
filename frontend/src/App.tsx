@@ -8,6 +8,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/ReadingList.css';
 import './styles/HotTopics.css';
+import './styles/DarkTheme.css';
 import './i18n'; // Initialize i18n
 import Dashboard from './components/Dashboard';
 import TrendAnalysis from './components/TrendAnalysis';

@@ -168,7 +168,7 @@
       "provider": "AI Provider",
       "description": "Select the AI service for analysis and summaries",
       "thinkingBudget": "Thinking Budget (tokens)",
-      "thinkingBudgetDescription": "Higher values improve analysis quality but increase processing time",
+      "thinkingBudgetDescription": "Token budget for AI thinking process. Higher values improve quality. Use -1 for unlimited, 0 to disable thinking.",
       "timeout": "Analysis Timeout",
       "timeoutDescription": "Maximum time to wait for AI analysis completion",
       "minute": "minute",
