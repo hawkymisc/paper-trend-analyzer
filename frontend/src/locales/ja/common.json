@@ -119,6 +119,37 @@
     "notesPlaceholder": "この論文についてのノートを追加...",
     "confirmRemove": "この論文をあとで読むリストから削除してもよろしいですか？"
   },
+  "hotTopics": {
+    "title": "ホットトピック",
+    "subtitle": "{{period}}間で{{papers}}件の論文を分析（{{generated}}生成）",
+    "generating": "AI分析でホットトピックを生成中...",
+    "paperCount": "{{count}}件の論文",
+    "recentPapers": "最近の論文 {{count}}件",
+    "viewDetails": "詳細を見る",
+    "summary": "概要",
+    "keywords": "キーワード",
+    "trendScore": "トレンドスコア",
+    "filters": {
+      "language": "言語",
+      "period": "期間",
+      "maxTopics": "最大トピック数",
+      "sortBy": "並び順",
+      "order": "順序",
+      "week": "週間",
+      "weeks": "週間",
+      "month": "ヶ月",
+      "months": "ヶ月",
+      "trendScore": "トレンドスコア",
+      "paperCount": "論文数",
+      "topic": "トピック名",
+      "descending": "降順",
+      "ascending": "昇順"
+    },
+    "noTopics": {
+      "title": "ホットトピックが見つかりません",
+      "description": "選択した期間と条件でトレンドとなっているトピックがありませんでした。フィルター条件を調整してお試しください。"
+    }
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラー",
@@ -134,6 +165,9 @@
     "remove": "削除",
     "confirm": "確認",
     "authors": "著者",
-    "published": "公開日"
+    "published": "公開日",
+    "filters": "フィルター",
+    "refresh": "更新",
+    "retry": "再試行"
   }
 }

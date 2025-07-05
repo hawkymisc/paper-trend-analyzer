@@ -7,11 +7,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './styles/ReadingList.css';
+import './styles/HotTopics.css';
 import './i18n'; // Initialize i18n
 import Dashboard from './components/Dashboard';
 import TrendAnalysis from './components/TrendAnalysis';
 import PaperSearch from './components/PaperSearch';
 import ReadingList from './components/ReadingList';
+import HotTopics from './components/HotTopics';
+import WeeklyTrendAnalysis from './components/WeeklyTrendAnalysis';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { ReadingListProvider, useReadingList } from './contexts/ReadingListContext';
 
@@ -30,6 +33,8 @@ const AppNavigation: React.FC = () => {
             <Nav.Link as={Link} to="/">{t('navigation.dashboard')}</Nav.Link>
             <Nav.Link as={Link} to="/trend-analysis">Trend Analysis</Nav.Link>
             <Nav.Link as={Link} to="/paper-search">{t('navigation.paperSearch')}</Nav.Link>
+            <Nav.Link as={Link} to="/hot-topics">{t('hotTopics.title')}</Nav.Link>
+            <Nav.Link as={Link} to="/weekly-trends">Weekly Trends</Nav.Link>
             <Nav.Link as={Link} to="/reading-list">
               {t('navigation.readingList')}
               {stats.total > 0 && (
@@ -56,6 +61,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/trend-analysis" element={<TrendAnalysis />} />
             <Route path="/paper-search" element={<PaperSearch />} />
+            <Route path="/hot-topics" element={<HotTopics />} />
+            <Route path="/weekly-trends" element={<WeeklyTrendAnalysis />} />
             <Route path="/reading-list" element={<ReadingList />} />
           </Routes>
         </Container>

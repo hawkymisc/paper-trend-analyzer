@@ -1,2 +1,10 @@
 INFO:     Will watch for changes in these directories: ['/Users/hwaka/Projects/paper-trend-analyzer/backend']
-ERROR:    [Errno 48] Address already in use
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [73545] using WatchFiles
+INFO:     Started server process [73577]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:52893 - "OPTIONS /api/v1/weekly-trend/latest?language=en HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52893 - "GET /api/v1/weekly-trend/latest?language=en HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52893 - "GET /api/v1/weekly-trend/latest?language=ja HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52901 - "GET /api/v1/weekly-trend/latest?language=en HTTP/1.1" 404 Not Found

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List, Optional
 
 class PaperBase(BaseModel):
     title: str
@@ -11,8 +12,7 @@ class Paper(PaperBase):
     arxiv_id: str
     authors: list
 
-    class Config:
-        orm_mode = True
+    model_config = {'from_attributes': True}
 
 class DashboardSummary(BaseModel):
     total_papers: int
@@ -30,8 +30,7 @@ class TrendResult(BaseModel):
     keyword: str
     data: list[TrendDataPoint]
 
-    class Config:
-        from_attributes = True
+    model_config = {'from_attributes': True}
 
 class TrendingKeyword(BaseModel):
     name: str
@@ -40,20 +39,17 @@ class TrendingKeyword(BaseModel):
     growth_count: int
     growth_rate_percent: float
 
-    class Config:
-        from_attributes = True
+    model_config = {'from_attributes': True}
 
 class DashboardTrendingKeywords(BaseModel):
     trending_keywords: list[TrendingKeyword]
 
-    class Config:
-        from_attributes = True
+    model_config = {'from_attributes': True}
 
 class PaperSearchResult(Paper):
     arxiv_url: str
 
-    class Config:
-        orm_mode = True
+    model_config = {'from_attributes': True}
 
 class PaperSearchResponse(BaseModel):
     papers: list[PaperSearchResult]
@@ -71,3 +67,70 @@ class WeeklyKeywordRank(BaseModel):
 class WeeklyRanking(BaseModel):
     week: str  # Format: YYYY-MM-DD (Monday of the week)
     rankings: list[WeeklyKeywordRank]
+
+# Weekly Trend Analysis Schemas
+class WeeklyTrendRequest(BaseModel):
+    language: Optional[str] = "auto"
+    
+class WeeklyTrendResponse(BaseModel):
+    trend_overview: str
+    analysis_period: str  # e.g., "2025-06-23 to 2025-06-30"
+    total_papers_analyzed: int
+    generated_at: datetime
+
+# Topic Keywords Schemas
+class TopicKeyword(BaseModel):
+    keyword: str
+    paper_count: int
+    relevance_score: float
+
+class TopicKeywordsRequest(BaseModel):
+    language: Optional[str] = "auto"
+    max_keywords: Optional[int] = 30
+
+class TopicKeywordsResponse(BaseModel):
+    keywords: List[TopicKeyword]
+    analysis_period: str
+    total_papers_analyzed: int
+    generated_at: datetime
+
+# Topic Summary Schemas
+class TopicSummaryRequest(BaseModel):
+    keywords: List[str]  # Selected keywords
+    language: Optional[str] = "auto"
+
+class TopicSummaryResponse(BaseModel):
+    topic_name: str  # Combined topic name from keywords
+    summary: str
+    keywords: List[str]
+    related_paper_count: int
+    key_findings: List[str]
+    generated_at: datetime
+
+# Legacy Hot Topics Schemas (for backward compatibility)
+class HotTopicPaper(BaseModel):
+    id: int
+    title: str
+    authors: List[str]
+    published_at: datetime
+    arxiv_url: str
+    summary: str
+
+class HotTopic(BaseModel):
+    topic: str
+    paper_count: int
+    recent_papers: List[HotTopicPaper]
+    summary: str
+    keywords: List[str]
+    trend_score: float
+
+class HotTopicsRequest(BaseModel):
+    language: Optional[str] = "auto"
+    days: Optional[int] = 30
+    max_topics: Optional[int] = 10
+
+class HotTopicsResponse(BaseModel):
+    hot_topics: List[HotTopic]
+    analysis_period_days: int
+    total_papers_analyzed: int
+    generated_at: datetime

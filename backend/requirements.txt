@@ -11,3 +11,7 @@ pytest
 pytest-asyncio
 factory-boy
 email-validator
+google-generativeai
+openai
+anthropic
+pydantic-settings

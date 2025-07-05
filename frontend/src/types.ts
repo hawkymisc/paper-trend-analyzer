@@ -92,3 +92,89 @@ export interface ReadingList {
     itemsPerPage: number;
   };
 }
+
+// Weekly Trend Analysis Types
+export interface WeeklyTrendRequest {
+  language?: string;
+}
+
+export interface WeeklyTrendResponse {
+  trend_overview: string;
+  analysis_period: string;
+  total_papers_analyzed: number;
+  generated_at: string;
+}
+
+// Topic Keywords Types
+export interface TopicKeyword {
+  keyword: string;
+  paper_count: number;
+  relevance_score: number;
+}
+
+export interface TopicKeywordsRequest {
+  language?: string;
+  max_keywords?: number;
+}
+
+export interface TopicKeywordsResponse {
+  keywords: TopicKeyword[];
+  analysis_period: string;
+  total_papers_analyzed: number;
+  generated_at: string;
+}
+
+// Topic Summary Types
+export interface TopicSummaryRequest {
+  keywords: string[];
+  language?: string;
+}
+
+export interface TopicSummaryResponse {
+  topic_name: string;
+  summary: string;
+  keywords: string[];
+  related_paper_count: number;
+  key_findings: string[];
+  generated_at: string;
+}
+
+// Legacy Hot Topics Types (for backward compatibility)
+export interface HotTopicPaper {
+  id: number;
+  title: string;
+  authors: string[];
+  published_at: string;
+  arxiv_url: string;
+  summary: string;
+}
+
+export interface HotTopic {
+  topic: string;
+  paper_count: number;
+  recent_papers: HotTopicPaper[];
+  summary: string;
+  keywords: string[];
+  trend_score: number;
+}
+
+export interface HotTopicsRequest {
+  language?: string;
+  days?: number;
+  max_topics?: number;
+}
+
+export interface HotTopicsResponse {
+  hot_topics: HotTopic[];
+  analysis_period_days: number;
+  total_papers_analyzed: number;
+  generated_at: string;
+}
+
+export interface HotTopicsFilters {
+  language: string;
+  days: number;
+  maxTopics: number;
+  sortBy: 'trend_score' | 'paper_count' | 'topic';
+  sortOrder: 'asc' | 'desc';
+}

@@ -120,3 +120,168 @@ def get_keyword_stats(db: Session = Depends(get_db)):
         "total_keywords": total_keywords,
         "total_associations": total_associations
     }
+
+@app.post("/api/v1/hot-topics/summary", response_model=schemas.HotTopicsResponse)
+async def get_hot_topics_summary(
+    request: schemas.HotTopicsRequest,
+    db: Session = Depends(get_db)
+):
+    """Generate hot topics summary using AI analysis"""
+    try:
+        # Validate parameters
+        days = min(max(request.days or 30, 1), 90)  # 1-90 days
+        max_topics = min(max(request.max_topics or 10, 1), 20)  # 1-20 topics
+        language = request.language or "auto"
+        
+        # Call service function
+        response = await services.get_hot_topics_summary(
+            db=db,
+            language=language,
+            days=days,
+            max_topics=max_topics
+        )
+        
+        return response
+        
+    except Exception as e:
+        logging.error(f"Hot topics summary failed: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate hot topics summary: {str(e)}"
+        )
+
+@app.get("/api/v1/hot-topics/summary", response_model=schemas.HotTopicsResponse)
+async def get_hot_topics_summary_get(
+    language: str = Query("auto", description="Summary language (auto, en, ja, zh, ko, de)"),
+    days: int = Query(30, ge=1, le=90, description="Analysis period in days"),
+    max_topics: int = Query(10, ge=1, le=20, description="Maximum number of topics"),
+    db: Session = Depends(get_db)
+):
+    """Generate hot topics summary using AI analysis (GET version)"""
+    try:
+        # Call service function
+        response = await services.get_hot_topics_summary(
+            db=db,
+            language=language,
+            days=days,
+            max_topics=max_topics
+        )
+        
+        return response
+        
+    except Exception as e:
+        logging.error(f"Hot topics summary failed: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate hot topics summary: {str(e)}"
+        )
+
+# New Weekly Trend Analysis Endpoints
+@app.get("/api/v1/weekly-trend/latest", response_model=schemas.WeeklyTrendResponse)
+async def get_latest_weekly_trend_overview_endpoint(
+    language: str = Query("auto", description="Summary language (auto, en, ja, zh, ko, de)"),
+    db: Session = Depends(get_db)
+):
+    """Get latest cached weekly trend overview"""
+    try:
+        response = await services.get_latest_weekly_trend_overview(
+            db=db,
+            language=language
+        )
+        if response:
+            return response
+        else:
+            raise HTTPException(
+                status_code=404,
+                detail="No weekly trend analysis found for this week. Please generate a new analysis."
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Latest weekly trend overview failed: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to get latest weekly trend overview: {str(e)}"
+        )
+
+@app.post("/api/v1/weekly-trend/generate", response_model=schemas.WeeklyTrendResponse)
+async def generate_weekly_trend_overview_endpoint(
+    language: str = Query("auto", description="Summary language (auto, en, ja, zh, ko, de)"),
+    db: Session = Depends(get_db)
+):
+    """Generate new weekly trend overview (AI analysis)"""
+    try:
+        response = await services.get_weekly_trend_overview(
+            db=db,
+            language=language
+        )
+        return response
+        
+    except Exception as e:
+        logging.error(f"Weekly trend overview generation failed: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate weekly trend overview: {str(e)}"
+        )
+
+@app.get("/api/v1/topic-keywords", response_model=schemas.TopicKeywordsResponse)
+async def get_topic_keywords_endpoint(
+    language: str = Query("auto", description="Analysis language (auto, en, ja, zh, ko, de)"),
+    max_keywords: int = Query(30, ge=1, le=50, description="Maximum number of keywords"),
+    db: Session = Depends(get_db)
+):
+    """Extract topic keywords from recent papers"""
+    try:
+        response = await services.get_topic_keywords(
+            db=db,
+            language=language,
+            max_keywords=max_keywords
+        )
+        return response
+        
+    except Exception as e:
+        logging.error(f"Topic keywords extraction failed: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to extract topic keywords: {str(e)}"
+        )
+
+@app.post("/api/v1/topic-summary", response_model=schemas.TopicSummaryResponse)
+async def get_topic_summary_endpoint(
+    request: schemas.TopicSummaryRequest,
+    db: Session = Depends(get_db)
+):
+    """Generate summary for selected topic keywords"""
+    try:
+        # Validate parameters
+        keywords = request.keywords or []
+        language = request.language or "auto"
+        
+        if not keywords:
+            raise HTTPException(
+                status_code=400,
+                detail="At least one keyword must be provided"
+            )
+        
+        if len(keywords) > 10:
+            raise HTTPException(
+                status_code=400,
+                detail="Maximum 10 keywords allowed"
+            )
+        
+        response = await services.get_topic_summary(
+            db=db,
+            keywords=keywords,
+            language=language
+        )
+        return response
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Topic summary failed: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Failed to generate topic summary: {str(e)}"
+        )

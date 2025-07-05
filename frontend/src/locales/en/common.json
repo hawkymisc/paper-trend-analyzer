@@ -118,6 +118,37 @@
     "notesPlaceholder": "Add your notes about this paper...",
     "confirmRemove": "Are you sure you want to remove this paper from your reading list?"
   },
+  "hotTopics": {
+    "title": "Hot Topics",
+    "subtitle": "Analyzed {{papers}} papers over {{period}} (generated {{generated}})",
+    "generating": "Generating hot topics with AI analysis...",
+    "paperCount": "{{count}} papers",
+    "recentPapers": "{{count}} recent papers",
+    "viewDetails": "View Details",
+    "summary": "Summary",
+    "keywords": "Keywords",
+    "trendScore": "Trend Score",
+    "filters": {
+      "language": "Language",
+      "period": "Period",
+      "maxTopics": "Max Topics",
+      "sortBy": "Sort By",
+      "order": "Order",
+      "week": "week",
+      "weeks": "weeks",
+      "month": "month",
+      "months": "months",
+      "trendScore": "Trend Score",
+      "paperCount": "Paper Count",
+      "topic": "Topic Name",
+      "descending": "Descending",
+      "ascending": "Ascending"
+    },
+    "noTopics": {
+      "title": "No Hot Topics Found",
+      "description": "No trending topics were found for the selected period and criteria. Try adjusting your filter conditions."
+    }
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "paperSearch": "Paper Search",
@@ -139,6 +170,9 @@
     "remove": "Remove",
     "confirm": "Confirm",
     "authors": "Authors",
-    "published": "Published"
+    "published": "Published",
+    "filters": "Filters",
+    "refresh": "Refresh",
+    "retry": "Retry"
   }
 }

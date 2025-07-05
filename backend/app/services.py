@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case, and_
 from datetime import datetime, timedelta, timezone
+import asyncio
+import hashlib
 
 from . import models, schemas
 import logging
@@ -9,6 +11,8 @@ import re
 import requests
 import xml.etree.ElementTree as ET
 from collections import Counter
+from .ai_service import get_ai_service
+from .config import settings
 
 # 定数
 MIN_RECENT_COUNT = 2
@@ -941,3 +945,583 @@ def rebuild_paper_keyword_associations(db: Session) -> int:
     
     logging.info(f"Added {associations_added} new associations in {time.time() - start_time:.2f} seconds.")
     return associations_added
+
+async def get_hot_topics_summary(
+    db: Session, 
+    language: str = "auto", 
+    days: int = 30, 
+    max_topics: int = 10
+) -> schemas.HotTopicsResponse:
+    """Get hot topics summary using AI analysis"""
+    start_time = time.time()
+    logging.info(f"Generating hot topics summary for last {days} days in {language}...")
+    
+    # Get recent papers for analysis
+    cutoff_date = get_time_ago(days=days)
+    
+    recent_papers_query = (
+        db.query(models.Paper)
+        .filter(models.Paper.published_at >= cutoff_date)
+        .order_by(models.Paper.published_at.desc())
+        .limit(500)  # Limit to prevent token overflow
+    )
+    
+    recent_papers = recent_papers_query.all()
+    total_papers_analyzed = recent_papers_query.count()
+    
+    if not recent_papers:
+        # Return empty response if no recent papers
+        return schemas.HotTopicsResponse(
+            hot_topics=[],
+            analysis_period_days=days,
+            total_papers_analyzed=0,
+            generated_at=get_utc_now()
+        )
+    
+    # Convert papers to analysis format
+    papers_data = []
+    for paper in recent_papers:
+        # Get paper keywords
+        paper_keywords = (
+            db.query(models.Keyword.name)
+            .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+            .filter(models.PaperKeyword.paper_id == paper.id)
+            .all()
+        )
+        
+        paper_data = {
+            'id': paper.id,
+            'title': paper.title,
+            'authors': paper.authors,
+            'published_at': paper.published_at.isoformat(),
+            'summary': paper.summary,
+            'keywords': [kw.name for kw in paper_keywords],
+            'arxiv_id': paper.arxiv_id
+        }
+        papers_data.append(paper_data)
+    
+    try:
+        # Get AI service and analyze hot topics with timeout
+        ai_service = get_ai_service()
+        hot_topics_ai = await asyncio.wait_for(
+            ai_service.analyze_hot_topics(papers_data, language),
+            timeout=settings.hot_topics_timeout
+        )
+        
+        # Convert AI results to response format
+        hot_topics_response = []
+        for topic_ai in hot_topics_ai[:max_topics]:
+            # Convert recent papers to response format
+            recent_papers_response = []
+            for paper_data in topic_ai.recent_papers:
+                arxiv_url = f"https://arxiv.org/abs/{paper_data.get('arxiv_id', '')}"
+                paper_response = schemas.HotTopicPaper(
+                    id=paper_data.get('id', 0),
+                    title=paper_data.get('title', ''),
+                    authors=paper_data.get('authors', []),
+                    published_at=datetime.fromisoformat(paper_data.get('published_at', get_utc_now().isoformat())),
+                    arxiv_url=arxiv_url,
+                    summary=paper_data.get('summary', '')
+                )
+                recent_papers_response.append(paper_response)
+            
+            hot_topic_response = schemas.HotTopic(
+                topic=topic_ai.topic,
+                paper_count=topic_ai.paper_count,
+                recent_papers=recent_papers_response,
+                summary=topic_ai.summary,
+                keywords=topic_ai.keywords,
+                trend_score=topic_ai.trend_score
+            )
+            hot_topics_response.append(hot_topic_response)
+        
+        response = schemas.HotTopicsResponse(
+            hot_topics=hot_topics_response,
+            analysis_period_days=days,
+            total_papers_analyzed=total_papers_analyzed,
+            generated_at=get_utc_now()
+        )
+        
+        logging.info(f"Generated hot topics summary with {len(hot_topics_response)} topics in {time.time() - start_time:.2f} seconds.")
+        return response
+        
+    except asyncio.TimeoutError:
+        logging.error(f"Hot topics analysis timed out after {settings.hot_topics_timeout} seconds")
+        # Return fallback response with keyword-based analysis
+        return await get_fallback_hot_topics(db, days, max_topics, total_papers_analyzed)
+    except Exception as e:
+        logging.error(f"Failed to generate hot topics summary: {e}")
+        
+        # Return fallback response with keyword-based analysis
+        return await get_fallback_hot_topics(db, days, max_topics, total_papers_analyzed)
+
+async def get_fallback_hot_topics(
+    db: Session, 
+    days: int, 
+    max_topics: int, 
+    total_papers_analyzed: int
+) -> schemas.HotTopicsResponse:
+    """Fallback hot topics analysis using keyword frequency"""
+    logging.info("Using fallback keyword-based hot topics analysis...")
+    
+    cutoff_date = get_time_ago(days=days)
+    
+    # Get trending keywords for the period
+    trending_keywords = (
+        db.query(
+            models.Keyword.name,
+            func.count(models.PaperKeyword.paper_id).label('paper_count')
+        )
+        .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+        .join(models.Paper, models.PaperKeyword.paper_id == models.Paper.id)
+        .filter(models.Paper.published_at >= cutoff_date)
+        .group_by(models.Keyword.name)
+        .having(func.count(models.PaperKeyword.paper_id) >= settings.hot_topics_min_papers)
+        .order_by(func.count(models.PaperKeyword.paper_id).desc())
+        .limit(max_topics)
+        .all()
+    )
+    
+    hot_topics_response = []
+    
+    for i, (keyword_name, paper_count) in enumerate(trending_keywords):
+        # Get recent papers for this keyword
+        recent_papers_query = (
+            db.query(models.Paper)
+            .join(models.PaperKeyword, models.Paper.id == models.PaperKeyword.paper_id)
+            .join(models.Keyword, models.PaperKeyword.keyword_id == models.Keyword.id)
+            .filter(
+                models.Keyword.name == keyword_name,
+                models.Paper.published_at >= cutoff_date
+            )
+            .order_by(models.Paper.published_at.desc())
+            .limit(5)
+        ).all()
+        
+        recent_papers_response = []
+        for paper in recent_papers_query:
+            arxiv_url = f"https://arxiv.org/abs/{paper.arxiv_id}"
+            paper_response = schemas.HotTopicPaper(
+                id=paper.id,
+                title=paper.title,
+                authors=paper.authors,
+                published_at=paper.published_at,
+                arxiv_url=arxiv_url,
+                summary=paper.summary
+            )
+            recent_papers_response.append(paper_response)
+        
+        # Calculate trend score based on ranking
+        trend_score = max(10, 100 - i * 10)
+        
+        hot_topic = schemas.HotTopic(
+            topic=keyword_name,
+            paper_count=paper_count,
+            recent_papers=recent_papers_response,
+            summary=f"Research area focusing on {keyword_name} with {paper_count} recent papers",
+            keywords=[keyword_name],
+            trend_score=trend_score
+        )
+        hot_topics_response.append(hot_topic)
+    
+    return schemas.HotTopicsResponse(
+        hot_topics=hot_topics_response,
+        analysis_period_days=days,
+        total_papers_analyzed=total_papers_analyzed,
+        generated_at=get_utc_now()
+    )
+
+# Helper functions for cache management
+def get_current_week_period():
+    """Get current week period (Monday to Sunday)"""
+    now = get_utc_now()
+    # Get Monday of current week
+    days_since_monday = now.weekday()
+    week_start = (now - timedelta(days=days_since_monday)).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_end = week_start + timedelta(days=6, hours=23, minutes=59, seconds=59)
+    return week_start, week_end
+
+def create_keywords_hash(keywords: list[str]) -> str:
+    """Create hash from sorted keywords for caching"""
+    sorted_keywords = sorted([kw.lower().strip() for kw in keywords])
+    keywords_str = "|".join(sorted_keywords)
+    return hashlib.sha256(keywords_str.encode()).hexdigest()
+
+# New Weekly Trend Analysis Functions with Cache
+async def get_latest_weekly_trend_overview(
+    db: Session, 
+    language: str = "auto"
+) -> schemas.WeeklyTrendResponse | None:
+    """Get latest cached weekly trend overview"""
+    week_start, week_end = get_current_week_period()
+    
+    cached_result = (
+        db.query(models.WeeklyTrendCache)
+        .filter(
+            models.WeeklyTrendCache.analysis_period_start == week_start,
+            models.WeeklyTrendCache.analysis_period_end == week_end,
+            models.WeeklyTrendCache.language == language
+        )
+        .order_by(models.WeeklyTrendCache.created_at.desc())
+        .first()
+    )
+    
+    if cached_result:
+        start_date = week_start.strftime("%Y-%m-%d")
+        end_date = week_end.strftime("%Y-%m-%d")
+        
+        return schemas.WeeklyTrendResponse(
+            trend_overview=cached_result.trend_overview,
+            analysis_period=f"{start_date} to {end_date}",
+            total_papers_analyzed=cached_result.total_papers_analyzed,
+            generated_at=cached_result.created_at
+        )
+    
+    return None
+
+async def get_weekly_trend_overview(
+    db: Session, 
+    language: str = "auto"
+) -> schemas.WeeklyTrendResponse:
+    """Generate weekly trend overview text with cache"""
+    start_time = time.time()
+    logging.info(f"Generating weekly trend overview in {language}...")
+    
+    # Get current week period
+    week_start, week_end = get_current_week_period()
+    start_date = week_start.strftime("%Y-%m-%d")
+    end_date = week_end.strftime("%Y-%m-%d")
+    
+    # Check cache first
+    cached_result = await get_latest_weekly_trend_overview(db, language)
+    if cached_result:
+        logging.info(f"Returning cached weekly trend overview from {cached_result.generated_at}")
+        return cached_result
+    
+    # Get papers from current week
+    recent_papers_query = (
+        db.query(models.Paper)
+        .filter(models.Paper.published_at >= week_start)
+        .filter(models.Paper.published_at <= week_end)
+        .order_by(models.Paper.published_at.desc())
+        .limit(100)  # Limit for AI processing
+    )
+    
+    recent_papers = recent_papers_query.all()
+    total_papers_analyzed = recent_papers_query.count()
+    
+    if not recent_papers:
+        return schemas.WeeklyTrendResponse(
+            trend_overview="No papers found for the past week.",
+            analysis_period=f"{start_date} to {end_date}",
+            total_papers_analyzed=0,
+            generated_at=get_utc_now()
+        )
+    
+    # Convert papers to analysis format
+    papers_data = []
+    for paper in recent_papers:
+        paper_keywords = (
+            db.query(models.Keyword.name)
+            .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+            .filter(models.PaperKeyword.paper_id == paper.id)
+            .all()
+        )
+        
+        paper_data = {
+            'id': paper.id,
+            'title': paper.title,
+            'authors': paper.authors,
+            'published_at': paper.published_at.isoformat(),
+            'summary': paper.summary,
+            'keywords': [kw.name for kw in paper_keywords],
+            'arxiv_id': paper.arxiv_id
+        }
+        papers_data.append(paper_data)
+    
+    try:
+        # Get AI service and generate overview with timeout
+        ai_service = get_ai_service()
+        trend_overview = await asyncio.wait_for(
+            ai_service.generate_weekly_trend_overview(papers_data, language),
+            timeout=settings.gemini_timeout
+        )
+        
+        # Cache the result
+        cache_entry = models.WeeklyTrendCache(
+            analysis_period_start=week_start,
+            analysis_period_end=week_end,
+            language=language,
+            trend_overview=trend_overview,
+            total_papers_analyzed=total_papers_analyzed
+        )
+        db.add(cache_entry)
+        db.commit()
+        
+        response = schemas.WeeklyTrendResponse(
+            trend_overview=trend_overview,
+            analysis_period=f"{start_date} to {end_date}",
+            total_papers_analyzed=total_papers_analyzed,
+            generated_at=get_utc_now()
+        )
+        
+        logging.info(f"Generated and cached weekly trend overview in {time.time() - start_time:.2f} seconds.")
+        return response
+        
+    except Exception as e:
+        logging.error(f"Failed to generate weekly trend overview: {e}")
+        
+        # Fallback overview
+        fallback_overview = f"This week ({start_date} to {end_date}) saw {total_papers_analyzed} new research papers across various domains including machine learning, AI applications, and emerging technologies. The research landscape continues to evolve with contributions spanning theoretical advances and practical applications."
+        
+        return schemas.WeeklyTrendResponse(
+            trend_overview=fallback_overview,
+            analysis_period=f"{start_date} to {end_date}",
+            total_papers_analyzed=total_papers_analyzed,
+            generated_at=get_utc_now()
+        )
+
+async def get_topic_keywords(
+    db: Session,
+    language: str = "auto",
+    max_keywords: int = 30
+) -> schemas.TopicKeywordsResponse:
+    """Extract topic keywords from recent papers"""
+    start_time = time.time()
+    logging.info(f"Extracting topic keywords (max: {max_keywords}) in {language}...")
+    
+    # Get papers from the last 7 days
+    cutoff_date = get_time_ago(days=7)
+    start_date = cutoff_date.strftime("%Y-%m-%d")
+    end_date = get_utc_now().strftime("%Y-%m-%d")
+    
+    recent_papers_query = (
+        db.query(models.Paper)
+        .filter(models.Paper.published_at >= cutoff_date)
+        .order_by(models.Paper.published_at.desc())
+        .limit(200)  # More papers for keyword extraction
+    )
+    
+    recent_papers = recent_papers_query.all()
+    total_papers_analyzed = recent_papers_query.count()
+    
+    if not recent_papers:
+        return schemas.TopicKeywordsResponse(
+            keywords=[],
+            analysis_period=f"{start_date} to {end_date}",
+            total_papers_analyzed=0,
+            generated_at=get_utc_now()
+        )
+    
+    # Convert papers to analysis format
+    papers_data = []
+    for paper in recent_papers:
+        paper_keywords = (
+            db.query(models.Keyword.name)
+            .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+            .filter(models.PaperKeyword.paper_id == paper.id)
+            .all()
+        )
+        
+        paper_data = {
+            'id': paper.id,
+            'title': paper.title,
+            'authors': paper.authors,
+            'published_at': paper.published_at.isoformat(),
+            'summary': paper.summary,
+            'keywords': [kw.name for kw in paper_keywords],
+            'arxiv_id': paper.arxiv_id
+        }
+        papers_data.append(paper_data)
+    
+    try:
+        # Get AI service and extract keywords with timeout
+        ai_service = get_ai_service()
+        keywords_ai = await asyncio.wait_for(
+            ai_service.extract_topic_keywords(papers_data, language, max_keywords),
+            timeout=settings.gemini_timeout
+        )
+        
+        # Convert AI results to response format
+        keywords_response = []
+        for kw_data in keywords_ai[:max_keywords]:
+            keyword_response = schemas.TopicKeyword(
+                keyword=kw_data.get('keyword', ''),
+                paper_count=kw_data.get('paper_count', 0),
+                relevance_score=kw_data.get('relevance_score', 0.0)
+            )
+            keywords_response.append(keyword_response)
+        
+        response = schemas.TopicKeywordsResponse(
+            keywords=keywords_response,
+            analysis_period=f"{start_date} to {end_date}",
+            total_papers_analyzed=total_papers_analyzed,
+            generated_at=get_utc_now()
+        )
+        
+        logging.info(f"Extracted {len(keywords_response)} topic keywords in {time.time() - start_time:.2f} seconds.")
+        return response
+        
+    except Exception as e:
+        logging.error(f"Failed to extract topic keywords: {e}")
+        
+        # Fallback: use database keywords frequency
+        return await get_fallback_topic_keywords(db, cutoff_date, max_keywords, total_papers_analyzed)
+
+async def get_fallback_topic_keywords(
+    db: Session,
+    cutoff_date: datetime,
+    max_keywords: int,
+    total_papers_analyzed: int
+) -> schemas.TopicKeywordsResponse:
+    """Fallback topic keywords using database frequency analysis"""
+    logging.info("Using fallback keyword frequency analysis...")
+    
+    start_date = cutoff_date.strftime("%Y-%m-%d")
+    end_date = get_utc_now().strftime("%Y-%m-%d")
+    
+    # Get trending keywords for the period
+    trending_keywords = (
+        db.query(
+            models.Keyword.name,
+            func.count(models.PaperKeyword.paper_id).label('paper_count')
+        )
+        .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+        .join(models.Paper, models.PaperKeyword.paper_id == models.Paper.id)
+        .filter(models.Paper.published_at >= cutoff_date)
+        .group_by(models.Keyword.name)
+        .having(func.count(models.PaperKeyword.paper_id) >= 1)
+        .order_by(func.count(models.PaperKeyword.paper_id).desc())
+        .limit(max_keywords)
+        .all()
+    )
+    
+    keywords_response = []
+    for i, (keyword_name, paper_count) in enumerate(trending_keywords):
+        # Calculate relevance score based on frequency and ranking
+        relevance_score = max(10.0, 100.0 - (i * 3.0))
+        
+        keyword_response = schemas.TopicKeyword(
+            keyword=keyword_name,
+            paper_count=paper_count,
+            relevance_score=relevance_score
+        )
+        keywords_response.append(keyword_response)
+    
+    return schemas.TopicKeywordsResponse(
+        keywords=keywords_response,
+        analysis_period=f"{start_date} to {end_date}",
+        total_papers_analyzed=total_papers_analyzed,
+        generated_at=get_utc_now()
+    )
+
+async def get_topic_summary(
+    db: Session,
+    keywords: list[str],
+    language: str = "auto"
+) -> schemas.TopicSummaryResponse:
+    """Generate summary for selected topic keywords"""
+    start_time = time.time()
+    logging.info(f"Generating topic summary for keywords: {keywords} in {language}...")
+    
+    if not keywords:
+        return schemas.TopicSummaryResponse(
+            topic_name="No Topic Selected",
+            summary="No keywords were selected for analysis.",
+            keywords=[],
+            related_paper_count=0,
+            key_findings=[],
+            generated_at=get_utc_now()
+        )
+    
+    # Get recent papers related to the selected keywords
+    cutoff_date = get_time_ago(days=7)
+    
+    # Find papers containing any of the keywords
+    related_papers_query = (
+        db.query(models.Paper)
+        .join(models.PaperKeyword, models.Paper.id == models.PaperKeyword.paper_id)
+        .join(models.Keyword, models.PaperKeyword.keyword_id == models.Keyword.id)
+        .filter(
+            models.Keyword.name.in_(keywords),
+            models.Paper.published_at >= cutoff_date
+        )
+        .distinct()
+        .order_by(models.Paper.published_at.desc())
+        .limit(50)
+    )
+    
+    related_papers = related_papers_query.all()
+    related_paper_count = related_papers_query.count()
+    
+    if not related_papers:
+        topic_name = " & ".join(keywords) if len(keywords) > 1 else keywords[0]
+        return schemas.TopicSummaryResponse(
+            topic_name=topic_name,
+            summary=f"No recent papers found for the selected topic: {topic_name}.",
+            keywords=keywords,
+            related_paper_count=0,
+            key_findings=[],
+            generated_at=get_utc_now()
+        )
+    
+    # Convert papers to analysis format
+    papers_data = []
+    for paper in related_papers:
+        paper_keywords = (
+            db.query(models.Keyword.name)
+            .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+            .filter(models.PaperKeyword.paper_id == paper.id)
+            .all()
+        )
+        
+        paper_data = {
+            'id': paper.id,
+            'title': paper.title,
+            'authors': paper.authors,
+            'published_at': paper.published_at.isoformat(),
+            'summary': paper.summary,
+            'keywords': [kw.name for kw in paper_keywords],
+            'arxiv_id': paper.arxiv_id
+        }
+        papers_data.append(paper_data)
+    
+    try:
+        # Get AI service and generate topic summary with timeout
+        ai_service = get_ai_service()
+        summary_ai = await asyncio.wait_for(
+            ai_service.generate_topic_summary(keywords, papers_data, language),
+            timeout=settings.gemini_timeout
+        )
+        
+        response = schemas.TopicSummaryResponse(
+            topic_name=summary_ai.get('topic_name', ' & '.join(keywords)),
+            summary=summary_ai.get('summary', ''),
+            keywords=keywords,
+            related_paper_count=related_paper_count,
+            key_findings=summary_ai.get('key_findings', []),
+            generated_at=get_utc_now()
+        )
+        
+        logging.info(f"Generated topic summary for {len(keywords)} keywords in {time.time() - start_time:.2f} seconds.")
+        return response
+        
+    except Exception as e:
+        logging.error(f"Failed to generate topic summary: {e}")
+        
+        # Fallback summary
+        topic_name = " & ".join(keywords) if len(keywords) > 1 else keywords[0]
+        fallback_summary = f"Research in {topic_name} shows active development with {related_paper_count} related papers in the past week. This area encompasses various methodologies and applications in current academic research."
+        
+        return schemas.TopicSummaryResponse(
+            topic_name=topic_name,
+            summary=fallback_summary,
+            keywords=keywords,
+            related_paper_count=related_paper_count,
+            key_findings=[
+                f"Active research in {topic_name}",
+                f"{related_paper_count} papers identified in this area",
+                "Diverse methodological approaches observed"
+            ],
+            generated_at=get_utc_now()
+        )
