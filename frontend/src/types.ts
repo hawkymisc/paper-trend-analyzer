@@ -47,3 +47,48 @@ export interface WeeklyRanking {
   week: string; // Format: YYYY-MM-DD (Monday of the week)
   rankings: WeeklyKeywordRank[];
 }
+
+// Reading List Types
+export interface ReadingListItem {
+  id: number;
+  paperId: number;
+  arxivId: string;
+  title: string;
+  authors: string[];
+  summary: string;
+  publishedAt: string;
+  arxivUrl: string;
+  addedAt: string;
+  notes?: string;
+  priority: 'low' | 'medium' | 'high';
+  readStatus: 'unread' | 'reading' | 'completed';
+  tags?: string[];
+}
+
+export interface ReadingListStats {
+  total: number;
+  unread: number;
+  reading: number;
+  completed: number;
+  highPriority: number;
+}
+
+export interface ReadingListFilters {
+  status: 'all' | 'unread' | 'reading' | 'completed';
+  priority: 'all' | 'low' | 'medium' | 'high';
+  tags: string[];
+  search: string;
+  sortBy: 'addedAt' | 'publishedAt' | 'title' | 'priority';
+  sortOrder: 'asc' | 'desc';
+}
+
+export interface ReadingList {
+  items: ReadingListItem[];
+  lastUpdated: string;
+  version: string;
+  settings?: {
+    defaultSort: string;
+    defaultFilter: string;
+    itemsPerPage: number;
+  };
+}

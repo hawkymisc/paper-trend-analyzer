@@ -3,6 +3,7 @@
   "navigation": {
     "dashboard": "대시보드",
     "paperSearch": "논문 검색",
+    "readingList": "읽기 목록",
     "languageSwitch": "언어"
   },
   "dashboard": {
@@ -53,6 +54,70 @@
       "page": "{{current}}페이지 / {{total}}페이지"
     }
   },
+  "readingList": {
+    "title": "읽기 목록",
+    "addToList": "읽기 목록에 추가",
+    "removeFromList": "목록에서 제거",
+    "save": "저장",
+    "saved": "저장됨",
+    "added": "목록에 추가됨",
+    "removed": "목록에서 제거됨",
+    "empty": {
+      "title": "저장된 논문이 없습니다",
+      "description": "검색 결과에서 논문을 추가하여 읽기 목록을 만들어보세요"
+    },
+    "stats": {
+      "total": "총계",
+      "unread": "읽지 않음",
+      "reading": "읽는 중",
+      "completed": "완료",
+      "summary": "{{total}}편 논문 ({{unread}}편 읽지 않음)"
+    },
+    "toast": {
+      "addedSuccess": "📖 「{{title}}」을(를) 읽기 목록에 추가했습니다",
+      "removedSuccess": "🗑️ 「{{title}}」을(를) 읽기 목록에서 제거했습니다",
+      "duplicateError": "⚠️ 이 논문은 이미 읽기 목록에 있습니다",
+      "storageError": "❌ 저장에 실패했습니다. 다시 시도해주세요.",
+      "bulkDeleteSuccess": "🗑️ {{count}}편의 논문을 읽기 목록에서 제거했습니다"
+    },
+    "filters": {
+      "all": "전체",
+      "unread": "읽지 않음",
+      "reading": "읽는 중",
+      "completed": "완료",
+      "priority": "우선순위",
+      "sortBy": "정렬 기준",
+      "addedDate": "추가 날짜",
+      "publishDate": "발행 날짜",
+      "title": "제목"
+    },
+    "priority": {
+      "low": "낮음",
+      "medium": "보통",
+      "high": "높음"
+    },
+    "status": {
+      "unread": "읽지 않음",
+      "reading": "읽는 중",
+      "completed": "완료"
+    },
+    "actions": {
+      "markAsRead": "읽음으로 표시",
+      "markAsReading": "읽는 중으로 표시",
+      "markAsUnread": "읽지 않음으로 표시",
+      "addNote": "노트 추가",
+      "editNotes": "노트 편집",
+      "remove": "제거"
+    },
+    "quickAccess": "읽기 목록 빠른 접근",
+    "viewAll": "전체 보기",
+    "showAbstract": "요약 보기",
+    "hideAbstract": "요약 숨기기",
+    "addedAt": "추가됨",
+    "notes": "노트",
+    "notesPlaceholder": "이 논문에 대한 노트를 추가하세요...",
+    "confirmRemove": "이 논문을 읽기 목록에서 제거하시겠습니까?"
+  },
   "common": {
     "loading": "로딩 중...",
     "error": "오류",
@@ -64,6 +129,10 @@
     "save": "저장",
     "delete": "삭제",
     "edit": "편집",
-    "close": "닫기"
+    "close": "닫기",
+    "remove": "제거",
+    "confirm": "확인",
+    "authors": "저자",
+    "published": "발행일"
   }
 }

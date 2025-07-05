@@ -3,6 +3,7 @@
   "navigation": {
     "dashboard": "ダッシュボード",
     "paperSearch": "論文検索",
+    "readingList": "あとで読む",
     "languageSwitch": "言語"
   },
   "dashboard": {
@@ -53,6 +54,70 @@
       "page": "{{current}}ページ / {{total}}ページ"
     }
   },
+  "readingList": {
+    "title": "あとで読む",
+    "addToList": "あとで読むに追加",
+    "removeFromList": "リストから削除",
+    "save": "保存",
+    "saved": "保存済み",
+    "added": "リストに追加しました",
+    "removed": "リストから削除しました",
+    "empty": {
+      "title": "保存された論文がありません",
+      "description": "検索結果から論文を追加してあとで読むリストを作成してください"
+    },
+    "stats": {
+      "total": "合計",
+      "unread": "未読",
+      "reading": "読書中",
+      "completed": "完了",
+      "summary": "{{total}}件 (未読{{unread}}件)"
+    },
+    "toast": {
+      "addedSuccess": "📖 「{{title}}」をあとで読むリストに追加しました",
+      "removedSuccess": "🗑️ 「{{title}}」をリストから削除しました",
+      "duplicateError": "⚠️ この論文は既にリストに追加されています",
+      "storageError": "❌ 保存中にエラーが発生しました。もう一度お試しください。",
+      "bulkDeleteSuccess": "🗑️ {{count}}件の論文をリストから削除しました"
+    },
+    "filters": {
+      "all": "すべて",
+      "unread": "未読",
+      "reading": "読書中",
+      "completed": "完了",
+      "priority": "優先度",
+      "sortBy": "並び順",
+      "addedDate": "追加日",
+      "publishDate": "公開日",
+      "title": "タイトル"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高"
+    },
+    "status": {
+      "unread": "未読",
+      "reading": "読書中",
+      "completed": "完了"
+    },
+    "actions": {
+      "markAsRead": "既読にする",
+      "markAsReading": "読書中にする",
+      "markAsUnread": "未読にする",
+      "addNote": "ノート追加",
+      "editNotes": "ノート編集",
+      "remove": "削除"
+    },
+    "quickAccess": "あとで読むクイックアクセス",
+    "viewAll": "すべて表示",
+    "showAbstract": "概要を表示",
+    "hideAbstract": "概要を非表示",
+    "addedAt": "追加日",
+    "notes": "ノート",
+    "notesPlaceholder": "この論文についてのノートを追加...",
+    "confirmRemove": "この論文をあとで読むリストから削除してもよろしいですか？"
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラー",
@@ -64,6 +129,10 @@
     "save": "保存",
     "delete": "削除",
     "edit": "編集",
-    "close": "閉じる"
+    "close": "閉じる",
+    "remove": "削除",
+    "confirm": "確認",
+    "authors": "著者",
+    "published": "公開日"
   }
 }

@@ -53,6 +53,76 @@
       "page": "Page {{current}} of {{total}}"
     }
   },
+  "readingList": {
+    "title": "Reading List",
+    "addToList": "Add to Reading List",
+    "removeFromList": "Remove from List",
+    "save": "Save",
+    "saved": "Saved",
+    "added": "Added to list",
+    "removed": "Removed from list",
+    "empty": {
+      "title": "No papers saved",
+      "description": "Add papers from search results to start building your reading list"
+    },
+    "stats": {
+      "total": "Total",
+      "unread": "Unread",
+      "reading": "Reading",
+      "completed": "Completed",
+      "summary": "{{total}} papers ({{unread}} unread)"
+    },
+    "toast": {
+      "addedSuccess": "📖 Added \"{{title}}\" to reading list",
+      "removedSuccess": "🗑️ Removed \"{{title}}\" from reading list",
+      "duplicateError": "⚠️ This paper is already in your reading list",
+      "storageError": "❌ Failed to save. Please try again.",
+      "bulkDeleteSuccess": "🗑️ Removed {{count}} papers from reading list"
+    },
+    "filters": {
+      "all": "All",
+      "unread": "Unread",
+      "reading": "Reading",
+      "completed": "Completed",
+      "priority": "Priority",
+      "sortBy": "Sort by",
+      "addedDate": "Added Date",
+      "publishDate": "Publish Date",
+      "title": "Title"
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "status": {
+      "unread": "Unread",
+      "reading": "Reading",
+      "completed": "Completed"
+    },
+    "actions": {
+      "markAsRead": "Mark as Read",
+      "markAsReading": "Mark as Reading",
+      "markAsUnread": "Mark as Unread",
+      "addNote": "Add Note",
+      "editNotes": "Edit Notes",
+      "remove": "Remove"
+    },
+    "quickAccess": "Reading List Quick Access",
+    "viewAll": "View All",
+    "showAbstract": "Show Abstract",
+    "hideAbstract": "Hide Abstract",
+    "addedAt": "Added",
+    "notes": "Notes",
+    "notesPlaceholder": "Add your notes about this paper...",
+    "confirmRemove": "Are you sure you want to remove this paper from your reading list?"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "paperSearch": "Paper Search",
+    "readingList": "Reading List",
+    "languageSwitch": "Language"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
@@ -64,6 +134,10 @@
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
-    "close": "Close"
+    "close": "Close",
+    "remove": "Remove",
+    "confirm": "Confirm",
+    "authors": "Authors",
+    "published": "Published"
   }
 }

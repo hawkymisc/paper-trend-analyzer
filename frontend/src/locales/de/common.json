@@ -3,6 +3,7 @@
   "navigation": {
     "dashboard": "Dashboard",
     "paperSearch": "Paper-Suche",
+    "readingList": "Leseliste",
     "languageSwitch": "Sprache"
   },
   "dashboard": {
@@ -53,6 +54,70 @@
       "page": "Seite {{current}} von {{total}}"
     }
   },
+  "readingList": {
+    "title": "Leseliste",
+    "addToList": "Zur Leseliste hinzufügen",
+    "removeFromList": "Aus Liste entfernen",
+    "save": "Speichern",
+    "saved": "Gespeichert",
+    "added": "Zur Liste hinzugefügt",
+    "removed": "Aus Liste entfernt",
+    "empty": {
+      "title": "Keine gespeicherten Papers",
+      "description": "Fügen Sie Papers aus den Suchergebnissen hinzu, um Ihre Leseliste zu erstellen"
+    },
+    "stats": {
+      "total": "Gesamt",
+      "unread": "Ungelesen",
+      "reading": "Lese ich",
+      "completed": "Abgeschlossen",
+      "summary": "{{total}} Papers ({{unread}} ungelesen)"
+    },
+    "toast": {
+      "addedSuccess": "📖 \"{{title}}\" zur Leseliste hinzugefügt",
+      "removedSuccess": "🗑️ \"{{title}}\" aus der Leseliste entfernt",
+      "duplicateError": "⚠️ Dieses Paper ist bereits in Ihrer Leseliste",
+      "storageError": "❌ Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "bulkDeleteSuccess": "🗑️ {{count}} Papers aus der Leseliste entfernt"
+    },
+    "filters": {
+      "all": "Alle",
+      "unread": "Ungelesen",
+      "reading": "Lese ich",
+      "completed": "Abgeschlossen",
+      "priority": "Priorität",
+      "sortBy": "Sortieren nach",
+      "addedDate": "Hinzugefügt am",
+      "publishDate": "Veröffentlichungsdatum",
+      "title": "Titel"
+    },
+    "priority": {
+      "low": "Niedrig",
+      "medium": "Mittel",
+      "high": "Hoch"
+    },
+    "status": {
+      "unread": "Ungelesen",
+      "reading": "Lese ich",
+      "completed": "Abgeschlossen"
+    },
+    "actions": {
+      "markAsRead": "Als gelesen markieren",
+      "markAsReading": "Als \"lese ich\" markieren",
+      "markAsUnread": "Als ungelesen markieren",
+      "addNote": "Notiz hinzufügen",
+      "editNotes": "Notizen bearbeiten",
+      "remove": "Entfernen"
+    },
+    "quickAccess": "Leseliste Schnellzugriff",
+    "viewAll": "Alle anzeigen",
+    "showAbstract": "Zusammenfassung anzeigen",
+    "hideAbstract": "Zusammenfassung verbergen",
+    "addedAt": "Hinzugefügt am",
+    "notes": "Notizen",
+    "notesPlaceholder": "Fügen Sie Ihre Notizen zu diesem Paper hinzu...",
+    "confirmRemove": "Sind Sie sicher, dass Sie dieses Paper aus Ihrer Leseliste entfernen möchten?"
+  },
   "common": {
     "loading": "Laden...",
     "error": "Fehler",
@@ -64,6 +129,10 @@
     "save": "Speichern",
     "delete": "Löschen",
     "edit": "Bearbeiten",
-    "close": "Schließen"
+    "close": "Schließen",
+    "remove": "Entfernen",
+    "confirm": "Bestätigen",
+    "authors": "Autoren",
+    "published": "Veröffentlicht"
   }
 }

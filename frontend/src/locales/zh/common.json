@@ -3,6 +3,7 @@
   "navigation": {
     "dashboard": "仪表板",
     "paperSearch": "论文搜索",
+    "readingList": "阅读清单",
     "languageSwitch": "语言"
   },
   "dashboard": {
@@ -53,6 +54,70 @@
       "page": "第{{current}}页 / 共{{total}}页"
     }
   },
+  "readingList": {
+    "title": "阅读清单",
+    "addToList": "添加到阅读清单",
+    "removeFromList": "从清单中移除",
+    "save": "保存",
+    "saved": "已保存",
+    "added": "已添加到清单",
+    "removed": "已从清单中移除",
+    "empty": {
+      "title": "没有保存的论文",
+      "description": "从搜索结果中添加论文以开始建立您的阅读清单"
+    },
+    "stats": {
+      "total": "总计",
+      "unread": "未读",
+      "reading": "阅读中",
+      "completed": "已完成",
+      "summary": "{{total}}篇论文 ({{unread}}篇未读)"
+    },
+    "toast": {
+      "addedSuccess": "📖 已将「{{title}}」添加到阅读清单",
+      "removedSuccess": "🗑️ 已从阅读清单中移除「{{title}}」",
+      "duplicateError": "⚠️ 此论文已在您的阅读清单中",
+      "storageError": "❌ 保存失败，请重试。",
+      "bulkDeleteSuccess": "🗑️ 已从阅读清单中移除{{count}}篇论文"
+    },
+    "filters": {
+      "all": "全部",
+      "unread": "未读",
+      "reading": "阅读中",
+      "completed": "已完成",
+      "priority": "优先级",
+      "sortBy": "排序方式",
+      "addedDate": "添加日期",
+      "publishDate": "发布日期",
+      "title": "标题"
+    },
+    "priority": {
+      "low": "低",
+      "medium": "中",
+      "high": "高"
+    },
+    "status": {
+      "unread": "未读",
+      "reading": "阅读中",
+      "completed": "已完成"
+    },
+    "actions": {
+      "markAsRead": "标记为已读",
+      "markAsReading": "标记为阅读中",
+      "markAsUnread": "标记为未读",
+      "addNote": "添加笔记",
+      "editNotes": "编辑笔记",
+      "remove": "移除"
+    },
+    "quickAccess": "阅读清单快速访问",
+    "viewAll": "查看全部",
+    "showAbstract": "显示摘要",
+    "hideAbstract": "隐藏摘要",
+    "addedAt": "添加于",
+    "notes": "笔记",
+    "notesPlaceholder": "添加关于这篇论文的笔记...",
+    "confirmRemove": "确定要从阅读清单中移除这篇论文吗？"
+  },
   "common": {
     "loading": "加载中...",
     "error": "错误",
@@ -64,6 +129,10 @@
     "save": "保存",
     "delete": "删除",
     "edit": "编辑",
-    "close": "关闭"
+    "close": "关闭",
+    "remove": "移除",
+    "confirm": "确认",
+    "authors": "作者",
+    "published": "发布日期"
   }
 }

@@ -1,0 +1,374 @@
+/* Reading List Styles and Animations */
+
+/* Button feedback animations */
+.reading-list-button {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.reading-list-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.reading-list-button.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.reading-list-button.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.reading-list-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success pulse animation */
+.btn-success-pulse {
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+  }
+}
+
+/* Feedback tooltip */
+.feedback-tooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+.feedback-tooltip.success {
+  background-color: #198754;
+  color: white;
+}
+
+.feedback-tooltip.error {
+  background-color: #dc3545;
+  color: white;
+}
+
+.feedback-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: inherit;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(5px); 
+  }
+  15%, 85% { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0); 
+  }
+}
+
+/* Reading list item animations */
+.reading-list-item {
+  animation: slideIn 0.3s ease-out;
+  transition: all 0.2s ease;
+}
+
+.reading-list-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reading-list-item.removing {
+  animation: fadeOut 0.2s ease-in;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Reading list stats animations */
+.reading-list-stats {
+  transition: all 0.3s ease-in-out;
+}
+
+.reading-list-stats .badge {
+  transition: all 0.2s ease;
+}
+
+.reading-list-stats .badge:hover {
+  transform: scale(1.1);
+}
+
+/* Priority badge colors */
+.badge.priority-high {
+  background-color: #dc3545 !important;
+}
+
+.badge.priority-medium {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.badge.priority-low {
+  background-color: #6c757d !important;
+}
+
+/* Status badge colors */
+.badge.status-unread {
+  background-color: #6c757d !important;
+}
+
+.badge.status-reading {
+  background-color: #0d6efd !important;
+}
+
+.badge.status-completed {
+  background-color: #198754 !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .reading-list-item .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .reading-list-item .btn-group .btn {
+    margin-bottom: 0.25rem;
+    border-radius: 0.375rem !important;
+  }
+  
+  .reading-list-filters {
+    flex-direction: column;
+  }
+  
+  .reading-list-filters .form-control,
+  .reading-list-filters .form-select {
+    margin-bottom: 0.5rem;
+  }
+
+  .feedback-tooltip {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 576px) {
+  .reading-list-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .reading-list-item h5 {
+    font-size: 1rem;
+  }
+  
+  .reading-list-stats .col {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .reading-list-item .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .reading-list-item .btn-group {
+    width: 100%;
+  }
+
+  .reading-list-item .btn-group .btn {
+    flex: 1;
+  }
+}
+
+/* Custom scrollbar for reading list */
+.reading-list-items {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.reading-list-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.reading-list-items::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.reading-list-items::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.reading-list-items::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Empty state styling */
+.reading-list-empty {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.reading-list-empty i {
+  color: #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.reading-list-empty h3 {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.reading-list-empty p {
+  color: #868e96;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Loading state */
+.reading-list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.reading-list-loading .spinner-border {
+  margin-bottom: 1rem;
+}
+
+/* Bulk actions bar */
+.bulk-actions-bar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bulk-actions-bar .btn {
+  margin-left: 0.5rem;
+}
+
+.bulk-actions-bar .btn:first-child {
+  margin-left: 0;
+}
+
+/* Filter panel styling */
+.filter-panel {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.filter-panel .form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Pagination styling */
+.reading-list-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.reading-list-pagination .pagination {
+  margin-bottom: 0;
+}
+
+/* Hover effects for interactive elements */
+.reading-list-item .dropdown-toggle:hover,
+.reading-list-item .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Focus states for accessibility */
+.reading-list-button:focus,
+.reading-list-item .btn:focus,
+.reading-list-item .dropdown-toggle:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Dark mode support (if needed in the future) */
+@media (prefers-color-scheme: dark) {
+  .feedback-tooltip.success {
+    background-color: #20c997;
+  }
+  
+  .feedback-tooltip.error {
+    background-color: #e74c3c;
+  }
+  
+  .reading-list-item {
+    background-color: #2d3748;
+    border-color: #4a5568;
+  }
+  
+  .reading-list-item:hover {
+    background-color: #374151;
+  }
+}

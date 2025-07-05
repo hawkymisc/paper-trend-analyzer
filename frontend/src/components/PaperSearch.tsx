@@ -3,6 +3,7 @@ import { Form, Button, Card, ListGroup, Pagination, Spinner, Alert } from 'react
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PaperSearchResponse, Paper } from '../types';
+import ReadingListButton from './ReadingListButton';
 
 const PaperSearch: React.FC = () => {
   const { t } = useTranslation();
@@ -192,8 +193,8 @@ const PaperSearch: React.FC = () => {
             <ListGroup variant="flush">
               {searchResults.map((paper) => (
                 <ListGroup.Item key={paper.id} className="py-4">
-                  <div className="mb-3">
-                    <h5 className="mb-2">
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <h5 className="mb-2 flex-grow-1 me-3">
                       <a 
                         href={paper.arxiv_url} 
                         target="_blank" 
@@ -205,6 +206,14 @@ const PaperSearch: React.FC = () => {
                         {paper.title}
                       </a>
                     </h5>
+                    <ReadingListButton 
+                      paper={paper}
+                      size="sm"
+                      variant="compact"
+                    />
+                  </div>
+                  
+                  <div>
                     <div className="mb-2">
                       <div className="row">
                         <div className="col-md-8">
