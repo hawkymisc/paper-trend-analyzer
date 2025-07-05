@@ -36,10 +36,72 @@ Navigate to the "Trend Analysis" section to explore the trends of specific keywo
 -   **Date Range**: Adjust the date range to observe short-term spikes or long-term growth patterns.
 -   **Combine Keywords**: Analyze multiple related keywords together to understand their co-occurrence and comparative trends.
 
-## 5. Data Collection
 
-The application collects paper data from the arXiv API. The `fetch_papers.py` script in the `backend/scripts/` directory is responsible for this. You can run this script periodically to update the database with the latest papers.
+## 6. Data Collection and Processing
 
-## 6. Troubleshooting
+The application features fully automated data collection and processing:
 
-If you encounter any issues, please refer to the [Developer Guide](developer.md) for debugging tips and project structure information.
+### Automated Paper Fetching
+- **arXiv Integration**: Automatically fetches papers from the arXiv API
+- **Scheduled Updates**: Regular updates to ensure fresh data
+- **Quality Filtering**: Filters papers based on relevance and quality metrics
+
+### Intelligent Keyword Extraction
+- **NLP Processing**: Uses advanced natural language processing for keyword extraction
+- **Technical Dictionary**: Specialized technical dictionary for high-quality keyword identification
+- **Automatic Filtering**: Removes low-quality keywords and stop words
+- **Trend Analysis**: Analyzes keyword growth patterns automatically
+
+### Data Quality
+- **Duplicate Detection**: Prevents duplicate papers from being stored
+- **Metadata Validation**: Ensures data integrity and consistency
+- **Cache Management**: Automatic cache invalidation for optimal performance
+
+## 7. Advanced Features
+
+### Internationalization
+- **Multi-language UI**: Complete interface translation for 5 languages
+- **Locale-aware Formatting**: Proper date, number, and text formatting for each language
+- **Easy Language Switching**: Instant language changes without page reload
+
+### Performance Optimization
+- **Intelligent Caching**: 5-minute cache for trending keywords
+- **Optimized Queries**: Database queries optimized for performance
+- **Responsive Design**: Bootstrap-based responsive UI for all devices
+
+### Search Capabilities
+- **Full-text Search**: Search across titles, abstracts, and keywords
+- **Relevance Scoring**: Intelligent relevance scoring for search results
+- **Flexible Sorting**: Multiple sorting options for different use cases
+- **Pagination**: Efficient pagination for large result sets
+
+## 8. Troubleshooting
+
+### Common Issues
+
+1. **No Search Results**: 
+   - Check if the database has been populated with papers
+   - Try broader search terms
+   - Verify date range settings
+
+2. **Language Switching Issues**:
+   - Clear browser cache
+   - Refresh the page
+   - Check if all translation files are loaded
+
+3. **Performance Issues**:
+   - Check if data fetching is in progress
+   - Verify internet connection
+   - Consider reducing search result limits
+
+4. **Dashboard Loading Issues**:
+   - Ensure backend server is running
+   - Check if database contains data
+   - Verify API endpoints are accessible
+
+### Getting Help
+
+For detailed technical information and troubleshooting, please refer to:
+- [Developer Guide](developer.md) - Technical architecture and debugging
+- [Setup Guide](setup.md) - Installation and configuration
+- [API Documentation](api.md) - Backend API reference
