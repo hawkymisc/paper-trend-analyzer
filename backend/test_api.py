@@ -207,7 +207,8 @@ def test_get_trends_invalid_date_range(client):
 
 def test_get_trends_invalid_date_format(client):
     response = client.get("/api/v1/trends?keywords=test&start_date=invalid-date")
-    assert response.status_code == 422
+    assert response.status_code == 400
+    assert "日付フォーマットが正しくありません" in response.json()["detail"]
 
 def test_get_trending_keywords_with_data(client, session):
     # テストデータを生成

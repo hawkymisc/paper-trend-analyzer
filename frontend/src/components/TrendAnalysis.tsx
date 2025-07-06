@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { TrendResult, TrendDataPoint } from '../types';
 
 const TrendAnalysis: React.FC = () => {
+  const { t } = useTranslation();
   const [keywords, setKeywords] = useState<string[]>([]);
   const [newKeyword, setNewKeyword] = useState<string>('');
   const [startDate, setStartDate] = useState<string>('');
@@ -34,7 +36,7 @@ const TrendAnalysis: React.FC = () => {
 
   const handleAnalyze = async () => {
     if (keywords.length === 0) {
-      setError('Please add at least one keyword.');
+      setError(t('trendAnalysis.addKeywordError'));
       return;
     }
     setLoading(true);
@@ -104,18 +106,18 @@ const TrendAnalysis: React.FC = () => {
 
   return (
     <div>
-      <h1>Trend Analysis</h1>
+      <h1>{t('trendAnalysis.title')}</h1>
 
       <Card className="mb-4">
         <Card.Body>
-          <Card.Title>Keyword and Date Selection</Card.Title>
+          <Card.Title>{t('trendAnalysis.keywordSelection')}</Card.Title>
           <Form>
             <Form.Group as={Row} className="mb-3">
-              <Form.Label column sm="2">Keywords</Form.Label>
+              <Form.Label column sm="2">{t('trendAnalysis.keywords')}</Form.Label>
               <Col sm="8">
                 <Form.Control
                   type="text"
-                  placeholder="Add a keyword"
+                  placeholder={t('trendAnalysis.addKeywordPlaceholder')}
                   value={newKeyword}
                   onChange={(e) => setNewKeyword(e.target.value)}
                   onKeyPress={(e) => {
@@ -127,7 +129,7 @@ const TrendAnalysis: React.FC = () => {
                 />
               </Col>
               <Col sm="2">
-                <Button onClick={handleAddKeyword}>Add</Button>
+                <Button onClick={handleAddKeyword}>{t('trendAnalysis.add')}</Button>
               </Col>
             </Form.Group>
             <div className="mb-3">
@@ -145,17 +147,17 @@ const TrendAnalysis: React.FC = () => {
 
             <Row className="mb-3">
               <Form.Group as={Col} md="6" controlId="startDate">
-                <Form.Label>Start Date</Form.Label>
+                <Form.Label>{t('trendAnalysis.startDate')}</Form.Label>
                 <Form.Control type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
               </Form.Group>
               <Form.Group as={Col} md="6" controlId="endDate">
-                <Form.Label>End Date</Form.Label>
+                <Form.Label>{t('trendAnalysis.endDate')}</Form.Label>
                 <Form.Control type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
               </Form.Group>
             </Row>
 
             <Button onClick={handleAnalyze} disabled={loading}>
-              {loading ? <Spinner animation="border" size="sm" /> : 'Analyze Trend'}
+              {loading ? <Spinner animation="border" size="sm" /> : t('trendAnalysis.analyzeTrend')}
             </Button>
           </Form>
         </Card.Body>
@@ -165,7 +167,7 @@ const TrendAnalysis: React.FC = () => {
 
       <Card>
         <Card.Body>
-          <Card.Title>Paper Count Trend</Card.Title>
+          <Card.Title>{t('trendAnalysis.paperCountTrend')}</Card.Title>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={400}>
               <LineChart
@@ -182,7 +184,7 @@ const TrendAnalysis: React.FC = () => {
                 {keywords.map((keyword, index) => (
                   <Line
                     key={keyword}
-                    type="monotone"
+                    type="linear"
                     dataKey={keyword}
                     name={keyword}
                     stroke={colors[index % colors.length]}
@@ -192,7 +194,7 @@ const TrendAnalysis: React.FC = () => {
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p>Select keywords and date range to see the trend.</p>
+            <p>{t('trendAnalysis.selectKeywordsMessage')}</p>
           )}
         </Card.Body>
       </Card>

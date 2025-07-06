@@ -1,0 +1,333 @@
+/* Hot Topics Styles */
+
+.hot-topic-card {
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+}
+
+.hot-topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #0d6efd;
+}
+
+.trend-score {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.4rem 0.6rem;
+  border-radius: 1rem;
+}
+
+.trend-score.text-success {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  border: 1px solid #c3e6cb;
+}
+
+.trend-score.text-warning {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  border: 1px solid #ffeaa7;
+}
+
+.trend-score.text-info {
+  background-color: #d1ecf1 !important;
+  color: #0c5460 !important;
+  border: 1px solid #b8daff;
+}
+
+.trend-score.text-muted {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  border: 1px solid #dee2e6;
+}
+
+/* Keyword badges */
+.hot-topic-card .badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Filters panel */
+.filters-panel {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 0.5rem;
+  border: 1px solid #dee2e6;
+}
+
+/* Loading animation */
+.hot-topics-loading {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hot-topics-loading .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Topic detail modal */
+.topic-detail-modal .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.topic-detail-modal .accordion-button {
+  padding: 0.75rem 1rem;
+}
+
+.topic-detail-modal .accordion-body {
+  padding: 1rem;
+}
+
+/* Empty state */
+.hot-topics-empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+}
+
+.hot-topics-empty i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.hot-topics-empty h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hot-topics-empty p {
+  max-width: 400px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/* Animation for topic cards */
+.hot-topic-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Delay animation for staggered effect */
+.hot-topic-card:nth-child(1) { animation-delay: 0.1s; }
+.hot-topic-card:nth-child(2) { animation-delay: 0.2s; }
+.hot-topic-card:nth-child(3) { animation-delay: 0.3s; }
+.hot-topic-card:nth-child(4) { animation-delay: 0.4s; }
+.hot-topic-card:nth-child(5) { animation-delay: 0.5s; }
+.hot-topic-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Header styling */
+.hot-topics-header {
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.hot-topics-header h1 {
+  color: #212529;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.hot-topics-header .subtitle {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Action buttons */
+.hot-topics-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hot-topics-actions .btn {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.hot-topics-actions .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hot-topics-header {
+    text-align: center;
+  }
+  
+  .hot-topics-actions {
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  
+  .hot-topic-card {
+    margin-bottom: 1rem;
+  }
+  
+  .filters-panel .row {
+    text-align: center;
+  }
+  
+  .filters-panel .col-md-1 {
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hot-topic-card .card-body {
+    padding: 1rem;
+  }
+  
+  .hot-topic-card .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .trend-score {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .topic-detail-modal .modal-body {
+    padding: 1rem;
+  }
+}
+
+/* Error state */
+.hot-topics-error {
+  border-left: 4px solid #dc3545;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.hot-topics-error .alert-heading {
+  color: #721c24;
+}
+
+/* Success state */
+.hot-topics-success {
+  border-left: 4px solid #28a745;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+/* Filter panel animations */
+.filters-panel {
+  animation: slideDown 0.3s ease-out;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Topic keyword styling */
+.topic-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.topic-keywords .badge {
+  transition: all 0.2s ease;
+}
+
+.topic-keywords .badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Paper count styling */
+.paper-count {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Trend score icons */
+.trend-score i {
+  margin-right: 0.25rem;
+}
+
+/* Modal improvements */
+.topic-detail-modal .modal-header {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border-bottom: none;
+}
+
+.topic-detail-modal .modal-header .btn-close {
+  filter: invert(1);
+}
+
+.topic-detail-modal .modal-title {
+  font-weight: 600;
+}
+
+.topic-detail-modal .accordion-item {
+  border: 1px solid #dee2e6;
+  margin-bottom: 0.5rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.topic-detail-modal .accordion-button:not(.collapsed) {
+  background-color: #e7f3ff;
+  color: #0056b3;
+}
+
+.topic-detail-modal .accordion-button:focus {
+  box-shadow: none;
+  border-color: #dee2e6;
+}
+
+/* Print styles */
+@media print {
+  .hot-topics-actions,
+  .filters-panel {
+    display: none;
+  }
+  
+  .hot-topic-card {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    border: 1px solid #000;
+  }
+  
+  .hot-topic-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}

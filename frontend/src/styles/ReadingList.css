@@ -1,0 +1,593 @@
+/* Reading List Styles and Animations */
+
+/* Button feedback animations */
+.reading-list-button {
+  transition: all 0.3s ease;
+  position: relative;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent text wrapping in CJK languages */
+  min-width: fit-content;
+}
+
+.reading-list-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Improved contrast for outline-primary button (未追加状態) */
+.reading-list-button.btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(13, 110, 253, 0.2);
+}
+
+.reading-list-button.btn-outline-primary:focus {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Success button (追加済み状態) with better contrast */
+.reading-list-button.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+  color: #ffffff;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(25, 135, 84, 0.2);
+}
+
+.reading-list-button.btn-success:focus {
+  background-color: #157347;
+  border-color: #146c43;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+.reading-list-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* High contrast button styles for better accessibility */
+.reading-list-button.btn-reading-list-add {
+  background-color: #ffffff;
+  border: 3px solid #0d6efd;
+  color: #0d6efd;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.reading-list-button.btn-reading-list-add:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.reading-list-button.btn-reading-list-add:focus {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.5);
+  outline: none;
+}
+
+.reading-list-button.btn-reading-list-saved {
+  background-color: #198754;
+  border: 3px solid #198754;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.reading-list-button.btn-reading-list-saved:hover {
+  background-color: #157347;
+  border-color: #157347;
+  color: #ffffff;
+}
+
+.reading-list-button.btn-reading-list-saved:focus {
+  background-color: #157347;
+  border-color: #157347;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.5);
+  outline: none;
+}
+
+/* Alternative light theme button styles (for future use) */
+.reading-list-button.btn-light-primary {
+  background-color: #e7f1ff;
+  border-color: #b6d7ff;
+  color: #0056b3;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-light-primary:hover {
+  background-color: #cce4ff;
+  border-color: #8dc4ff;
+  color: #003d82;
+}
+
+.reading-list-button.btn-light-success {
+  background-color: #d1e7dd;
+  border-color: #a3cfbb;
+  color: #0f5132;
+  border-width: 2px;
+}
+
+.reading-list-button.btn-light-success:hover {
+  background-color: #badbcc;
+  border-color: #86c7a1;
+  color: #0a3622;
+}
+
+/* Success pulse animation */
+.btn-success-pulse {
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+  }
+}
+
+/* Feedback tooltip */
+.feedback-tooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+.feedback-tooltip.success {
+  background-color: #198754;
+  color: white;
+}
+
+.feedback-tooltip.error {
+  background-color: #dc3545;
+  color: white;
+}
+
+.feedback-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border: 5px solid transparent;
+  border-top-color: inherit;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(5px); 
+  }
+  15%, 85% { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0); 
+  }
+}
+
+/* Card body background fix for better readability */
+.card-body {
+  background-color: #ffffff !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Dark mode card body support */
+@media (prefers-color-scheme: dark) {
+  .card-body {
+    background-color: #ffffff !important;
+    color: #212529 !important;
+  }
+}
+
+/* Reading list item animations */
+.reading-list-item {
+  animation: slideIn 0.3s ease-out;
+  transition: all 0.2s ease;
+}
+
+.reading-list-item:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.reading-list-item.removing {
+  animation: fadeOut 0.2s ease-in;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Reading list stats animations */
+.reading-list-stats {
+  transition: all 0.3s ease-in-out;
+}
+
+.reading-list-stats .badge {
+  transition: all 0.2s ease;
+}
+
+.reading-list-stats .badge:hover {
+  transform: scale(1.1);
+}
+
+/* Priority badge colors */
+.badge.priority-high {
+  background-color: #dc3545 !important;
+}
+
+.badge.priority-medium {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.badge.priority-low {
+  background-color: #6c757d !important;
+}
+
+/* Status badge colors */
+.badge.status-unread {
+  background-color: #6c757d !important;
+}
+
+.badge.status-reading {
+  background-color: #0d6efd !important;
+}
+
+.badge.status-completed {
+  background-color: #198754 !important;
+}
+
+/* Navigation badge and text improvements */
+.navbar .badge {
+  font-weight: 700;
+  font-size: 0.7em;
+  padding: 0.35em 0.65em;
+  border-radius: 10rem;
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.navbar-light .nav-link {
+  color: #212529 !important;
+  font-weight: 500;
+}
+
+.navbar-light .nav-link:hover {
+  color: #0d6efd !important;
+}
+
+.navbar-dark .nav-link {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+.navbar-dark .nav-link:hover {
+  color: #86b7fe !important;
+}
+
+/* Navigation and dark background compatibility */
+.navbar-light .reading-list-button.btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.navbar-dark .reading-list-button.btn-outline-primary {
+  background-color: #ffffff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .reading-list-button.btn-outline-primary {
+    background-color: #ffffff;
+    border-color: #000000;
+    color: #000000;
+    border-width: 3px;
+  }
+  
+  .reading-list-button.btn-success {
+    background-color: #000000;
+    border-color: #000000;
+    color: #ffffff;
+    border-width: 3px;
+  }
+}
+
+/* Improved text contrast for all states */
+.reading-list-button {
+  text-shadow: none;
+  min-contrast: 4.5;
+}
+
+/* CJK language specific button styling to prevent text wrapping */
+.reading-list-button:lang(ja),
+.reading-list-button:lang(zh),
+.reading-list-button:lang(ko) {
+  word-break: keep-all;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  min-width: max-content;
+}
+
+.reading-list-button.btn-outline-primary {
+  font-weight: 600;
+}
+
+.reading-list-button.btn-success {
+  font-weight: 600;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .reading-list-item .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .reading-list-item .btn-group .btn {
+    margin-bottom: 0.25rem;
+    border-radius: 0.375rem !important;
+  }
+  
+  .reading-list-filters {
+    flex-direction: column;
+  }
+  
+  .reading-list-filters .form-control,
+  .reading-list-filters .form-select {
+    margin-bottom: 0.5rem;
+  }
+
+  .feedback-tooltip {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Enhanced button contrast on mobile */
+  .reading-list-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px; /* Touch target size */
+    white-space: nowrap; /* Prevent text wrapping in buttons */
+  }
+}
+
+@media (max-width: 576px) {
+  .reading-list-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    white-space: nowrap; /* Prevent text wrapping in buttons on small screens */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px; /* Limit width on very small screens */
+  }
+  
+  .reading-list-item h5 {
+    font-size: 1rem;
+  }
+  
+  .reading-list-stats .col {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .reading-list-item .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .reading-list-item .btn-group {
+    width: 100%;
+  }
+
+  .reading-list-item .btn-group .btn {
+    flex: 1;
+  }
+}
+
+/* Custom scrollbar for reading list */
+.reading-list-items {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.reading-list-items::-webkit-scrollbar {
+  width: 8px;
+}
+
+.reading-list-items::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.reading-list-items::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.reading-list-items::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Empty state styling */
+.reading-list-empty {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.reading-list-empty i {
+  color: #dee2e6;
+  margin-bottom: 1rem;
+}
+
+.reading-list-empty h3 {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.reading-list-empty p {
+  color: #868e96;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Loading state */
+.reading-list-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.reading-list-loading .spinner-border {
+  margin-bottom: 1rem;
+}
+
+/* Bulk actions bar */
+.bulk-actions-bar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bulk-actions-bar .btn {
+  margin-left: 0.5rem;
+}
+
+.bulk-actions-bar .btn:first-child {
+  margin-left: 0;
+}
+
+/* Filter panel styling */
+.filter-panel {
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.filter-panel .form-label {
+  font-weight: 500;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+/* Pagination styling */
+.reading-list-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.reading-list-pagination .pagination {
+  margin-bottom: 0;
+}
+
+/* Hover effects for interactive elements */
+.reading-list-item .dropdown-toggle:hover,
+.reading-list-item .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Focus states for accessibility */
+.reading-list-button:focus,
+.reading-list-item .btn:focus,
+.reading-list-item .dropdown-toggle:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* Dark mode support (if needed in the future) */
+@media (prefers-color-scheme: dark) {
+  .feedback-tooltip.success {
+    background-color: #20c997;
+  }
+  
+  .feedback-tooltip.error {
+    background-color: #e74c3c;
+  }
+  
+  .reading-list-item {
+    background-color: #2d3748;
+    border-color: #4a5568;
+  }
+  
+  .reading-list-item:hover {
+    background-color: #374151;
+  }
+}

@@ -1,0 +1,235 @@
+# 📊 Paper Trend Analyzer
+
+研究論文のトレンド分析を行う包括的なプラットフォームです。AI解析を活用して、新興研究トピック、トレンドキーワード、論文要約などの洞察を提供します。
+
+## ✨ 最新の更新
+
+### Version 2.1.0 - インタラクティブ論文参照とカスタマイズ機能
+- **強化された論文参照**: 上付き記法（¹'²'³）によるインタラクティブツールチップとクリック可能なarXivリンク
+- **カスタムキーワード辞書**: ユーザー定義の専門用語重み付けによる改善されたトレンド分析
+- **Markdownスタイルカスタマイズ**: 見出しフォント、行間、コンテンツタイポグラフィのパーソナライズ
+- **多言語翻訳更新**: 辞書とスタイリング機能の包括的なローカライゼーション
+- **UI改善**: ページタイトル管理と洗練されたインターフェース要素
+
+## 🚀 機能
+
+### 📈 ダッシュボード & 分析
+- **リアルタイム統計**: 総論文数、最近の投稿、トレンドキーワードの追跡
+- **インタラクティブワードクラウド**: 過去16週間のトレンドキーワードの可視化
+- **包括的サマリー**: 研究情勢に関する洞察の取得
+
+### 🔍 論文検索 & 管理
+- **高度検索**: タイトル、要約、キーワードにわたる全文検索
+- **スマートフィルタリング**: 日付範囲、関連性、ソートオプション
+- **読書リスト**: 優先度レベルとメモ付きの個人論文管理
+- **多言語サポート**: 英語、日本語、中国語、韓国語、ドイツ語でのインターフェース
+
+### 🔥 AI駆動分析
+- **ホットトピック検出**: 自動的なトレンド研究領域の特定
+- **週次トレンド分析**: AI生成による研究トレンドの要約取得
+- **トピックキーワード抽出**: 関連研究キーワードの抽出とランキング
+- **トピック要約**: 選択したトピックの詳細要約生成
+
+### ⚙️ 高度な設定
+- **複数AIプロバイダー**: Google Gemini、OpenAI、Anthropic Claudeのサポート
+- **カスタムシステムプロンプト**: AI分析動作のパーソナライズ
+- **思考予算制御**: AI推論深度の微調整（-1で無制限、0で無効化）
+- **テーマ管理**: ライト、ダーク、自動テーマ
+- **Markdownレンダリング**: シンタックスハイライト付きの美しい書式設定
+- **辞書ベース分析**: トレンド検出強化のためのカスタムキーワード重み付け
+- **柔軟なスタイリング**: コンテンツ表示のユーザーカスタマイズ可能なタイポグラフィと間隔
+
+### 📄 スマートコンテンツ機能
+- **インタラクティブ論文参照**: 上付きリンク¹'²とホバーツールチップによる論文参照の自動検出
+- **カスタムキーワード辞書**: キーワード分析強化のためのユーザー定義専門用語
+- **Markdownスタイルカスタマイズ**: 見出しフォント、行間、段落書式のパーソナライズ
+- **キャッシュ分析**: コスト削減のための効率的なデータベースキャッシュ
+- **手動トリガー**: オンデマンドでのコスト効率的な分析生成
+
+## 🛠️ 技術スタック
+
+### バックエンド
+- **FastAPI**: API構築のためのモダンで高速なWebフレームワーク
+- **SQLAlchemy**: SQLツールキットとORM
+- **Pydantic**: Python型注釈を使用したデータ検証
+- **Google Generative AI**: 高度なAI分析機能
+- **asyncio**: 非同期プログラミングサポート
+
+### フロントエンド
+- **React 18**: フック付きのモダンUIライブラリ
+- **TypeScript**: 型安全なJavaScript
+- **Bootstrap 5**: レスポンシブデザインフレームワーク
+- **React Markdown**: シンタックスハイライト付きMarkdownレンダリング
+- **i18next**: 国際化フレームワーク
+- **React Router**: クライアントサイドルーティング
+
+### データベース
+- **SQLite**: 軽量ファイルベースデータベース
+- **キャッシュシステム**: コスト最適化のための効率的な結果ストレージ
+
+## 📦 インストール
+
+### 前提条件
+- Python 3.11+
+- Node.js 18+
+- npm または yarn
+
+### バックエンドセットアップ
+
+1. **リポジトリのクローン**
+   ```bash
+   git clone https://github.com/hawkymisc/paper-trend-analyzer.git
+   cd paper-trend-analyzer/backend
+   ```
+
+2. **仮想環境の作成**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Windows: venv\Scripts\activate
+   ```
+
+3. **依存関係のインストール**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **環境設定**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   `.env`を編集して設定を構成:
+   ```env
+   # AIプロバイダー設定
+   GEMINI_API_KEY=your_gemini_api_key_here
+   OPENAI_API_KEY=your_openai_key_here  # オプション
+   ANTHROPIC_API_KEY=your_anthropic_key_here  # オプション
+   
+   # AI設定
+   AI_PROVIDER=gemini
+   GEMINI_MODEL=gemini-1.5-pro
+   GEMINI_MAX_TOKENS=4000
+   GEMINI_TEMPERATURE=0.3
+   GEMINI_THINKING_BUDGET=20000
+   GEMINI_TIMEOUT=120
+   
+   # 分析設定
+   HOT_TOPICS_MAX_TOPICS=10
+   HOT_TOPICS_MIN_PAPERS=3
+   HOT_TOPICS_TIMEOUT=180
+   ```
+
+5. **バックエンドの実行**
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+### フロントエンドセットアップ
+
+1. **フロントエンドディレクトリに移動**
+   ```bash
+   cd ../frontend
+   ```
+
+2. **依存関係のインストール**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+3. **開発サーバーの起動**
+   ```bash
+   npm start
+   ```
+
+アプリケーションは以下のURLで利用可能になります:
+- フロントエンド: http://localhost:3000
+- バックエンドAPI: http://localhost:8000
+- APIドキュメント: http://localhost:8000/docs
+
+## 多言語サポート
+
+アプリケーションは以下の言語をサポートしています:
+- 英語 (en)
+- 日本語 (ja) - 日本語
+- 中国語 (zh) - 中文
+- 韓国語 (ko) - 한국어
+- ドイツ語 (de) - Deutsch
+
+ユーザーはナビゲーションバーの言語スイッチャーを使用して言語を切り替えることができます。
+
+## APIドキュメント
+
+包括的なAPIドキュメントは[docs/api.md](docs/api.md)で利用可能です。主要なエンドポイント:
+
+- `GET /api/v1/dashboard/summary` - ダッシュボード統計
+- `GET /api/v1/dashboard/trending-keywords` - トレンドキーワード
+- `GET /api/v1/papers/search` - ソート付き論文検索
+- `GET /api/v1/trends` - キーワードトレンド分析
+
+## アーキテクチャ
+
+### バックエンド
+- **FastAPI**: API構築のためのモダンで高速なWebフレームワーク
+- **SQLAlchemy**: ローカル開発用SQLiteを使用したデータベースORM
+- **自動処理**: スケジュールされた論文取得とキーワード抽出
+- **キャッシュ**: パフォーマンス最適化のためのインメモリキャッシュ
+
+### フロントエンド
+- **React**: TypeScript付きのコンポーネントベースUIライブラリ
+- **React Router**: クライアントサイドルーティング
+- **react-i18next**: 国際化フレームワーク
+- **Bootstrap**: レスポンシブUIコンポーネント
+- **Chart.js**: インタラクティブデータ可視化
+
+## 開発
+
+### プロジェクト構造
+```
+paper-trend-analyzer/
+├── backend/                 # FastAPIバックエンド
+│   ├── app/                # コアアプリケーション
+│   │   ├── main.py        # APIルート
+│   │   ├── models.py      # データベースモデル
+│   │   ├── services.py    # ビジネスロジック
+│   │   └── schemas.py     # Pydanticスキーマ
+│   └── scripts/           # ユーティリティスクリプト
+├── frontend/              # Reactフロントエンド
+│   ├── src/
+│   │   ├── components/    # Reactコンポーネント
+│   │   ├── locales/       # 翻訳ファイル
+│   │   └── i18n.ts        # i18n設定
+│   └── public/           # 静的アセット
+├── docs/                  # ドキュメント
+└── start_dev.sh          # 開発起動スクリプト
+```
+
+### 主要技術
+- **バックエンド**: FastAPI、SQLAlchemy、Pydantic、arXiv API
+- **フロントエンド**: React、TypeScript、Bootstrap、react-i18next
+- **データベース**: SQLite（開発）、PostgreSQL（本番）
+- **デプロイ**: Docker、Kubernetes対応
+
+## ドキュメント
+
+- [セットアップガイド](docs/setup.md) - インストールとデプロイ手順
+- [APIドキュメント](docs/api.md) - 完全なAPIリファレンス
+- [開発者ガイド](docs/developer.md) - 開発ワークフローとアーキテクチャ
+- [ユーザーガイド](docs/usage.md) - アプリケーションの使用方法
+
+## 貢献
+
+1. リポジトリをフォーク
+2. 機能ブランチを作成
+3. 変更を実施
+4. 該当する場合はテストを追加
+5. プルリクエストを提出
+
+詳細な開発ガイドラインについては、[docs/developer.md](docs/developer.md)を参照してください。
+
+## ライセンス
+
+このプロジェクトはMITライセンスの下でライセンスされています - 詳細はLICENSEファイルを参照してください。
+
+## サポート
+
+問題や質問については、GitHubの Issues ページを使用するか、`docs/`ディレクトリのドキュメントを参照してください。
