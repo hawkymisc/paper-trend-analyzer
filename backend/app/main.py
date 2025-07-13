@@ -28,6 +28,20 @@ app.add_middleware(
     allow_headers=["*"],  # すべてのHTTPヘッダーを許可
 )
 
+# ルートエンドポイント - セキュリティ上の理由により最小限の情報のみ提供
+@app.get("/")
+def read_root():
+    """
+    API ルートエンドポイント
+    セキュリティ上の理由により、システム情報は最小限に制限されています。
+    """
+    return {
+        "service": "paper-trend-analyzer",
+        "status": "running",
+        "api_version": "v1",
+        "endpoints": "/docs"
+    }
+
 @app.get("/api/v1/trends", response_model=list[schemas.TrendResult])
 def get_trends(
     keywords: list[str] = Query(..., description="分析したいキーワードのリスト"),
@@ -346,4 +360,153 @@ async def get_latest_paper_date(db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=500,
             detail=f"Failed to get latest paper date: {str(e)}"
+        )
+
+# Trend Summary Endpoints
+@app.post("/api/v1/trend-summary", response_model=schemas.TrendSummaryResponse)
+async def create_trend_summary_endpoint(
+    request: schemas.TrendSummaryRequest,
+    db: Session = Depends(get_db)
+):
+    """Create a new trend summary analysis"""
+    try:
+        response = await services.create_trend_summary(db=db, request=request)
+        return response
+    except Exception as e:
+        logging.error(f"Trend summary creation failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"トレンド要約の作成に失敗しました: {str(e)}"
+        )
+
+@app.get("/api/v1/trend-summaries", response_model=schemas.TrendSummaryListResponse)
+def get_trend_summaries_endpoint(
+    skip: int = Query(0, ge=0, description="スキップする件数"),
+    limit: int = Query(20, ge=1, le=100, description="取得する最大件数"),
+    db: Session = Depends(get_db)
+):
+    """Get list of trend summaries with pagination"""
+    try:
+        response = services.get_trend_summaries(db=db, skip=skip, limit=limit)
+        return response
+    except Exception as e:
+        logging.error(f"Failed to get trend summaries: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"トレンド要約一覧の取得に失敗しました: {str(e)}"
+        )
+
+@app.get("/api/v1/trend-summary/latest", response_model=schemas.TrendSummaryResponse)
+def get_latest_trend_summary_endpoint(
+    db: Session = Depends(get_db)
+):
+    """Get the most recent trend summary"""
+    try:
+        response = services.get_latest_trend_summary(db=db)
+        if not response:
+            raise HTTPException(
+                status_code=404,
+                detail="トレンド要約が見つかりません"
+            )
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Failed to get latest trend summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"最新のトレンド要約の取得に失敗しました: {str(e)}"
+        )
+
+@app.get("/api/v1/trend-summary/{summary_id}", response_model=schemas.TrendSummaryResponse)
+def get_trend_summary_endpoint(
+    summary_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get a specific trend summary by ID"""
+    try:
+        response = services.get_trend_summary_by_id(db=db, summary_id=summary_id)
+        if not response:
+            raise HTTPException(
+                status_code=404,
+                detail="指定されたトレンド要約が見つかりません"
+            )
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Failed to get trend summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"トレンド要約の取得に失敗しました: {str(e)}"
+        )
+
+@app.delete("/api/v1/trend-summary/{summary_id}")
+def delete_trend_summary_endpoint(
+    summary_id: int,
+    db: Session = Depends(get_db)
+):
+    """Delete a specific trend summary by ID"""
+    try:
+        success = services.delete_trend_summary(db=db, summary_id=summary_id)
+        if not success:
+            raise HTTPException(
+                status_code=404,
+                detail="指定されたトレンド要約が見つかりません"
+            )
+        return {"message": "トレンド要約が正常に削除されました"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Failed to delete trend summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"トレンド要約の削除に失敗しました: {str(e)}"
+        )
+
+# Paper Summary Endpoints
+@app.post("/api/v1/papers/{paper_id}/summary", response_model=schemas.PaperSummaryResponse)
+async def generate_paper_summary_endpoint(
+    paper_id: int,
+    request: schemas.PaperSummaryRequest = Body(...),
+    db: Session = Depends(get_db)
+):
+    """Generate summary for a specific paper"""
+    try:
+        response = await services.generate_paper_summary(
+            db=db, 
+            paper_id=paper_id, 
+            language=request.language
+        )
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Failed to generate paper summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"論文要約の生成に失敗しました: {str(e)}"
+        )
+
+@app.get("/api/v1/papers/{paper_id}/summary", response_model=schemas.PaperSummaryResponse)
+def get_paper_summary_endpoint(
+    paper_id: int,
+    db: Session = Depends(get_db)
+):
+    """Get existing summary for a specific paper"""
+    try:
+        response = services.get_paper_summary(db=db, paper_id=paper_id)
+        if not response:
+            raise HTTPException(
+                status_code=404,
+                detail="この論文の要約が見つかりません"
+            )
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Failed to get paper summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"論文要約の取得に失敗しました: {str(e)}"
         )

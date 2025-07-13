@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
 
@@ -125,6 +125,7 @@ class TopicSummaryResponse(BaseModel):
     related_paper_count: int
     key_findings: List[str]
     generated_at: datetime
+    papers: Optional[List[PaperResponse]] = None
 
 # Legacy Hot Topics Schemas (for backward compatibility)
 class HotTopicPaper(BaseModel):
@@ -175,3 +176,43 @@ class DictionaryKeyword(BaseModel):
     importance: str  # 'high', 'medium', 'low'
     category: str
     created_at: str
+
+# Trend Summary Schemas
+class TrendSummaryRequest(BaseModel):
+    title: str
+    period_start: str  # YYYY-MM-DD format
+    period_end: str    # YYYY-MM-DD format
+    paper_count: int = Field(ge=10, le=50, description="論文数（10-50件）")
+    language: Optional[str] = "ja"
+
+class TrendSummaryResponse(BaseModel):
+    id: int
+    title: str
+    period_start: datetime
+    period_end: datetime
+    paper_count: int
+    summary: str
+    key_insights: List[str]
+    top_keywords: List[dict]  # Array of {keyword, count} objects
+    language: str
+    created_at: datetime
+    papers: Optional[List[PaperResponse]] = None  # Papers used in analysis
+
+class TrendSummaryListResponse(BaseModel):
+    summaries: List[TrendSummaryResponse]
+    total_count: int
+
+# Paper Summary Schemas
+class PaperSummaryRequest(BaseModel):
+    paper_id: int
+    language: Optional[str] = "ja"
+
+class PaperSummaryResponse(BaseModel):
+    id: int
+    paper_id: int
+    summary: str
+    language: str
+    created_at: datetime
+    paper: Optional[PaperResponse] = None
+
+    model_config = {'from_attributes': True}

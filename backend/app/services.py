@@ -1638,13 +1638,36 @@ async def get_topic_summary(
             timeout=settings.gemini_timeout
         )
         
+        # Convert papers to response format
+        paper_responses = []
+        for paper in related_papers[:20]:  # Limit to first 20 papers for UI
+            # Get keywords for this paper
+            paper_keywords = (
+                db.query(models.Keyword.name)
+                .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+                .filter(models.PaperKeyword.paper_id == paper.id)
+                .all()
+            )
+            
+            paper_responses.append(schemas.PaperResponse(
+                id=paper.id,
+                arxiv_id=paper.arxiv_id,
+                title=paper.title,
+                summary=paper.summary,
+                published_at=paper.published_at,
+                authors=paper.authors,
+                arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+                keywords=[kw.name for kw in paper_keywords]
+            ))
+
         response = schemas.TopicSummaryResponse(
             topic_name=summary_ai.get('topic_name', ' & '.join(keywords)),
             summary=summary_ai.get('summary', ''),
             keywords=keywords,
             related_paper_count=related_paper_count,
             key_findings=summary_ai.get('key_findings', []),
-            generated_at=get_utc_now()
+            generated_at=get_utc_now(),
+            papers=paper_responses
         )
         
         logging.info(f"Generated topic summary for {len(keywords)} keywords in {time.time() - start_time:.2f} seconds.")
@@ -1657,6 +1680,28 @@ async def get_topic_summary(
         topic_name = " & ".join(keywords) if len(keywords) > 1 else keywords[0]
         fallback_summary = f"Research in {topic_name} shows active development with {related_paper_count} related papers in the past week. This area encompasses various methodologies and applications in current academic research."
         
+        # Convert papers to response format for fallback
+        paper_responses = []
+        for paper in related_papers[:20]:  # Limit to first 20 papers for UI
+            # Get keywords for this paper
+            paper_keywords = (
+                db.query(models.Keyword.name)
+                .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+                .filter(models.PaperKeyword.paper_id == paper.id)
+                .all()
+            )
+            
+            paper_responses.append(schemas.PaperResponse(
+                id=paper.id,
+                arxiv_id=paper.arxiv_id,
+                title=paper.title,
+                summary=paper.summary,
+                published_at=paper.published_at,
+                authors=paper.authors,
+                arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+                keywords=[kw.name for kw in paper_keywords]
+            ))
+
         return schemas.TopicSummaryResponse(
             topic_name=topic_name,
             summary=fallback_summary,
@@ -1667,7 +1712,8 @@ async def get_topic_summary(
                 f"{related_paper_count} papers identified in this area",
                 "Diverse methodological approaches observed"
             ],
-            generated_at=get_utc_now()
+            generated_at=get_utc_now(),
+            papers=paper_responses
         )
 
 async def fetch_papers_from_arxiv(
@@ -1750,3 +1796,534 @@ async def fetch_papers_from_arxiv(
             total_fetched=0,
             processing_time=time.time() - start_time
         )
+
+# Trend Summary Functions
+async def create_trend_summary(
+    db: Session,
+    request: schemas.TrendSummaryRequest
+) -> schemas.TrendSummaryResponse:
+    """Create a new trend summary analysis"""
+    start_time = time.time()
+    logging.info(f"Creating trend summary for period {request.period_start} to {request.period_end}...")
+    
+    try:
+        # Parse dates
+        period_start = datetime.strptime(request.period_start, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        period_end = datetime.strptime(request.period_end, "%Y-%m-%d").replace(hour=23, minute=59, second=59, tzinfo=timezone.utc)
+        
+        # Get papers within the specified period
+        papers_query = (
+            db.query(models.Paper)
+            .filter(
+                models.Paper.published_at >= period_start,
+                models.Paper.published_at <= period_end
+            )
+            .order_by(models.Paper.published_at.desc())
+            .limit(request.paper_count)
+        )
+        
+        papers = papers_query.all()
+        actual_paper_count = len(papers)
+        
+        if not papers:
+            return schemas.TrendSummaryResponse(
+                id=0,
+                title=request.title,
+                period_start=period_start,
+                period_end=period_end,
+                paper_count=0,
+                summary="指定期間内に論文が見つかりませんでした。",
+                key_insights=["データが不十分です"],
+                top_keywords=[],
+                language=request.language,
+                created_at=get_utc_now()
+            )
+        
+        # Convert papers to analysis format
+        papers_data = []
+        for paper in papers:
+            paper_keywords = (
+                db.query(models.Keyword.name)
+                .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+                .filter(models.PaperKeyword.paper_id == paper.id)
+                .all()
+            )
+            
+            paper_data = {
+                'id': paper.id,
+                'title': paper.title,
+                'authors': paper.authors,
+                'published_at': paper.published_at.isoformat(),
+                'summary': paper.summary,
+                'keywords': [kw.name for kw in paper_keywords],
+                'arxiv_id': paper.arxiv_id
+            }
+            papers_data.append(paper_data)
+        
+        # Get AI service and generate summary
+        ai_service = get_ai_service()
+        
+        # Custom prompt for trend summary - unified with weekly trend analysis
+        system_prompt = f"""
+        以下の学術論文（{request.period_start} から {request.period_end} の期間）を分析し、
+        研究トレンドの要約を{request.language}で生成してください。
+        
+        分析項目：
+        1. 主要な研究テーマとその傾向
+        2. 新しい技術や手法の動向
+        3. 注目すべき発見や進歩
+        4. 将来的な研究方向性
+        
+        300-500文字の要約文を作成してください。
+        Markdownフォーマット（**太字**、*斜体*、リストなど）を使用して読みやすく構造化してください。
+        JSON形式は使わず、普通の文章で回答してください。
+        
+        IMPORTANT: 特定の論文に言及する際は、[Paper:N]の形式（Nは論文番号）を使用してください。
+        これにより、UIで論文への参照が可能になります。
+        """
+        
+        summary_result = await asyncio.wait_for(
+            ai_service.generate_weekly_trend_overview(papers_data, request.language, system_prompt),
+            timeout=settings.gemini_timeout
+        )
+        
+        # Clean up the AI response - remove any JSON formatting if present
+        import re
+        import json
+        
+        cleaned_summary = summary_result.strip()
+        
+        # Try to extract JSON if present and get the summary field
+        json_match = re.search(r'\{.*\}', cleaned_summary, re.DOTALL)
+        if json_match:
+            try:
+                json_data = json.loads(json_match.group())
+                if isinstance(json_data, dict) and 'summary' in json_data:
+                    cleaned_summary = json_data['summary']
+                    # Also extract AI-generated insights if available
+                    if 'key_insights' in json_data and isinstance(json_data['key_insights'], list):
+                        ai_insights = json_data['key_insights'][:3]  # Take first 3
+                    else:
+                        ai_insights = []
+                else:
+                    ai_insights = []
+            except json.JSONDecodeError:
+                ai_insights = []
+        else:
+            ai_insights = []
+        
+        # Remove any remaining JSON formatting markers
+        cleaned_summary = re.sub(r'^```json\s*', '', cleaned_summary)
+        cleaned_summary = re.sub(r'\s*```$', '', cleaned_summary)
+        cleaned_summary = re.sub(r'^\{.*?\}\s*', '', cleaned_summary, flags=re.DOTALL)
+        cleaned_summary = cleaned_summary.strip()
+        
+        # Calculate top keywords from the papers
+        keyword_counts = {}
+        for paper in papers:
+            paper_keywords = (
+                db.query(models.Keyword.name)
+                .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+                .filter(models.PaperKeyword.paper_id == paper.id)
+                .all()
+            )
+            for kw in paper_keywords:
+                keyword_counts[kw.name] = keyword_counts.get(kw.name, 0) + 1
+        
+        # Get top 10 keywords
+        top_keywords = [
+            {"keyword": kw, "count": count}
+            for kw, count in sorted(keyword_counts.items(), key=lambda x: x[1], reverse=True)[:10]
+        ]
+        
+        # Generate key insights based on analysis - combine AI insights with data insights
+        key_insights = []
+        if ai_insights:
+            key_insights.extend(ai_insights)
+        
+        # Add data-driven insights
+        data_insights = [
+            f"分析期間内に{actual_paper_count}本の論文を調査",
+            f"最も頻出するキーワード: {top_keywords[0]['keyword'] if top_keywords else 'データなし'}",
+        ]
+        
+        # Add research activity insight only if we have enough papers
+        if actual_paper_count >= 10:
+            data_insights.append("研究活動の活発な分野での新しい進展を確認")
+        
+        key_insights.extend(data_insights)
+        
+        # Limit to maximum 5 insights
+        key_insights = key_insights[:5]
+        
+        # Convert papers to response format for paper references
+        paper_responses = []
+        for i, paper in enumerate(papers):  # Use all papers from analysis
+            paper_keywords = (
+                db.query(models.Keyword.name)
+                .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+                .filter(models.PaperKeyword.paper_id == paper.id)
+                .all()
+            )
+            
+            paper_responses.append(schemas.PaperResponse(
+                id=paper.id,
+                title=paper.title,
+                authors=paper.authors,
+                summary=paper.summary,
+                published_at=paper.published_at,
+                arxiv_id=paper.arxiv_id,
+                arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+                keywords=[kw.name for kw in paper_keywords]
+            ))
+
+        # Create database entry
+        trend_summary = models.TrendSummary(
+            title=request.title,
+            period_start=period_start,
+            period_end=period_end,
+            paper_count=actual_paper_count,
+            summary=cleaned_summary[:2000],  # Use cleaned summary, limit to 2000 characters
+            key_insights=key_insights,
+            top_keywords=top_keywords,
+            language=request.language
+        )
+        
+        db.add(trend_summary)
+        db.commit()
+        db.refresh(trend_summary)
+        
+        logging.info(f"Created trend summary with ID {trend_summary.id} in {time.time() - start_time:.2f} seconds.")
+        
+        return schemas.TrendSummaryResponse(
+            id=trend_summary.id,
+            title=trend_summary.title,
+            period_start=trend_summary.period_start,
+            period_end=trend_summary.period_end,
+            paper_count=trend_summary.paper_count,
+            summary=cleaned_summary,  # Return cleaned summary
+            key_insights=trend_summary.key_insights,
+            top_keywords=trend_summary.top_keywords,
+            language=trend_summary.language,
+            created_at=trend_summary.created_at,
+            papers=paper_responses  # Include papers for reference
+        )
+        
+    except Exception as e:
+        logging.error(f"Failed to create trend summary: {e}")
+        db.rollback()
+        
+        # Return fallback response
+        return schemas.TrendSummaryResponse(
+            id=0,
+            title=request.title,
+            period_start=period_start,
+            period_end=period_end,
+            paper_count=0,
+            summary=f"要約の生成中にエラーが発生しました: {str(e)}",
+            key_insights=["エラーが発生しました"],
+            top_keywords=[],
+            language=request.language,
+            created_at=get_utc_now()
+        )
+
+def get_trend_summaries(
+    db: Session,
+    skip: int = 0,
+    limit: int = 20
+) -> schemas.TrendSummaryListResponse:
+    """Get list of trend summaries"""
+    
+    # Get total count
+    total_count = db.query(models.TrendSummary).count()
+    
+    # Get summaries with pagination
+    summaries = (
+        db.query(models.TrendSummary)
+        .order_by(models.TrendSummary.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    
+    # Convert to response format
+    summary_responses = []
+    for summary in summaries:
+        # Fetch papers from the same period to include in response
+        papers = (
+            db.query(models.Paper)
+            .filter(
+                models.Paper.published_at >= summary.period_start,
+                models.Paper.published_at <= summary.period_end
+            )
+            .order_by(models.Paper.published_at.desc())
+            .limit(summary.paper_count)  # Use the original paper count limit
+            .all()
+        )
+        
+        # Convert papers to response format
+        paper_responses = []
+        for paper in papers:  # Use all papers from query
+            paper_keywords = (
+                db.query(models.Keyword.name)
+                .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+                .filter(models.PaperKeyword.paper_id == paper.id)
+                .all()
+            )
+            
+            paper_responses.append(schemas.PaperResponse(
+                id=paper.id,
+                title=paper.title,
+                authors=paper.authors,
+                summary=paper.summary,
+                published_at=paper.published_at,
+                arxiv_id=paper.arxiv_id,
+                arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+                keywords=[kw.name for kw in paper_keywords]
+            ))
+        
+        summary_response = schemas.TrendSummaryResponse(
+            id=summary.id,
+            title=summary.title,
+            period_start=summary.period_start,
+            period_end=summary.period_end,
+            paper_count=summary.paper_count,
+            summary=summary.summary,
+            key_insights=summary.key_insights,
+            top_keywords=summary.top_keywords,
+            language=summary.language,
+            created_at=summary.created_at,
+            papers=paper_responses  # Include papers
+        )
+        summary_responses.append(summary_response)
+    
+    return schemas.TrendSummaryListResponse(
+        summaries=summary_responses,
+        total_count=total_count
+    )
+
+def get_trend_summary_by_id(
+    db: Session,
+    summary_id: int
+) -> Optional[schemas.TrendSummaryResponse]:
+    """Get a specific trend summary by ID"""
+    
+    summary = db.query(models.TrendSummary).filter(models.TrendSummary.id == summary_id).first()
+    
+    if not summary:
+        return None
+    
+    # Get papers from the same period for reference
+    papers = (
+        db.query(models.Paper)
+        .filter(
+            models.Paper.published_at >= summary.period_start,
+            models.Paper.published_at <= summary.period_end
+        )
+        .order_by(models.Paper.published_at.desc())
+        .limit(50)  # Match AI processing limit
+        .all()
+    )
+    
+    # Convert papers to response format
+    paper_responses = []
+    for paper in papers:
+        paper_keywords = (
+            db.query(models.Keyword.name)
+            .join(models.PaperKeyword, models.Keyword.id == models.PaperKeyword.keyword_id)
+            .filter(models.PaperKeyword.paper_id == paper.id)
+            .all()
+        )
+        
+        paper_responses.append(schemas.PaperResponse(
+            id=paper.id,
+            title=paper.title,
+            authors=paper.authors,
+            summary=paper.summary,
+            published_at=paper.published_at,
+            arxiv_id=paper.arxiv_id,
+            arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+            keywords=[kw.name for kw in paper_keywords]
+        ))
+    
+    return schemas.TrendSummaryResponse(
+        id=summary.id,
+        title=summary.title,
+        period_start=summary.period_start,
+        period_end=summary.period_end,
+        paper_count=summary.paper_count,
+        summary=summary.summary,
+        key_insights=summary.key_insights,
+        top_keywords=summary.top_keywords,
+        language=summary.language,
+        created_at=summary.created_at,
+        papers=paper_responses  # Include papers for reference
+    )
+
+def get_latest_trend_summary(db: Session) -> schemas.TrendSummaryResponse | None:
+    """Get the most recent trend summary"""
+    summary = (
+        db.query(models.TrendSummary)
+        .order_by(models.TrendSummary.created_at.desc())
+        .first()
+    )
+    
+    if not summary:
+        return None
+    
+    return get_trend_summary_by_id(db=db, summary_id=summary.id)
+
+def delete_trend_summary(db: Session, summary_id: int) -> bool:
+    """Delete a trend summary by ID"""
+    summary = db.query(models.TrendSummary).filter(models.TrendSummary.id == summary_id).first()
+    
+    if not summary:
+        return False
+    
+    try:
+        db.delete(summary)
+        db.commit()
+        logging.info(f"Deleted trend summary with ID {summary_id}")
+        return True
+    except Exception as e:
+        logging.error(f"Failed to delete trend summary {summary_id}: {e}")
+        db.rollback()
+        raise e
+
+# Paper Summary Functions
+async def generate_paper_summary(
+    db: Session,
+    paper_id: int,
+    language: str = "ja"
+) -> schemas.PaperSummaryResponse:
+    """Generate summary for a specific paper"""
+    start_time = time.time()
+    logging.info(f"Generating summary for paper ID {paper_id} in {language}...")
+    
+    # Check if summary already exists
+    existing_summary = db.query(models.PaperSummary).filter(
+        models.PaperSummary.paper_id == paper_id,
+        models.PaperSummary.language == language
+    ).first()
+    
+    if existing_summary:
+        logging.info(f"Found existing summary for paper {paper_id}")
+        # Return existing summary with paper details
+        paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+        if not paper:
+            raise Exception("論文が見つかりません")
+        
+        paper_response = schemas.PaperResponse(
+            id=paper.id,
+            title=paper.title,
+            authors=paper.authors,
+            summary=paper.summary,
+            published_at=paper.published_at,
+            arxiv_id=paper.arxiv_id,
+            arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+            keywords=[]
+        )
+        
+        return schemas.PaperSummaryResponse(
+            id=existing_summary.id,
+            paper_id=existing_summary.paper_id,
+            summary=existing_summary.summary,
+            language=existing_summary.language,
+            created_at=existing_summary.created_at,
+            paper=paper_response
+        )
+    
+    # Get paper details
+    paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+    if not paper:
+        raise Exception("論文が見つかりません")
+    
+    try:
+        # Get AI service
+        ai_service = get_ai_service()
+        
+        # Fetch PDF and extract text
+        pdf_text = await ai_service.fetch_arxiv_pdf(paper.arxiv_id)
+        
+        # Generate summary using AI
+        summary_text = await asyncio.wait_for(
+            ai_service.generate_paper_summary(pdf_text, language),
+            timeout=settings.gemini_timeout
+        )
+        
+        # Save summary to database
+        paper_summary = models.PaperSummary(
+            paper_id=paper_id,
+            summary=summary_text,
+            language=language
+        )
+        
+        db.add(paper_summary)
+        db.commit()
+        db.refresh(paper_summary)
+        
+        # Prepare paper response
+        paper_response = schemas.PaperResponse(
+            id=paper.id,
+            title=paper.title,
+            authors=paper.authors,
+            summary=paper.summary,
+            published_at=paper.published_at,
+            arxiv_id=paper.arxiv_id,
+            arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+            keywords=[]
+        )
+        
+        logging.info(f"Generated and saved summary for paper {paper_id} in {time.time() - start_time:.2f} seconds.")
+        
+        return schemas.PaperSummaryResponse(
+            id=paper_summary.id,
+            paper_id=paper_summary.paper_id,
+            summary=paper_summary.summary,
+            language=paper_summary.language,
+            created_at=paper_summary.created_at,
+            paper=paper_response
+        )
+        
+    except Exception as e:
+        logging.error(f"Failed to generate paper summary for {paper_id}: {e}")
+        db.rollback()
+        raise Exception(f"論文要約の生成に失敗しました: {str(e)}")
+
+def get_paper_summary(
+    db: Session,
+    paper_id: int
+) -> Optional[schemas.PaperSummaryResponse]:
+    """Get existing summary for a specific paper"""
+    
+    paper_summary = db.query(models.PaperSummary).filter(
+        models.PaperSummary.paper_id == paper_id
+    ).first()
+    
+    if not paper_summary:
+        return None
+    
+    # Get paper details
+    paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+    if not paper:
+        return None
+    
+    paper_response = schemas.PaperResponse(
+        id=paper.id,
+        title=paper.title,
+        authors=paper.authors,
+        summary=paper.summary,
+        published_at=paper.published_at,
+        arxiv_id=paper.arxiv_id,
+        arxiv_url=f"https://arxiv.org/abs/{paper.arxiv_id}",
+        keywords=[]
+    )
+    
+    return schemas.PaperSummaryResponse(
+        id=paper_summary.id,
+        paper_id=paper_summary.paper_id,
+        summary=paper_summary.summary,
+        language=paper_summary.language,
+        created_at=paper_summary.created_at,
+        paper=paper_response
+    )

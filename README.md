@@ -2,6 +2,29 @@
 
 A comprehensive research paper trend analysis platform that provides insights into emerging research topics, trending keywords, and paper summaries using advanced AI analysis.
 
+## ✨ Recent Updates
+
+### Version 2.2.0 - AI-Powered Paper Summarization (January 13, 2025)
+- **🤖 Paper Summary Generation**: New AI-powered feature to generate comprehensive paper summaries
+  - Download and analyze arXiv PDFs using Gemini API
+  - Generate detailed Japanese summaries covering research background, methodology, results, and implications
+  - Smart caching system to avoid regenerating existing summaries
+- **📄 Enhanced Paper Display**: Added interactive summary buttons to analyzed papers
+  - "この論文を要約" button for generating new summaries
+  - "要約を表示" button for viewing existing summaries
+  - Rich modal interface with paper metadata and formatted summaries
+- **⚙️ Analysis Configuration Improvements**: Fixed paper count consistency issues
+  - UI now correctly displays the specified number of papers (up to 50)
+  - Added proper validation and explanatory text for AI processing limits
+- **🧪 Comprehensive Testing**: Added complete test suite for paper summary functionality
+
+### Version 2.1.0 - Interactive Paper References & Customization
+- **Enhanced Paper References**: Superscript notation (¹'²'³) with interactive tooltips and clickable arXiv links
+- **Custom Keyword Dictionary**: User-defined terminology weighting for improved trend analysis
+- **Markdown Style Customization**: Personalize heading fonts, line spacing, and content typography
+- **Multi-language Translation Updates**: Comprehensive localization for dictionary and styling features
+- **Improved UI**: Page title management and refined interface elements
+
 ## 🚀 Features
 
 ### 📈 Dashboard & Analytics
@@ -27,9 +50,13 @@ A comprehensive research paper trend analysis platform that provides insights in
 - **Thinking Budget Control**: Fine-tune AI reasoning depth (-1 for unlimited, 0 to disable)
 - **Theme Management**: Light, dark, and auto themes
 - **Markdown Rendering**: Beautiful formatting with syntax highlighting
+- **Dictionary-Based Analysis**: Custom keyword weighting for enhanced trend detection
+- **Flexible Styling**: User-customizable typography and spacing for content display
 
 ### 📄 Smart Content Features
-- **Paper Reference Linking**: Automatic detection of "Paper N" references with hover tooltips
+- **Interactive Paper References**: Automatic detection of paper references with superscript links¹'² and hover tooltips
+- **Custom Keyword Dictionary**: User-defined technical terminology for enhanced keyword analysis
+- **Markdown Style Customization**: Personalize heading fonts, line spacing, and paragraph formatting
 - **Cached Analysis**: Efficient database caching to reduce API costs
 - **Manual Triggers**: Cost-effective analysis generation on demand
 

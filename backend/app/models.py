@@ -91,3 +91,35 @@ class TopicSummaryCache(Base):
     __table_args__ = (
         Index('idx_topic_summary_hash_lang', 'keywords_hash', 'language'),
     )
+
+class TrendSummary(Base):
+    __tablename__ = "trend_summaries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    period_start = Column(UTCDateTime, nullable=False, index=True)
+    period_end = Column(UTCDateTime, nullable=False, index=True)
+    paper_count = Column(Integer, nullable=False)
+    summary = Column(Text, nullable=False)
+    key_insights = Column(JSON, nullable=False)  # Array of key insights
+    top_keywords = Column(JSON, nullable=False)  # Array of {keyword, count} objects
+    language = Column(String(10), nullable=False, index=True)
+    created_at = Column(UTCDateTime, server_default=func.now())
+    updated_at = Column(UTCDateTime, server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        Index('idx_trend_summary_period', 'period_start', 'period_end'),
+        Index('idx_trend_summary_created', 'created_at'),
+    )
+
+class PaperSummary(Base):
+    __tablename__ = "paper_summaries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    paper_id = Column(Integer, ForeignKey("papers.id"), nullable=False, unique=True, index=True)
+    summary = Column(Text, nullable=False)
+    language = Column(String(10), nullable=False, default='ja')
+    created_at = Column(UTCDateTime, server_default=func.now())
+    updated_at = Column(UTCDateTime, server_default=func.now(), onupdate=func.now())
+
+    paper = relationship("Paper", backref="paper_summary")

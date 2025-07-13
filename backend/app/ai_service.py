@@ -65,6 +65,11 @@ class AIServiceBase(ABC):
     async def generate_topic_summary(self, keywords: List[str], papers_data: List[Dict[str, Any]], language: str = "auto") -> Dict[str, Any]:
         """Generate summary for specific topic keywords"""
         pass
+    
+    @abstractmethod
+    async def generate_paper_summary(self, paper_text: str, language: str = "ja") -> str:
+        """Generate summary for a specific paper"""
+        pass
 
 
 class GeminiService(AIServiceBase):
@@ -346,7 +351,9 @@ Focus on:
 3. Popular application domains
 4. Notable shifts or new developments
 
-Please write a coherent narrative overview (300-500 words) that captures the essence of this week's research landscape."""
+Please write a coherent narrative overview (300-500 words) that captures the essence of this week's research landscape.
+
+IMPORTANT: When referencing specific papers in your analysis, use the format [Paper:N] where N is the paper number from the data provided. This allows for interactive paper references in the UI."""
             
             prompt = f"""
 {base_instruction}
@@ -463,6 +470,8 @@ Provide:
 2. Key findings and breakthroughs
 3. Main methodologies being used
 4. Future directions and implications
+
+IMPORTANT: When referencing specific papers in your summary, use the format [Paper:N] where N is the paper number from the data provided. This allows for interactive paper references in the UI.
 
 Format as JSON:
 {{
@@ -587,6 +596,90 @@ Topic Summary:"""
             ],
             "related_paper_count": len(related_papers)
         }
+    
+    async def generate_paper_summary(self, paper_text: str, language: str = "ja") -> str:
+        """Generate summary for a specific paper using Gemini"""
+        try:
+            language_instruction = self._get_language_instruction(language)
+            
+            prompt = f"""
+{language_instruction}
+
+以下の学術論文の内容を要約してください。要約では以下の点に焦点を当ててください：
+
+1. 研究の背景と動機
+2. 提案された手法やアプローチ
+3. 主要な実験結果や発見
+4. 研究の意義と応用可能性
+5. 将来の研究方向
+
+要約は400-600文字程度で、読みやすい日本語で記載してください。
+
+論文内容:
+{paper_text}
+
+要約:"""
+
+            response = await asyncio.wait_for(
+                asyncio.to_thread(
+                    self.model.generate_content,
+                    prompt,
+                    generation_config=self._create_generation_config()
+                ),
+                timeout=settings.gemini_timeout
+            )
+            
+            return response.text.strip()
+            
+        except asyncio.TimeoutError:
+            logger.error(f"Gemini paper summary generation timed out after {settings.gemini_timeout} seconds")
+            raise TimeoutError(f"論文要約の生成がタイムアウトしました（{settings.gemini_timeout}秒）")
+        except Exception as e:
+            logger.error(f"Gemini paper summary generation failed: {e}")
+            raise Exception(f"論文要約の生成に失敗しました: {str(e)}")
+    
+    async def fetch_arxiv_pdf(self, arxiv_id: str) -> str:
+        """Fetch and extract text from arXiv PDF"""
+        import aiohttp
+        import asyncio
+        import io
+        
+        try:
+            # Construct PDF URL
+            pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
+            
+            # Download PDF
+            async with aiohttp.ClientSession() as session:
+                async with session.get(pdf_url) as response:
+                    if response.status != 200:
+                        raise Exception(f"PDFダウンロードに失敗しました。HTTPステータス: {response.status}")
+                    
+                    pdf_content = await response.read()
+            
+            # Extract text from PDF
+            import PyPDF2
+            
+            pdf_file = io.BytesIO(pdf_content)
+            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            
+            text_content = ""
+            for page_num in range(min(len(pdf_reader.pages), 10)):  # First 10 pages only
+                page = pdf_reader.pages[page_num]
+                text_content += page.extract_text() + "\n"
+            
+            if not text_content.strip():
+                raise Exception("PDFからテキストを抽出できませんでした")
+            
+            # Limit text length to avoid token limits
+            max_chars = 15000  # Reasonable limit for Gemini
+            if len(text_content) > max_chars:
+                text_content = text_content[:max_chars] + "..."
+            
+            return text_content
+            
+        except Exception as e:
+            logger.error(f"arXiv PDF fetch failed for {arxiv_id}: {e}")
+            raise Exception(f"arXiv PDFの取得に失敗しました: {str(e)}")
 
 
 class OpenAIService(AIServiceBase):
@@ -617,6 +710,9 @@ class OpenAIService(AIServiceBase):
     
     async def generate_topic_summary(self, keywords: List[str], papers_data: List[Dict[str, Any]], language: str = "auto") -> Dict[str, Any]:
         raise NotImplementedError("OpenAI service not yet implemented")
+    
+    async def generate_paper_summary(self, paper_text: str, language: str = "ja") -> str:
+        raise NotImplementedError("OpenAI service not yet implemented")
 
 
 class AnthropicService(AIServiceBase):
@@ -646,6 +742,9 @@ class AnthropicService(AIServiceBase):
         raise NotImplementedError("Anthropic service not yet implemented")
     
     async def generate_topic_summary(self, keywords: List[str], papers_data: List[Dict[str, Any]], language: str = "auto") -> Dict[str, Any]:
+        raise NotImplementedError("Anthropic service not yet implemented")
+    
+    async def generate_paper_summary(self, paper_text: str, language: str = "ja") -> str:
         raise NotImplementedError("Anthropic service not yet implemented")
 
 
