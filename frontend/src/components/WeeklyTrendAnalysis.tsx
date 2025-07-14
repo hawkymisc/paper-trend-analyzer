@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge }
 import { WeeklyTrendService } from '../services/WeeklyTrendService';
 import { useSettings } from '../contexts/SettingsContext';
 import MarkdownRenderer from './MarkdownRenderer';
+import ReadingListButton from './ReadingListButton';
 import { 
   WeeklyTrendResponse, 
   TopicKeywordsResponse, 
@@ -442,16 +443,23 @@ const WeeklyTrendAnalysis: React.FC = () => {
                           {summaryState.data.papers.map((paper: any, index: number) => (
                             <div key={paper.id} className="card mb-2">
                               <div className="card-body py-2">
-                                <h6 className="card-title mb-1" style={{ fontSize: '0.9rem' }}>
-                                  <a 
-                                    href={paper.arxiv_url} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-decoration-none"
-                                  >
-                                    {index + 1}. {paper.title}
-                                  </a>
-                                </h6>
+                                <div className="d-flex justify-content-between align-items-start mb-1">
+                                  <h6 className="card-title mb-0 flex-grow-1" style={{ fontSize: '0.9rem', marginRight: '10px' }}>
+                                    <a 
+                                      href={paper.arxiv_url} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="text-decoration-none"
+                                    >
+                                      {index + 1}. {paper.title}
+                                    </a>
+                                  </h6>
+                                  <ReadingListButton 
+                                    paper={paper}
+                                    size="sm"
+                                    variant="compact"
+                                  />
+                                </div>
                                 <div className="d-flex justify-content-between align-items-center">
                                   <div>
                                     <small className="text-muted">
