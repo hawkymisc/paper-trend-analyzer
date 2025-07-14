@@ -245,6 +245,41 @@ FastAPI automatically generates interactive API documentation:
   }
   ```
 
+### 8. GET /api/v1/trend-summary/latest
+**Description**: Retrieves the most recent trend summary, optionally filtered by language.
+**Method**: `GET`
+**Request**:
+  - Query Parameters:
+    - `language`: `str` (Optional) - Language code to filter summaries (e.g., "ja", "en", "auto")
+**Response**:
+  - `200 OK`
+  ```json
+  {
+    "id": 16,
+    "title": "週次トレンド分析 (2025-01-08 - 2025-01-15)",
+    "period_start": "2025-01-08T00:00:00Z",
+    "period_end": "2025-01-15T00:00:00Z",
+    "paper_count": 50,
+    "summary": "過去1週間のAI研究動向...",
+    "key_insights": ["洞察1", "洞察2"],
+    "top_keywords": [{"keyword": "LLM", "count": 25}],
+    "language": "ja",
+    "created_at": "2025-01-15T10:30:00Z",
+    "papers": [...]
+  }
+  ```
+  - `404 Not Found`: No summary found
+  ```json
+  {
+    "detail": "ja言語のトレンド要約が見つかりません"
+  }
+  ```
+
+**Examples**:
+- Get latest summary (any language): `GET /api/v1/trend-summary/latest`
+- Get latest Japanese summary: `GET /api/v1/trend-summary/latest?language=ja`
+- Get latest Auto Detect summary: `GET /api/v1/trend-summary/latest?language=auto`
+
 ## Rate Limiting
 
 The API implements caching to improve performance:

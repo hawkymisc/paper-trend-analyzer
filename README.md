@@ -4,6 +4,20 @@ A comprehensive research paper trend analysis platform that provides insights in
 
 ## ✨ Recent Updates
 
+### Version 2.3.0 - Language-Specific Trend Analysis & UI Improvements (January 15, 2025)
+- **🌐 Language-Specific Latest Summaries**: Fixed critical issue where language-specific trend summaries were not displayed correctly
+  - API now supports language parameter for retrieving latest summaries by language
+  - Users can now reliably access Japanese summaries even when Auto Detect summaries exist
+  - Eliminates confusing "summary not found" messages for existing language-specific content
+- **⚡ Performance Optimization**: Resolved duplicate API calls causing unnecessary server load
+  - Removed redundant useEffect hooks and conflicting state management
+  - Implemented atomic state updates to prevent race conditions
+  - Reduced API calls from multiple per page load to single optimized request
+- **🔧 React State Management Improvements**: Enhanced component reliability
+  - Consolidated multiple related states into unified state objects
+  - Eliminated flickering between "loading", "not found", and "found" states
+  - Improved user experience with stable, predictable UI behavior
+
 ### Version 2.2.0 - AI-Powered Paper Summarization (January 13, 2025)
 - **🤖 Paper Summary Generation**: New AI-powered feature to generate comprehensive paper summaries
   - Download and analyze arXiv PDFs using Gemini API

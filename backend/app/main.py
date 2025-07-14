@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, Query, Body
+from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
@@ -398,16 +399,23 @@ def get_trend_summaries_endpoint(
 
 @app.get("/api/v1/trend-summary/latest", response_model=schemas.TrendSummaryResponse)
 def get_latest_trend_summary_endpoint(
+    language: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    """Get the most recent trend summary"""
+    """Get the most recent trend summary, optionally filtered by language"""
     try:
-        response = services.get_latest_trend_summary(db=db)
+        response = services.get_latest_trend_summary(db=db, language=language)
         if not response:
-            raise HTTPException(
-                status_code=404,
-                detail="トレンド要約が見つかりません"
-            )
+            if language:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"{language}言語のトレンド要約が見つかりません"
+                )
+            else:
+                raise HTTPException(
+                    status_code=404,
+                    detail="トレンド要約が見つかりません"
+                )
         return response
     except HTTPException:
         raise

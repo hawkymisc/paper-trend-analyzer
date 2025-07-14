@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
 import { WeeklyTrendService } from '../services/WeeklyTrendService';
@@ -20,13 +20,21 @@ interface PaperSummary {
 }
 
 const WeeklyTrendAnalysis: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { settings } = useSettings();
   const [isLoadingOverview, setIsLoadingOverview] = useState(false);
   const [isLoadingKeywords, setIsLoadingKeywords] = useState(false);
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   
-  const [weeklyOverview, setWeeklyOverview] = useState<WeeklyTrendResponse | null>(null);
+  // 統合された要約状態管理
+  const [summaryState, setSummaryState] = useState<{
+    status: 'checking' | 'found' | 'not_found';
+    data: WeeklyTrendResponse | null;
+  }>({
+    status: 'checking',
+    data: null
+  });
+  
   const [topicKeywords, setTopicKeywords] = useState<TopicKeywordsResponse | null>(null);
   const [topicSummaryResponse, setTopicSummaryResponse] = useState<TopicSummaryResponse | null>(null);
   
@@ -48,7 +56,8 @@ const WeeklyTrendAnalysis: React.FC = () => {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedPaper, setSelectedPaper] = useState<any>(null);
   const [paperSummary, setPaperSummary] = useState<PaperSummary | null>(null);
-  const [isLoadingPaperSummary, setIsLoadingPaperSummary] = useState(false);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [isLoadingExistingSummary, setIsLoadingExistingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
 
   // Initialize default date range (last 7 days)
@@ -65,48 +74,67 @@ const WeeklyTrendAnalysis: React.FC = () => {
     }));
   }, []);
 
+  // Check for existing summary on component mount
+  useEffect(() => {
+    const checkExistingSummary = async () => {
+      try {
+        // 言語固有の最新要約を取得するため、言語パラメータを追加
+        const response = await fetch(`/api/v1/trend-summary/latest?language=${i18n.language}`);
+        if (response.ok) {
+          const summaryData = await response.json();
+          if (summaryData) {
+            // Convert to WeeklyTrendResponse format for compatibility
+            const weeklyResponse: WeeklyTrendResponse = {
+              trend_overview: summaryData.summary,
+              analysis_period: `${summaryData.period_start.split('T')[0]} to ${summaryData.period_end.split('T')[0]}`,
+              total_papers_analyzed: summaryData.paper_count,
+              generated_at: summaryData.created_at,
+              papers: summaryData.papers || []
+            };
+            
+            // 要約が見つかった場合: 統合状態で一括更新
+            setSummaryState({
+              status: 'found',
+              data: weeklyResponse
+            });
+            
+            // Store generated data for keyword display
+            if (summaryData.top_keywords && summaryData.top_keywords.length > 0) {
+              const keywordsResponse: TopicKeywordsResponse = {
+                keywords: summaryData.top_keywords.map((kw: any) => ({
+                  keyword: kw.keyword,
+                  paper_count: kw.count,
+                  relevance_score: Math.max(10, 100 - (summaryData.top_keywords.indexOf(kw) * 10))
+                })),
+                analysis_period: `${summaryData.period_start.split('T')[0]} to ${summaryData.period_end.split('T')[0]}`,
+                total_papers_analyzed: summaryData.paper_count,
+                generated_at: summaryData.created_at
+              };
+              setTopicKeywords(keywordsResponse);
+            }
+            return;
+          }
+        }
+        // 要約が見つからなかった場合
+        setSummaryState({
+          status: 'not_found',
+          data: null
+        });
+      } catch (error) {
+        console.log('No existing summary found or error:', error);
+        setSummaryState({
+          status: 'not_found',
+          data: null
+        });
+      }
+    };
+
+    checkExistingSummary();
+  }, [i18n.language]);
+
   // Supported languages
   const supportedLanguages = WeeklyTrendService.getSupportedLanguages();
 
-  // Load latest trend summary on mount
-  const loadLatestTrendSummary = useCallback(async () => {
-    try {
-      const response = await fetch('/api/v1/trend-summary/latest');
-      
-      if (response.ok) {
-        const summaryData = await response.json();
-        
-        // Convert to WeeklyTrendResponse format for compatibility
-        const weeklyResponse: WeeklyTrendResponse = {
-          trend_overview: summaryData.summary,
-          analysis_period: `${summaryData.period_start.split('T')[0]} to ${summaryData.period_end.split('T')[0]}`,
-          total_papers_analyzed: summaryData.paper_count,
-          generated_at: summaryData.created_at,
-          papers: summaryData.papers || []
-        };
-        
-        setWeeklyOverview(weeklyResponse);
-        
-        // Store generated data for keyword display
-        if (summaryData.top_keywords && summaryData.top_keywords.length > 0) {
-          const keywordsResponse: TopicKeywordsResponse = {
-            keywords: summaryData.top_keywords.map((kw: any) => ({
-              keyword: kw.keyword,
-              paper_count: kw.count,
-              relevance_score: Math.max(10, 100 - (summaryData.top_keywords.indexOf(kw) * 10))
-            })),
-            analysis_period: `${summaryData.period_start.split('T')[0]} to ${summaryData.period_end.split('T')[0]}`,
-            total_papers_analyzed: summaryData.paper_count,
-            generated_at: summaryData.created_at
-          };
-          setTopicKeywords(keywordsResponse);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading latest trend summary:', error);
-      // Don't set error for initial load failure - it's expected if no data exists
-    }
-  }, []);
 
   // Generate Weekly Overview with custom configuration
   const handleGenerateOverview = async () => {
@@ -151,7 +179,10 @@ const WeeklyTrendAnalysis: React.FC = () => {
         papers: summaryData.papers || [] // Include papers for reference
       };
       
-      setWeeklyOverview(weeklyResponse);
+      setSummaryState({
+        status: 'found',
+        data: weeklyResponse
+      });
       
       // Store generated data for keyword display
       if (summaryData.top_keywords && summaryData.top_keywords.length > 0) {
@@ -246,7 +277,8 @@ const WeeklyTrendAnalysis: React.FC = () => {
   // Paper summary functions
   const handleGeneratePaperSummary = async (paper: any) => {
     setSelectedPaper(paper);
-    setIsLoadingPaperSummary(true);
+    setIsGeneratingSummary(true);
+    setIsLoadingExistingSummary(false);
     setSummaryError(null);
     setShowSummaryModal(true);
     
@@ -273,13 +305,14 @@ const WeeklyTrendAnalysis: React.FC = () => {
       console.error('Error generating paper summary:', error);
       setSummaryError(error instanceof Error ? error.message : 'Failed to generate summary');
     } finally {
-      setIsLoadingPaperSummary(false);
+      setIsGeneratingSummary(false);
     }
   };
 
   const handleShowExistingSummary = async (paper: any) => {
     setSelectedPaper(paper);
-    setIsLoadingPaperSummary(true);
+    setIsLoadingExistingSummary(true);
+    setIsGeneratingSummary(false);
     setSummaryError(null);
     setShowSummaryModal(true);
     
@@ -296,7 +329,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
       console.error('Error fetching paper summary:', error);
       setSummaryError(error instanceof Error ? error.message : 'Failed to fetch summary');
     } finally {
-      setIsLoadingPaperSummary(false);
+      setIsLoadingExistingSummary(false);
     }
   };
 
@@ -308,10 +341,6 @@ const WeeklyTrendAnalysis: React.FC = () => {
   };
 
 
-  // Auto-load latest trend summary on mount
-  useEffect(() => {
-    loadLatestTrendSummary();
-  }, [loadLatestTrendSummary]);
 
   return (
     <Container className="mt-4">
@@ -344,7 +373,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
                 トレンド概要
               </h5>
               <Button
-                variant={weeklyOverview ? 'outline-secondary' : 'primary'}
+                variant={summaryState.data ? 'outline-secondary' : 'primary'}
                 size="sm"
                 onClick={() => setShowConfigModal(true)}
                 disabled={isLoadingOverview}
@@ -352,30 +381,30 @@ const WeeklyTrendAnalysis: React.FC = () => {
                 {isLoadingOverview ? (
                   <>
                     <Spinner animation="border" size="sm" className="me-2" />
-                    {weeklyOverview ? '再生成中...' : '分析中...'}
+                    {summaryState.data ? '再生成中...' : '分析中...'}
                   </>
                 ) : (
                   <>
-                    <i className={`${weeklyOverview ? 'bi bi-arrow-clockwise' : 'bi bi-play-fill'} me-1`}></i>
-                    {weeklyOverview ? '新しい分析を作成' : '分析を開始'}
+                    <i className={`${summaryState.data ? 'bi bi-arrow-clockwise' : 'bi bi-play-fill'} me-1`}></i>
+                    {summaryState.data ? '新しい分析を作成' : '分析を開始'}
                   </>
                 )}
               </Button>
             </Card.Header>
             <Card.Body>
-              {weeklyOverview ? (
+              {summaryState.data ? (
                 <div>
                   <div className="mb-3">
                     <small className="text-muted">
-                      {t('weeklyTrends.analysisPeriod')}: {weeklyOverview.analysis_period} | 
-                      {t('weeklyTrends.papersAnalyzed')}: {weeklyOverview.total_papers_analyzed} | 
-                      {t('weeklyTrends.generated')}: {WeeklyTrendService.getRelativeTime(weeklyOverview.generated_at)}
+                      {t('weeklyTrends.analysisPeriod')}: {summaryState.data.analysis_period} | 
+                      {t('weeklyTrends.papersAnalyzed')}: {summaryState.data.total_papers_analyzed} | 
+                      {t('weeklyTrends.generated')}: {WeeklyTrendService.getRelativeTime(summaryState.data.generated_at)}
                     </small>
                   </div>
                   <MarkdownRenderer
-                    content={weeklyOverview.trend_overview}
+                    content={summaryState.data.trend_overview}
                     enableMarkdown={settings.enableMarkdownRendering}
-                    papers={weeklyOverview.papers || []}
+                    papers={summaryState.data.papers || []}
                     className="overview-text"
                     markdownStyles={settings.markdownStyles}
                   />
@@ -402,15 +431,15 @@ const WeeklyTrendAnalysis: React.FC = () => {
                   )}
                   
                   {/* Papers used in analysis */}
-                  {weeklyOverview.papers && weeklyOverview.papers.length > 0 && (
+                  {summaryState.data.papers && summaryState.data.papers.length > 0 && (
                     <div className="mt-4">
                       <details className="mb-3">
                         <summary className="btn btn-outline-info btn-sm mb-3" style={{ cursor: 'pointer' }}>
                           <i className="bi bi-list-ul me-1"></i>
-                          {t('weeklyTrends.viewAnalyzedPapers')} ({weeklyOverview.papers.length})
+                          {t('weeklyTrends.viewAnalyzedPapers')} ({summaryState.data.papers.length})
                         </summary>
                         <div className="analyzed-papers-list" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                          {weeklyOverview.papers.map((paper, index) => (
+                          {summaryState.data.papers.map((paper: any, index: number) => (
                             <div key={paper.id} className="card mb-2">
                               <div className="card-body py-2">
                                 <h6 className="card-title mb-1" style={{ fontSize: '0.9rem' }}>
@@ -439,19 +468,39 @@ const WeeklyTrendAnalysis: React.FC = () => {
                                       variant="outline-primary"
                                       size="sm"
                                       onClick={() => handleGeneratePaperSummary(paper)}
+                                      disabled={isGeneratingSummary && selectedPaper?.id === paper.id}
                                       style={{ fontSize: '0.75rem' }}
                                     >
-                                      <i className="bi bi-file-text me-1"></i>
-                                      この論文を要約
+                                      {isGeneratingSummary && selectedPaper?.id === paper.id ? (
+                                        <>
+                                          <Spinner animation="border" size="sm" className="me-1" />
+                                          生成中...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <i className="bi bi-file-text me-1"></i>
+                                          この論文を要約
+                                        </>
+                                      )}
                                     </Button>
                                     <Button
                                       variant="outline-secondary"
                                       size="sm"
                                       onClick={() => handleShowExistingSummary(paper)}
+                                      disabled={isLoadingExistingSummary && selectedPaper?.id === paper.id}
                                       style={{ fontSize: '0.75rem' }}
                                     >
-                                      <i className="bi bi-eye me-1"></i>
-                                      要約を表示
+                                      {isLoadingExistingSummary && selectedPaper?.id === paper.id ? (
+                                        <>
+                                          <Spinner animation="border" size="sm" className="me-1" />
+                                          読み込み中...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <i className="bi bi-eye me-1"></i>
+                                          要約を表示
+                                        </>
+                                      )}
                                     </Button>
                                   </div>
                                 </div>
@@ -463,11 +512,24 @@ const WeeklyTrendAnalysis: React.FC = () => {
                     </div>
                   )}
                 </div>
-              ) : (
+              ) : summaryState.status === 'checking' ? (
                 <div className="text-center py-4">
-                  <p className="text-muted mb-0">{t('weeklyTrends.clickToAnalyze')}</p>
+                  <Spinner animation="border" className="me-2" />
+                  <span className="text-muted">既存の要約を確認中...</span>
                 </div>
-              )}
+              ) : summaryState.status === 'not_found' ? (
+                <div className="text-center py-4">
+                  <div className="mb-3">
+                    <i className="bi bi-info-circle text-primary me-2" style={{ fontSize: '1.2rem' }}></i>
+                  </div>
+                  <p className="text-muted mb-2">
+                    {i18n.language}言語の週次トレンド要約が見つかりませんでした
+                  </p>
+                  <p className="text-muted mb-0">
+                    <strong>「分析を開始」</strong>ボタンをクリックして新しい要約を生成してください
+                  </p>
+                </div>
+              ) : null}
             </Card.Body>
           </Card>
 
@@ -634,10 +696,19 @@ const WeeklyTrendAnalysis: React.FC = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {isLoadingPaperSummary ? (
+          {isGeneratingSummary ? (
             <div className="text-center py-4">
               <Spinner animation="border" className="me-2" />
-              要約を生成中...
+              <strong>論文要約を生成中...</strong>
+              <br />
+              <small className="text-muted">arXiv PDFを取得してAI分析中です</small>
+            </div>
+          ) : isLoadingExistingSummary ? (
+            <div className="text-center py-4">
+              <Spinner animation="border" className="me-2" />
+              <strong>要約を読み込み中...</strong>
+              <br />
+              <small className="text-muted">保存済み要約を取得中です</small>
             </div>
           ) : summaryError ? (
             <Alert variant="danger">

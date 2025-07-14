@@ -2160,13 +2160,15 @@ def get_trend_summary_by_id(
         papers=paper_responses  # Include papers for reference
     )
 
-def get_latest_trend_summary(db: Session) -> schemas.TrendSummaryResponse | None:
-    """Get the most recent trend summary"""
-    summary = (
-        db.query(models.TrendSummary)
-        .order_by(models.TrendSummary.created_at.desc())
-        .first()
-    )
+def get_latest_trend_summary(db: Session, language: str = None) -> schemas.TrendSummaryResponse | None:
+    """Get the most recent trend summary, optionally filtered by language"""
+    query = db.query(models.TrendSummary)
+    
+    # 言語が指定された場合、言語でフィルタリング
+    if language:
+        query = query.filter(models.TrendSummary.language == language)
+    
+    summary = query.order_by(models.TrendSummary.created_at.desc()).first()
     
     if not summary:
         return None
