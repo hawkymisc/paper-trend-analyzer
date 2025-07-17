@@ -93,14 +93,14 @@ export interface ReadingList {
   };
 }
 
-// Weekly Trend Analysis Types
-export interface WeeklyTrendRequest {
+// Recent Trend Analysis Types
+export interface RecentTrendRequest {
   language?: string;
   system_prompt?: string;
   force_regenerate?: boolean;
 }
 
-export interface WeeklyTrendResponse {
+export interface RecentTrendResponse {
   trend_overview: string;
   analysis_period: string;
   total_papers_analyzed: number;

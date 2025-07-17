@@ -69,13 +69,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           references.set(paperNum, papers[paperNum - 1]);
         });
         
-        // Create replacement text with individual links (superscript numbers only)
-        const links = validPapers.map(paperNum => `[${paperNum}](#paper-${paperNum})`);
+        // Create replacement text with individual links, properly handling commas
+        const linksWithCommas = validPapers.map((paperNum, index) => {
+          const link = `[${paperNum}](#paper-${paperNum})`;
+          if (index < validPapers.length - 1) {
+            return link + '[,](#comma)';
+          }
+          return link;
+        }).join('');
         
-        // Replace with markdown links, joining with superscript comma
+        // Replace with markdown links
         processed = processed.replace(
           bracketMatch[0],
-          links.join('[,](#comma) ')
+          linksWithCommas
         );
       }
     }

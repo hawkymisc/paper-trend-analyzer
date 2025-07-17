@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-import { WeeklyTrendService } from '../services/WeeklyTrendService';
+import { RecentTrendService } from '../services/RecentTrendService';
 import { useSettings } from '../contexts/SettingsContext';
 import MarkdownRenderer from './MarkdownRenderer';
 import ReadingListButton from './ReadingListButton';
 import { 
-  WeeklyTrendResponse, 
+  RecentTrendResponse, 
   TopicKeywordsResponse, 
   TopicSummaryResponse, 
   TopicKeyword 
@@ -20,17 +20,17 @@ interface PaperSummary {
   created_at: string;
 }
 
-const WeeklyTrendAnalysis: React.FC = () => {
+const RecentTrendAnalysis: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { settings } = useSettings();
   const [isLoadingOverview, setIsLoadingOverview] = useState(false);
-  const [isLoadingKeywords, setIsLoadingKeywords] = useState(false);
+  // const [isLoadingKeywords, setIsLoadingKeywords] = useState(false); // 未使用のためコメントアウト
   const [isLoadingSummary, setIsLoadingSummary] = useState(false);
   
   // 統合された要約状態管理
   const [summaryState, setSummaryState] = useState<{
     status: 'checking' | 'found' | 'not_found';
-    data: WeeklyTrendResponse | null;
+    data: RecentTrendResponse | null;
   }>({
     status: 'checking',
     data: null
@@ -41,7 +41,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
   
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const [language, setLanguage] = useState('auto');
-  const [maxKeywords] = useState(30);
+  // const [maxKeywords] = useState(30); // 未使用のためコメントアウト
   const [error, setError] = useState<string | null>(null);
   
   // Modal state for configuration
@@ -60,6 +60,8 @@ const WeeklyTrendAnalysis: React.FC = () => {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [isLoadingExistingSummary, setIsLoadingExistingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [isGeneratingXPost, setIsGeneratingXPost] = useState(false);
+  const [xPostUrl, setXPostUrl] = useState<string | null>(null);
 
   // Initialize default date range (last 7 days)
   useEffect(() => {
@@ -84,8 +86,8 @@ const WeeklyTrendAnalysis: React.FC = () => {
         if (response.ok) {
           const summaryData = await response.json();
           if (summaryData) {
-            // Convert to WeeklyTrendResponse format for compatibility
-            const weeklyResponse: WeeklyTrendResponse = {
+            // Convert to RecentTrendResponse format for compatibility
+            const weeklyResponse: RecentTrendResponse = {
               trend_overview: summaryData.summary,
               analysis_period: `${summaryData.period_start.split('T')[0]} to ${summaryData.period_end.split('T')[0]}`,
               total_papers_analyzed: summaryData.paper_count,
@@ -134,13 +136,13 @@ const WeeklyTrendAnalysis: React.FC = () => {
   }, [i18n.language]);
 
   // Supported languages
-  const supportedLanguages = WeeklyTrendService.getSupportedLanguages();
+  const supportedLanguages = RecentTrendService.getSupportedLanguages();
 
 
   // Generate Weekly Overview with custom configuration
   const handleGenerateOverview = async () => {
     if (!configForm.title || !configForm.period_start || !configForm.period_end) {
-      setError('すべての必須フィールドを入力してください');
+      setError(t('trendSummary.allFieldsRequired'));
       return;
     }
 
@@ -160,7 +162,11 @@ const WeeklyTrendAnalysis: React.FC = () => {
           period_start: configForm.period_start,
           period_end: configForm.period_end,
           paper_count: configForm.paper_count,
-          language: language
+          language: language,
+          ai_provider: settings.aiProvider,
+          ai_model: settings.aiProvider === 'gemini' ? settings.geminiModel :
+                   settings.aiProvider === 'openai' ? settings.openaiModel :
+                   settings.anthropicModel
         }),
       });
 
@@ -171,8 +177,8 @@ const WeeklyTrendAnalysis: React.FC = () => {
 
       const summaryData = await response.json();
       
-      // Convert to WeeklyTrendResponse format for compatibility
-      const weeklyResponse: WeeklyTrendResponse = {
+      // Convert to RecentTrendResponse format for compatibility
+      const weeklyResponse: RecentTrendResponse = {
         trend_overview: summaryData.summary,
         analysis_period: `${configForm.period_start} to ${configForm.period_end}`,
         total_papers_analyzed: summaryData.paper_count,
@@ -208,13 +214,13 @@ const WeeklyTrendAnalysis: React.FC = () => {
     }
   };
 
-  // Step 2: Extract Topic Keywords
+  // Step 2: Extract Topic Keywords - 未使用のためコメントアウト
+  /*
   const handleExtractKeywords = async (forceRegenerate: boolean = false) => {
     try {
-      setIsLoadingKeywords(true);
       setError(null);
       
-      const response = await WeeklyTrendService.getTopicKeywords({
+      const response = await RecentTrendService.getTopicKeywords({
         language: language,
         max_keywords: maxKeywords,
         system_prompt: settings.systemPrompt,
@@ -227,10 +233,9 @@ const WeeklyTrendAnalysis: React.FC = () => {
     } catch (error) {
       console.error('Error extracting keywords:', error);
       setError(error instanceof Error ? error.message : 'Failed to extract topic keywords');
-    } finally {
-      setIsLoadingKeywords(false);
     }
   };
+  */
 
   // Step 3: Generate Topic Summary
   const handleGenerateSummary = async (forceRegenerate: boolean = false) => {
@@ -243,7 +248,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
       setIsLoadingSummary(true);
       setError(null);
       
-      const response = await WeeklyTrendService.getTopicSummary({
+      const response = await RecentTrendService.getTopicSummary({
         keywords: selectedKeywords,
         language: language,
         system_prompt: settings.systemPrompt,
@@ -321,7 +326,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
       const response = await fetch(`/api/v1/papers/${paper.id}/summary`);
 
       if (!response.ok) {
-        throw new Error('要約が見つかりません');
+        throw new Error(t('settings.twitterPost.summaryRequired'));
       }
 
       const summaryData = await response.json();
@@ -339,6 +344,81 @@ const WeeklyTrendAnalysis: React.FC = () => {
     setSelectedPaper(null);
     setPaperSummary(null);
     setSummaryError(null);
+  };
+
+  const handleGenerateXPost = async (paper: any) => {
+    setIsGeneratingXPost(true);
+    setSummaryError(null);
+
+    // ユーザーイベント内で空のポップアップを作成（ポップアップブロッカーを回避）
+    const newWindow = window.open('', '_blank');
+    
+    // ローディング表示をポップアップに追加
+    if (newWindow && !newWindow.closed) {
+      newWindow.document.write(`
+        <html>
+          <head><title>{t('settings.twitterPost.preparing')}</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h2>{t('settings.twitterPost.preparing')}</h2>
+            <p>{t('settings.twitterPost.generating')}</p>
+            <div style="margin: 20px 0;">
+              <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #1da1f2; border-radius: 50%; border-top: 2px solid transparent; animation: spin 1s linear infinite;"></div>
+            </div>
+            <style>
+              @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
+          </body>
+        </html>
+      `);
+    }
+
+    try {
+      const response = await fetch(`/api/v1/papers/${paper.id}/x-post`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          paper_id: paper.id, 
+          language: 'ja',
+          custom_prompt: settings.twitterPostPrompt,
+          ai_provider: settings.aiProvider,
+          ai_model: settings.aiProvider === 'gemini' ? settings.geminiModel :
+                   settings.aiProvider === 'openai' ? settings.openaiModel :
+                   settings.anthropicModel
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        throw new Error(errorData.detail || 'Failed to generate X post');
+      }
+
+      const data = await response.json();
+      
+      // 既に開いたポップアップにTwitterのURLを設定
+      console.log('X投稿URL:', data.tweet_url);
+      
+      if (newWindow && !newWindow.closed) {
+        newWindow.location.href = data.tweet_url;
+        console.log('Twitter投稿画面を開きました');
+        setXPostUrl(null);
+      } else {
+        // ポップアップがブロックされた場合
+        console.warn('ポップアップがブロックされました');
+        setXPostUrl(data.tweet_url);
+        setSummaryError(t('settings.twitterPost.popupBlocked'));
+      }
+      
+    } catch (err) {
+      // エラーが発生した場合、空のポップアップを閉じる
+      if (newWindow && !newWindow.closed) {
+        newWindow.close();
+      }
+      setSummaryError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsGeneratingXPost(false);
+    }
   };
 
 
@@ -399,7 +479,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
                     <small className="text-muted">
                       {t('weeklyTrends.analysisPeriod')}: {summaryState.data.analysis_period} | 
                       {t('weeklyTrends.papersAnalyzed')}: {summaryState.data.total_papers_analyzed} | 
-                      {t('weeklyTrends.generated')}: {WeeklyTrendService.getRelativeTime(summaryState.data.generated_at)}
+                      {t('weeklyTrends.generated')}: {RecentTrendService.getRelativeTime(summaryState.data.generated_at)}
                     </small>
                   </div>
                   <MarkdownRenderer
@@ -585,9 +665,9 @@ const WeeklyTrendAnalysis: React.FC = () => {
                               <small className="text-muted">
                                 {keyword.paper_count} {t('common.papers')}
                               </small>
-                              <span className={`badge ${WeeklyTrendService.getRelevanceScoreColor(keyword.relevance_score).replace('text-', 'bg-')}`}>
-                                <i className={`${WeeklyTrendService.getRelevanceScoreIcon(keyword.relevance_score)} me-1`}></i>
-                                {WeeklyTrendService.formatRelevanceScore(keyword.relevance_score)}
+                              <span className={`badge ${RecentTrendService.getRelevanceScoreColor(keyword.relevance_score).replace('text-', 'bg-')}`}>
+                                <i className={`${RecentTrendService.getRelevanceScoreIcon(keyword.relevance_score)} me-1`}></i>
+                                {RecentTrendService.formatRelevanceScore(keyword.relevance_score)}
                               </span>
                             </div>
                           </div>
@@ -654,7 +734,7 @@ const WeeklyTrendAnalysis: React.FC = () => {
                 <div className="mb-3">
                   <small className="text-muted">
                     {t('weeklyTrends.relatedPapers')}: {topicSummaryResponse.related_paper_count} | 
-                    {t('weeklyTrends.generated')}: {WeeklyTrendService.getRelativeTime(topicSummaryResponse.generated_at)}
+                    {t('weeklyTrends.generated')}: {RecentTrendService.getRelativeTime(topicSummaryResponse.generated_at)}
                   </small>
                 </div>
                 
@@ -759,9 +839,44 @@ const WeeklyTrendAnalysis: React.FC = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseSummaryModal}>
-            閉じる
-          </Button>
+          <div className="d-flex justify-content-between align-items-center w-100">
+            <div className="d-flex gap-2">
+              {selectedPaper && (
+                <Button
+                  variant="outline-primary"
+                  onClick={() => handleGenerateXPost(selectedPaper)}
+                  disabled={isGeneratingXPost}
+                >
+                  {isGeneratingXPost ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      {t('settings.twitterPost.generatingButton')}
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-twitter me-2"></i>
+                      Xに投稿
+                    </>
+                  )}
+                </Button>
+              )}
+              {xPostUrl && (
+                <Button
+                  variant="success"
+                  size="sm"
+                  href={xPostUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="bi bi-box-arrow-up-right me-1"></i>
+                  Twitterを開く
+                </Button>
+              )}
+            </div>
+            <Button variant="secondary" onClick={handleCloseSummaryModal}>
+              閉じる
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal>
 
@@ -810,12 +925,12 @@ const WeeklyTrendAnalysis: React.FC = () => {
               <Form.Control
                 type="number"
                 min="10"
-                max="50"
+                max="500"
                 value={configForm.paper_count}
                 onChange={(e) => setConfigForm({ ...configForm, paper_count: parseInt(e.target.value) || 50 })}
               />
               <Form.Text className="text-muted">
-                デフォルト: 直近7日間の最新50件（AI処理とコンテキスト長の制限により最大50件まで）
+                デフォルト: 直近7日間の最新50件（Gemini 2.5系では最大500件まで処理可能）
               </Form.Text>
             </Form.Group>
 
@@ -878,4 +993,4 @@ const WeeklyTrendAnalysis: React.FC = () => {
   );
 };
 
-export default WeeklyTrendAnalysis;
+export default RecentTrendAnalysis;

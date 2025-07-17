@@ -13,7 +13,8 @@ import Dashboard from './components/Dashboard';
 import TrendAnalysis from './components/TrendAnalysis';
 import PaperSearch from './components/PaperSearch';
 import ReadingList from './components/ReadingList';
-import WeeklyTrendAnalysis from './components/WeeklyTrendAnalysis';
+import RecentTrendAnalysis from './components/RecentTrendAnalysis';
+import TrendSummary from './components/TrendSummary';
 import Settings from './components/Settings';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { ReadingListProvider, useReadingList } from './contexts/ReadingListContext';
@@ -33,8 +34,10 @@ const PageTitleManager: React.FC = () => {
           return `${t('navigation.trendAnalysis')} - Paper Trend Analyzer`;
         case '/paper-search':
           return `${t('navigation.paperSearch')} - Paper Trend Analyzer`;
-        case '/weekly-trends':
+        case '/recent-trends':
           return `${t('navigation.weeklyTrends')} - Paper Trend Analyzer`;
+        case '/trend-summary':
+          return `${t('navigation.trendSummary')} - Paper Trend Analyzer`;
         case '/reading-list':
           return `${t('navigation.readingList')} - Paper Trend Analyzer`;
         case '/settings':
@@ -65,7 +68,8 @@ const AppNavigation: React.FC = () => {
             <Nav.Link as={Link} to="/">{t('navigation.dashboard')}</Nav.Link>
             <Nav.Link as={Link} to="/trend-analysis">{t('navigation.trendAnalysis')}</Nav.Link>
             <Nav.Link as={Link} to="/paper-search">{t('navigation.paperSearch')}</Nav.Link>
-            <Nav.Link as={Link} to="/weekly-trends">{t('navigation.weeklyTrends')}</Nav.Link>
+            <Nav.Link as={Link} to="/recent-trends">{t('navigation.weeklyTrends')}</Nav.Link>
+            <Nav.Link as={Link} to="/trend-summary">{t('navigation.trendSummary')}</Nav.Link>
             <Nav.Link as={Link} to="/reading-list">
               {t('navigation.readingList')}
               {stats.total > 0 && (
@@ -98,7 +102,8 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/trend-analysis" element={<TrendAnalysis />} />
               <Route path="/paper-search" element={<PaperSearch />} />
-              <Route path="/weekly-trends" element={<WeeklyTrendAnalysis />} />
+              <Route path="/recent-trends" element={<RecentTrendAnalysis />} />
+              <Route path="/trend-summary" element={<TrendSummary />} />
               <Route path="/reading-list" element={<ReadingList />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>

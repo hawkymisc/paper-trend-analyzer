@@ -4,9 +4,10 @@
     "dashboard": "Dashboard",
     "trendAnalysis": "Trend Analysis",
     "paperSearch": "Paper Search",
-    "weeklyTrends": "Weekly Trends",
+    "weeklyTrends": "Recent Research Trends",
     "readingList": "Reading List",
     "settings": "Settings",
+    "trendSummary": "Trend Summary",
     "languageSwitch": "Language"
   },
   "dashboard": {
@@ -218,6 +219,22 @@
       "paragraphSpacing": "Paragraph Spacing",
       "resetToDefault": "Reset to Default"
     },
+    "twitterPost": {
+      "title": "X (Twitter) Post Prompt",
+      "prompt": "Post Generation Prompt",
+      "placeholder": "Enter prompt for Twitter post generation...",
+      "description": "Prompt for generating X (Twitter) post text from paper abstracts. You can include character limits and hashtag instructions.",
+      "preparing": "Preparing X post...",
+      "generating": "Generating X post text from paper abstract.",
+      "generatingButton": "Generating X post...",
+      "popupBlocked": "Popup blocked. Please use the button below to open Twitter.",
+      "summaryNotFound": "Summary not found for this paper",
+      "summaryRequired": "Summary not found"
+    },
+    "modelSelection": {
+      "title": "Model Selection",
+      "description": "Select the model to use with your chosen AI provider."
+    },
     "dictionary": {
       "title": "Trending Keywords Dictionary Settings",
       "customKeywords": "Custom Keywords",
@@ -252,6 +269,14 @@
       "resetToDefaults": "Reset to Default Dictionary"
     }
   },
+  "trendSummary": {
+    "title": "Trend Analysis Summary",
+    "createNew": "Create New Summary",
+    "loading": "Loading...",
+    "noSummaries": "No trend summaries yet. Please create a new summary.",
+    "weeklyAnalysis": "Weekly Trend Analysis",
+    "allFieldsRequired": "Please fill in all required fields"
+  },
   "trendAnalysis": {
     "title": "Trend Analysis",
     "keywordSelection": "Keyword and Date Selection",
@@ -268,13 +293,13 @@
     "addKeywordError": "Please add at least one keyword."
   },
   "weeklyTrends": {
-    "title": "Weekly Trend Analysis",
-    "step1": "Step 1: Weekly Research Trends Overview",
+    "title": "Recent Research Trends",
+    "step1": "Step 1: Research Trends Overview",
     "step2": "Step 2: Select Topic Keywords",
     "step3": "Step 3: Topic Summary",
     "analysisLanguage": "Analysis Language",
     "maxKeywords": "Max Keywords",
-    "analyzeThisWeek": "Analyze This Week",
+    "analyzeThisWeek": "Analyze Period",
     "regenerateOverview": "Regenerate Overview",
     "analyzing": "Analyzing...",
     "regenerating": "Regenerating...",
@@ -283,7 +308,7 @@
     "generated": "Generated",
     "nextExtractKeywords": "Next: Extract Topic Keywords",
     "extracting": "Extracting...",
-    "clickToAnalyze": "Click \"Analyze This Week\" to generate an overview of recent research trends.",
+    "clickToAnalyze": "Click \"Analyze Period\" to generate an overview of recent research trends.",
     "selectedKeywords": "Selected Keywords",
     "keywordsFound": "Keywords Found",
     "generateTopicSummary": "Generate Topic Summary",

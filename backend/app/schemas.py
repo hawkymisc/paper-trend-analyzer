@@ -101,7 +101,7 @@ class TopicKeyword(BaseModel):
 
 class TopicKeywordsRequest(BaseModel):
     language: Optional[str] = "auto"
-    max_keywords: Optional[int] = 30
+    max_keywords: Optional[int] = 100
     system_prompt: Optional[str] = None
     force_regenerate: Optional[bool] = False
 
@@ -147,7 +147,7 @@ class HotTopic(BaseModel):
 class HotTopicsRequest(BaseModel):
     language: Optional[str] = "auto"
     days: Optional[int] = 30
-    max_topics: Optional[int] = 10
+    max_topics: Optional[int] = 20
 
 class HotTopicsResponse(BaseModel):
     hot_topics: List[HotTopic]
@@ -182,8 +182,10 @@ class TrendSummaryRequest(BaseModel):
     title: str
     period_start: str  # YYYY-MM-DD format
     period_end: str    # YYYY-MM-DD format
-    paper_count: int = Field(ge=10, le=50, description="論文数（10-50件）")
+    paper_count: int = Field(ge=10, le=500, description="論文数（10-500件）※Gemini 2.5系では大量の論文を処理可能")
     language: Optional[str] = "ja"
+    ai_provider: Optional[str] = None
+    ai_model: Optional[str] = None
 
 class TrendSummaryResponse(BaseModel):
     id: int
@@ -216,3 +218,18 @@ class PaperSummaryResponse(BaseModel):
     paper: Optional[PaperResponse] = None
 
     model_config = {'from_attributes': True}
+
+# X (Twitter) Post Generation Schemas
+class XPostRequest(BaseModel):
+    paper_id: int
+    language: Optional[str] = "ja"
+    custom_prompt: Optional[str] = None
+    ai_provider: Optional[str] = None
+    ai_model: Optional[str] = None
+    
+class XPostResponse(BaseModel):
+    tweet_text: str
+    tweet_url: str
+    paper_title: str
+    paper_url: str
+    generated_at: datetime

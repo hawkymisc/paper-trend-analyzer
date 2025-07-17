@@ -4,7 +4,7 @@
     "dashboard": "대시보드",
     "trendAnalysis": "트렌드 분석",
     "paperSearch": "논문 검색",
-    "weeklyTrends": "주간 트렌드",
+    "weeklyTrends": "최신 연구 동향",
     "readingList": "읽기 목록",
     "settings": "설정",
     "languageSwitch": "언어"
@@ -232,6 +232,30 @@
       "import": "가져오기",
       "exportKeywords": "키워드 사전 내보내기",
       "resetToDefaults": "기본 사전으로 재설정"
+    },
+    "twitterPost": {
+      "title": "X (Twitter) 게시 프롬프트",
+      "prompt": "게시 생성 프롬프트",
+      "placeholder": "Twitter 게시 생성용 프롬프트를 입력하세요...",
+      "description": "논문 초록에서 X (Twitter) 게시 텍스트를 생성하기 위한 프롬프트입니다. 문자 수 제한 및 해시태그 지시사항을 포함할 수 있습니다.",
+      "preparing": "X 게시 준비 중...",
+      "generating": "논문 초록에서 X 게시 텍스트를 생성하고 있습니다.",
+      "generatingButton": "X 게시 생성 중...",
+      "popupBlocked": "팝업이 차단되었습니다. 아래 버튼을 사용하여 Twitter를 열어주세요.",
+      "summaryNotFound": "이 논문의 초록을 찾을 수 없습니다",
+      "summaryRequired": "초록을 찾을 수 없습니다"
+    },
+    "modelSelection": {
+      "title": "모델 선택",
+      "description": "선택한 AI 제공업체에서 사용할 모델을 선택하세요."
+    },
+    "trendSummary": {
+      "title": "트렌드 분석 요약",
+      "createNew": "새 요약 생성",
+      "loading": "로딩 중...",
+      "noSummaries": "아직 트렌드 요약이 없습니다. 새 요약을 생성해주세요.",
+      "weeklyAnalysis": "주간 트렌드 분석",
+      "allFieldsRequired": "모든 필수 필드를 입력해주세요"
     }
   },
   "hotTopics": {

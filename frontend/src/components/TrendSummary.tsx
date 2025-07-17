@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Alert, Spinner, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useSettings } from '../contexts/SettingsContext';
 import MarkdownRenderer from './MarkdownRenderer';
@@ -36,6 +36,7 @@ interface TrendSummaryListResponse {
 }
 
 const TrendSummary: React.FC = () => {
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const [summaries, setSummaries] = useState<TrendSummaryData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -57,6 +58,10 @@ const TrendSummary: React.FC = () => {
   const [selectedPaper, setSelectedPaper] = useState<PaperReference | null>(null);
   const [showPaperSummaryModal, setShowPaperSummaryModal] = useState(false);
   const [paperSummary, setPaperSummary] = useState<string>('');
+  
+  // X post generation states
+  const [isGeneratingXPost, setIsGeneratingXPost] = useState(false);
+  const [xPostUrl, setXPostUrl] = useState<string | null>(null);
 
   // Form state for creating new summary
   const [formData, setFormData] = useState({
@@ -77,9 +82,9 @@ const TrendSummary: React.FC = () => {
       ...prev,
       period_start: sevenDaysAgo.toISOString().split('T')[0],
       period_end: today.toISOString().split('T')[0],
-      title: `直近7日間のトレンド分析 (${sevenDaysAgo.toISOString().split('T')[0]} - ${today.toISOString().split('T')[0]})`
+      title: `${t('trendSummary.weeklyAnalysis')} (${sevenDaysAgo.toISOString().split('T')[0]} - ${today.toISOString().split('T')[0]})`
     }));
-  }, []);
+  }, [t]);
 
   const fetchSummaries = async (page: number = 1) => {
     setLoading(true);
@@ -110,7 +115,7 @@ const TrendSummary: React.FC = () => {
 
   const handleCreateSummary = async () => {
     if (!formData.title || !formData.period_start || !formData.period_end) {
-      setError('すべての必須フィールドを入力してください');
+      setError(t('trendSummary.allFieldsRequired'));
       return;
     }
 
@@ -123,7 +128,13 @@ const TrendSummary: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          ai_provider: settings.aiProvider,
+          ai_model: settings.aiProvider === 'gemini' ? settings.geminiModel :
+                   settings.aiProvider === 'openai' ? settings.openaiModel :
+                   settings.anthropicModel
+        }),
       });
 
       if (!response.ok) {
@@ -204,12 +215,12 @@ const TrendSummary: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/paper-summary', {
+      const response = await fetch(`/api/v1/papers/${paper.id}/summary`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ paper_id: paper.id }),
+        body: JSON.stringify({ paper_id: paper.id, language: 'ja' }),
       });
 
       if (!response.ok) {
@@ -233,11 +244,11 @@ const TrendSummary: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(`/api/v1/paper-summary/${paper.id}`);
+      const response = await fetch(`/api/v1/papers/${paper.id}/summary`);
       
       if (!response.ok) {
         if (response.status === 404) {
-          setError('この論文の要約が見つかりませんでした');
+          setError(t('settings.twitterPost.summaryNotFound'));
         } else {
           const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
           throw new Error(errorData.detail || 'Failed to load paper summary');
@@ -255,14 +266,89 @@ const TrendSummary: React.FC = () => {
     }
   };
 
+  const handleGenerateXPost = async (paper: PaperReference) => {
+    setIsGeneratingXPost(true);
+    setError(null);
+
+    // ユーザーイベント内で空のポップアップを作成（ポップアップブロッカーを回避）
+    const newWindow = window.open('', '_blank');
+    
+    // ローディング表示をポップアップに追加
+    if (newWindow && !newWindow.closed) {
+      newWindow.document.write(`
+        <html>
+          <head><title>{t('settings.twitterPost.preparing')}</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h2>{t('settings.twitterPost.preparing')}</h2>
+            <p>{t('settings.twitterPost.generating')}</p>
+            <div style="margin: 20px 0;">
+              <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #1da1f2; border-radius: 50%; border-top: 2px solid transparent; animation: spin 1s linear infinite;"></div>
+            </div>
+            <style>
+              @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            </style>
+          </body>
+        </html>
+      `);
+    }
+    
+    try {
+      const response = await fetch(`/api/v1/papers/${paper.id}/x-post`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          paper_id: paper.id, 
+          language: 'ja',
+          custom_prompt: settings.twitterPostPrompt,
+          ai_provider: settings.aiProvider,
+          ai_model: settings.aiProvider === 'gemini' ? settings.geminiModel :
+                   settings.aiProvider === 'openai' ? settings.openaiModel :
+                   settings.anthropicModel
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        throw new Error(errorData.detail || 'Failed to generate X post');
+      }
+
+      const data = await response.json();
+      
+      // 既に開いたポップアップにTwitterのURLを設定
+      console.log('X投稿URL:', data.tweet_url);
+      
+      if (newWindow && !newWindow.closed) {
+        newWindow.location.href = data.tweet_url;
+        console.log('Twitter投稿画面を開きました');
+        setXPostUrl(null);
+      } else {
+        // ポップアップがブロックされた場合
+        console.warn('ポップアップがブロックされました');
+        setXPostUrl(data.tweet_url);
+        setError(t('settings.twitterPost.popupBlocked'));
+      }
+      
+    } catch (err) {
+      // エラーが発生した場合、空のポップアップを閉じる
+      if (newWindow && !newWindow.closed) {
+        newWindow.close();
+      }
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsGeneratingXPost(false);
+    }
+  };
+
   return (
     <Container className="mt-4">
       <Row>
         <Col>
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2>トレンド分析要約</h2>
+            <h2>{t('trendSummary.title')}</h2>
             <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-              新しい要約を作成
+              {t('trendSummary.createNew')}
             </Button>
           </div>
 
@@ -275,14 +361,14 @@ const TrendSummary: React.FC = () => {
           {loading ? (
             <div className="text-center p-4">
               <Spinner animation="border" role="status">
-                <span className="visually-hidden">読み込み中...</span>
+                <span className="visually-hidden">{t('trendSummary.loading')}</span>
               </Spinner>
             </div>
           ) : (
             <>
               {summaries.length === 0 ? (
                 <Alert variant="info">
-                  まだトレンド要約がありません。新しい要約を作成してください。
+                  {t('trendSummary.noSummaries')}
                 </Alert>
               ) : (
                 <>
@@ -816,9 +902,44 @@ const TrendSummary: React.FC = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowPaperSummaryModal(false)}>
-            閉じる
-          </Button>
+          <div className="d-flex justify-content-between align-items-center w-100">
+            <div className="d-flex gap-2">
+              {selectedPaper && (
+                <Button
+                  variant="outline-primary"
+                  onClick={() => handleGenerateXPost(selectedPaper)}
+                  disabled={isGeneratingXPost}
+                >
+                  {isGeneratingXPost ? (
+                    <>
+                      <Spinner animation="border" size="sm" className="me-2" />
+                      {t('settings.twitterPost.generatingButton')}
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-twitter me-2"></i>
+                      Xに投稿
+                    </>
+                  )}
+                </Button>
+              )}
+              {xPostUrl && (
+                <Button
+                  variant="success"
+                  size="sm"
+                  href={xPostUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="bi bi-box-arrow-up-right me-1"></i>
+                  Twitterを開く
+                </Button>
+              )}
+            </div>
+            <Button variant="secondary" onClick={() => setShowPaperSummaryModal(false)}>
+              閉じる
+            </Button>
+          </div>
         </Modal.Footer>
       </Modal>
     </Container>

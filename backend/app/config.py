@@ -17,10 +17,10 @@ class Settings(BaseSettings):
     
     # Gemini API settings
     gemini_api_key: Optional[str] = Field(default=None)
-    gemini_model: str = Field(default="gemini-1.5-pro")
-    gemini_max_tokens: int = Field(default=8192)
+    gemini_model: str = Field(default="gemini-2.5-pro")
+    gemini_max_tokens: int = Field(default=100000)
     gemini_temperature: float = Field(default=0.7)
-    gemini_thinking_budget: Optional[int] = Field(default=20000, description="Thinking budget for Gemini API (tokens)")
+    gemini_thinking_budget: Optional[int] = Field(default=50000, description="Thinking budget for Gemini API (tokens) - increased for comprehensive analysis")
     gemini_timeout: int = Field(default=120, description="Request timeout for Gemini API (seconds)")
     
     # OpenAI API settings
@@ -38,7 +38,7 @@ class Settings(BaseSettings):
     # Hot topics analysis settings
     hot_topics_analysis_days: int = Field(default=30, description="Days to analyze for hot topics")
     hot_topics_min_papers: int = Field(default=5, description="Minimum papers required for a topic to be considered hot")
-    hot_topics_max_topics: int = Field(default=10, description="Maximum number of hot topics to return")
+    hot_topics_max_topics: int = Field(default=20, description="Maximum number of hot topics to return")
     hot_topics_timeout: int = Field(default=180, description="Timeout for hot topics analysis (seconds)")
     
     # Summary settings

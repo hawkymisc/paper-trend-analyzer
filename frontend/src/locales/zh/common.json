@@ -4,7 +4,7 @@
     "dashboard": "仪表板",
     "trendAnalysis": "趋势分析",
     "paperSearch": "论文搜索",
-    "weeklyTrends": "每周趋势",
+    "weeklyTrends": "最新研究动向",
     "readingList": "阅读清单",
     "settings": "设置",
     "languageSwitch": "语言"
@@ -200,6 +200,22 @@
       "paragraphSpacing": "段落间距",
       "resetToDefault": "重置为默认"
     },
+    "twitterPost": {
+      "title": "X (Twitter) 发帖提示",
+      "prompt": "发帖生成提示",
+      "placeholder": "请输入Twitter发帖生成的提示词...",
+      "description": "用于从论文摘要生成X (Twitter) 发帖文本的提示词。可以包含字数限制和标签说明。",
+      "preparing": "正在准备X发帖...",
+      "generating": "正在从论文摘要生成X发帖文本。",
+      "generatingButton": "正在生成X发帖...",
+      "popupBlocked": "弹窗被阻止。请使用下方按钮打开Twitter。",
+      "summaryNotFound": "未找到该论文的摘要",
+      "summaryRequired": "未找到摘要"
+    },
+    "modelSelection": {
+      "title": "模型选择",
+      "description": "请选择在您选择的AI提供商上使用的模型。"
+    },
     "dictionary": {
       "title": "趋势关键词词典设置",
       "customKeywords": "自定义关键词",
@@ -264,6 +280,14 @@
       "title": "未找到热门话题",
       "description": "在选定的时间段和条件下未找到趋势话题。请尝试调整筛选条件。"
     }
+  },
+  "trendSummary": {
+    "title": "趋势分析总结",
+    "createNew": "创建新总结",
+    "loading": "加载中...",
+    "noSummaries": "尚无趋势总结。请创建新的总结。",
+    "weeklyAnalysis": "周度趋势分析",
+    "allFieldsRequired": "请填写所有必填字段"
   },
   "trendAnalysis": {
     "title": "趋势分析",

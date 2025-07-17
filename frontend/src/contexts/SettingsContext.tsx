@@ -32,7 +32,11 @@ export interface MarkdownStyles {
 
 export interface SystemSettings {
   aiProvider: 'gemini' | 'openai' | 'anthropic';
+  geminiModel: string;
+  openaiModel: string;
+  anthropicModel: string;
   systemPrompt: string;
+  twitterPostPrompt: string;
   uiTheme: 'light' | 'dark' | 'auto';
   language: string;
   geminiThinkingBudget: number;
@@ -77,9 +81,40 @@ const DEFAULT_KEYWORDS: KeywordDictionary[] = [
   { id: '10', keyword: 'large language model', importance: 'high', category: 'nlp', created_at: new Date().toISOString() },
 ];
 
+// AI Models available for each provider
+export const AI_MODELS = {
+  gemini: [
+    { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro (Latest)' },
+    { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (Latest)' },
+    { value: 'gemini-2.5-flash-lite-preview-06-17', label: 'Gemini 2.5 Flash-Lite (Preview)' },
+    { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
+    { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' },
+    { value: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
+    { value: 'gemini-1.5-flash-8b', label: 'Gemini 1.5 Flash-8B' },
+  ],
+  openai: [
+    { value: 'gpt-4o', label: 'GPT-4o' },
+    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
+    { value: 'gpt-4', label: 'GPT-4' },
+    { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+  ],
+  anthropic: [
+    { value: 'claude-3-5-sonnet-20241022', label: 'Claude 3.5 Sonnet' },
+    { value: 'claude-3-5-haiku-20241022', label: 'Claude 3.5 Haiku' },
+    { value: 'claude-3-opus-20240229', label: 'Claude 3 Opus' },
+    { value: 'claude-3-sonnet-20240229', label: 'Claude 3 Sonnet' },
+    { value: 'claude-3-haiku-20240307', label: 'Claude 3 Haiku' },
+  ],
+};
+
 export const DEFAULT_SETTINGS: SystemSettings = {
   aiProvider: 'gemini',
+  geminiModel: 'gemini-2.5-pro',
+  openaiModel: 'gpt-4o',
+  anthropicModel: 'claude-3-5-sonnet-20241022',
   systemPrompt: 'You are an expert research analyst. Analyze the provided research papers and generate concise, insightful summaries focusing on emerging trends, key methodologies, and potential impacts. Use Markdown formatting for better readability. When referencing specific papers in your analysis, use the format [Paper:N] where N is the paper number from the data provided. This allows for interactive paper references in the UI. Prioritize clarity and actionable insights.',
+  twitterPostPrompt: 'あなたは学術論文の魅力を伝える専門家です。以下の論文要約から、X (Twitter) 投稿用の魅力的なテキストを生成してください。\n\n要件:\n1. 280文字以内（日本語）※絶対に超えないでください\n2. 論文の興味深い点、意義、インパクトを簡潔に表現\n3. 一般の人にもわかりやすく\n4. 適切なハッシュタグを2-3個含める (#AI #機械学習 #論文 など)\n5. 論文の革新性や面白さを簡潔に伝える\n6. 感情を込めた魅力的で簡潔な文章\n\n直接的で要点を絞ったX投稿のテキストのみを出力してください。説明文や前置きは不要です。',
   uiTheme: 'light',
   language: 'auto',
   geminiThinkingBudget: 20000,

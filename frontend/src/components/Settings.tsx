@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSettings, DEFAULT_SETTINGS, KeywordDictionary } from '../contexts/SettingsContext';
+import { useSettings, DEFAULT_SETTINGS, KeywordDictionary, AI_MODELS } from '../contexts/SettingsContext';
 import { Button, Card, Modal, Form, Badge, Alert } from 'react-bootstrap';
 
 const Settings: React.FC = () => {
@@ -191,6 +191,34 @@ const Settings: React.FC = () => {
                     </div>
                   </div>
 
+                  <div className="mb-3">
+                    <label htmlFor="ai-model" className="form-label">
+                      {t('settings.modelSelection.title')}
+                    </label>
+                    <select
+                      id="ai-model"
+                      className="form-select"
+                      value={
+                        settings.aiProvider === 'gemini' ? settings.geminiModel :
+                        settings.aiProvider === 'openai' ? settings.openaiModel :
+                        settings.anthropicModel
+                      }
+                      onChange={(e) => {
+                        const modelKey = `${settings.aiProvider}Model` as keyof typeof settings;
+                        handleSettingChange(modelKey, e.target.value);
+                      }}
+                    >
+                      {AI_MODELS[settings.aiProvider].map((model) => (
+                        <option key={model.value} value={model.value}>
+                          {model.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="form-text">
+                      {t('settings.modelSelection.description')}
+                    </div>
+                  </div>
+
                   {settings.aiProvider === 'gemini' && (
                     <div className="mb-3">
                       <label htmlFor="thinking-budget" className="form-label">
@@ -266,6 +294,47 @@ const Settings: React.FC = () => {
                       type="button"
                       className="btn btn-outline-secondary btn-sm"
                       onClick={() => handleSettingChange('systemPrompt', DEFAULT_SETTINGS.systemPrompt)}
+                    >
+                      <i className="bi bi-arrow-clockwise me-1"></i>
+                      {t('settings.systemPrompt.resetToDefault')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Twitter Post Prompt Settings */}
+            <div className="col-lg-6 mb-4">
+              <div className="card h-100">
+                <div className="card-header">
+                  <h5 className="card-title mb-0">
+                    <i className="bi bi-twitter me-2"></i>
+                    {t('settings.twitterPost.title')}
+                  </h5>
+                </div>
+                <div className="card-body">
+                  <div className="mb-3">
+                    <label htmlFor="twitter-prompt" className="form-label">
+                      {t('settings.twitterPost.prompt')}
+                    </label>
+                    <textarea
+                      id="twitter-prompt"
+                      className="form-control"
+                      rows={8}
+                      value={settings.twitterPostPrompt}
+                      onChange={(e) => handleSettingChange('twitterPostPrompt', e.target.value)}
+                      placeholder={t('settings.twitterPost.placeholder')}
+                    />
+                    <div className="form-text">
+                      {t('settings.twitterPost.description')}
+                    </div>
+                  </div>
+                  
+                  <div className="d-flex gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary btn-sm"
+                      onClick={() => handleSettingChange('twitterPostPrompt', DEFAULT_SETTINGS.twitterPostPrompt)}
                     >
                       <i className="bi bi-arrow-clockwise me-1"></i>
                       {t('settings.systemPrompt.resetToDefault')}

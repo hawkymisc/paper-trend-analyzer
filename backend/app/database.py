@@ -40,7 +40,7 @@ def get_db():
     db = SessionLocal()
     try:
         # クエリのパフォーマンスを最適化するために統計情報を更新
-        db.execute(text("ANALYZE"))
+        # db.execute(text("ANALYZE"))  # Temporary disable due to lock issues
         yield db
     finally:
         db.close()

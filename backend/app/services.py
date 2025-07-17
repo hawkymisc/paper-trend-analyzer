@@ -1860,26 +1860,58 @@ async def create_trend_summary(
             }
             papers_data.append(paper_data)
         
-        # Get AI service and generate summary
-        ai_service = get_ai_service()
+        # Get AI service with custom provider and model if specified
+        if request.ai_provider and request.ai_model:
+            from .ai_service import AIServiceFactory
+            ai_service = AIServiceFactory.create_service(request.ai_provider, request.ai_model)
+        else:
+            ai_service = get_ai_service()
         
-        # Custom prompt for trend summary - unified with weekly trend analysis
+        # Enhanced prompt for comprehensive trend analysis with Gemini 2.5 thinking
         system_prompt = f"""
-        以下の学術論文（{request.period_start} から {request.period_end} の期間）を分析し、
-        研究トレンドの要約を{request.language}で生成してください。
+        あなたは学術論文の研究トレンドを分析する専門家です。以下の{len(papers_data)}件の学術論文（{request.period_start} から {request.period_end} の期間）を詳細に分析し、包括的な研究トレンドの要約を{request.language}で生成してください。
+
+        **重要な指示:**
+        1. **できるだけ多くの論文を言及**: 提供された論文のうち、少なくとも15-20件以上の論文を具体的に言及してください
+        2. **[Paper:N]形式の使用**: 特定の論文に言及する際は、必ず[Paper:N]の形式（Nは論文番号）を使用してください
+        3. **思考プロセス**: まず論文全体を俯瞰し、主要なテーマやパターンを特定してから詳細な分析を行ってください
+        4. **詳細な分析**: 1000-1500文字程度の包括的な分析を行ってください
+
+        **分析項目（各項目で複数の論文を言及）:**
         
-        分析項目：
-        1. 主要な研究テーマとその傾向
-        2. 新しい技術や手法の動向
-        3. 注目すべき発見や進歩
-        4. 将来的な研究方向性
-        
-        300-500文字の要約文を作成してください。
-        Markdownフォーマット（**太字**、*斜体*、リストなど）を使用して読みやすく構造化してください。
-        JSON形式は使わず、普通の文章で回答してください。
-        
-        IMPORTANT: 特定の論文に言及する際は、[Paper:N]の形式（Nは論文番号）を使用してください。
-        これにより、UIで論文への参照が可能になります。
+        **1. 主要な研究テーマとその傾向**
+        - 最も頻繁に現れる研究テーマを特定
+        - 各テーマに関連する具体的な論文を[Paper:N]形式で言及
+        - テーマ間の関連性や発展傾向を分析
+
+        **2. 新しい技術や手法の動向**
+        - 革新的な技術やアプローチを提案する論文を特定
+        - 既存技術の改良や新しい応用を示す論文を言及
+        - 技術の発展方向性を分析
+
+        **3. 注目すべき発見や進歩**
+        - 重要な発見や画期的な結果を報告する論文を特定
+        - 性能向上やブレークスルーを示す論文を言及
+        - 学術的・実用的インパクトを評価
+
+        **4. 将来的な研究方向性**
+        - 新しい研究方向を示唆する論文を特定
+        - 今後の発展が期待される分野を分析
+        - 残された課題や研究ギャップを指摘
+
+        **フォーマット要件:**
+        - Markdownフォーマット（**太字**、*斜体*、リストなど）を使用
+        - JSON形式は使わず、構造化された文章で回答
+        - 各セクションで具体的な論文を複数言及
+        - 論文の内容を正確に反映した分析
+
+        **品質基準:**
+        - 論文の多様性を反映した包括的な分析
+        - 具体的な論文への言及を通じた根拠のある主張
+        - 研究分野の現状と将来性の的確な評価
+        - 読者にとって有益で洞察に富む内容
+
+        提供される論文数が多いので、思考プロセスを活用して体系的に分析してください。
         """
         
         summary_result = await asyncio.wait_for(
@@ -1983,7 +2015,7 @@ async def create_trend_summary(
             period_start=period_start,
             period_end=period_end,
             paper_count=actual_paper_count,
-            summary=cleaned_summary[:2000],  # Use cleaned summary, limit to 2000 characters
+            summary=cleaned_summary[:5000],  # Use cleaned summary, increased limit for comprehensive analysis
             key_insights=key_insights,
             top_keywords=top_keywords,
             language=request.language
@@ -2329,3 +2361,129 @@ def get_paper_summary(
         created_at=paper_summary.created_at,
         paper=paper_response
     )
+
+
+# X (Twitter) Post Generation Functions
+async def generate_x_post_text(
+    db: Session,
+    paper_id: int,
+    language: str = "ja",
+    custom_prompt: Optional[str] = None,
+    ai_provider: Optional[str] = None,
+    ai_model: Optional[str] = None
+) -> schemas.XPostResponse:
+    """Generate X (Twitter) post text from paper summary"""
+    start_time = time.time()
+    logging.info(f"Generating X post text for paper ID {paper_id} in {language}...")
+    
+    # Get paper details
+    paper = db.query(models.Paper).filter(models.Paper.id == paper_id).first()
+    if not paper:
+        raise Exception("論文が見つかりません")
+    
+    # Get existing summary or generate one
+    paper_summary = db.query(models.PaperSummary).filter(
+        models.PaperSummary.paper_id == paper_id,
+        models.PaperSummary.language == language
+    ).first()
+    
+    summary_text = ""
+    if paper_summary:
+        summary_text = paper_summary.summary
+    else:
+        # Generate summary first
+        summary_response = await generate_paper_summary(db, paper_id, language)
+        summary_text = summary_response.summary
+    
+    try:
+        # Get AI service with custom provider and model if specified
+        if ai_provider and ai_model:
+            from .ai_service import AIServiceFactory
+            ai_service = AIServiceFactory.create_service(ai_provider, ai_model)
+        else:
+            ai_service = get_ai_service()
+        
+        # Create prompt for X post generation
+        if custom_prompt:
+            system_prompt = custom_prompt
+        elif language == "ja":
+            system_prompt = """
+あなたは学術論文の魅力を伝える専門家です。
+以下の論文要約から、X (Twitter) 投稿用の魅力的なテキストを生成してください。
+
+要件:
+1. 280文字以内（日本語）※絶対に超えないでください
+2. 論文の興味深い点、意義、インパクトを簡潔に表現
+3. 一般の人にもわかりやすく
+4. 適切なハッシュタグを2-3個含める (#AI #機械学習 #論文 など)
+5. 論文の革新性や面白さを簡潔に伝える
+6. 感情を込めた魅力的で簡潔な文章
+
+直接的で要点を絞ったX投稿のテキストのみを出力してください。説明文や前置きは不要です。
+"""
+        else:
+            system_prompt = """
+You are an expert at communicating the appeal of academic papers.
+Please generate engaging text for X (Twitter) posts based on the following paper summary.
+
+Requirements:
+1. Within 280 characters (English) - MUST NOT exceed this limit
+2. Emphasize key points, significance, and impact concisely
+3. Make it accessible to general audience
+4. Include 2-3 relevant hashtags (#AI #MachineLearning #Research etc.)
+5. Convey innovation and excitement concisely
+6. Write with emotion and appeal
+
+Output only the X post text directly. No explanations or preamble needed.
+"""
+        
+        user_prompt = f"""
+論文タイトル: {paper.title}
+著者: {', '.join(paper.authors)}
+要約: {summary_text}
+
+上記の論文要約から、魅力的なX (Twitter) 投稿テキストを生成してください。
+"""
+        
+        # Generate X post text using the existing generate_summary method
+        combined_prompt = f"{system_prompt}\n\n{user_prompt}"
+        post_text = await ai_service.generate_summary(
+            text=combined_prompt,
+            language=language
+        )
+        
+        # Clean up the generated text
+        post_text = post_text.strip()
+        
+        # Ensure it's within character limits
+        if language == "ja":
+            if len(post_text) > 280:
+                post_text = post_text[:277] + "..."
+        else:
+            if len(post_text) > 280:
+                post_text = post_text[:277] + "..."
+        
+        # Generate X post URL
+        arxiv_url = f"https://arxiv.org/abs/{paper.arxiv_id}"
+        
+        # URL encode the text for Twitter
+        import urllib.parse
+        encoded_text = urllib.parse.quote(post_text)
+        encoded_url = urllib.parse.quote(arxiv_url)
+        
+        tweet_url = f"https://twitter.com/intent/tweet?text={encoded_text}&url={encoded_url}"
+        
+        processing_time = time.time() - start_time
+        logging.info(f"Generated X post text in {processing_time:.2f} seconds")
+        
+        return schemas.XPostResponse(
+            tweet_text=post_text,
+            tweet_url=tweet_url,
+            paper_title=paper.title,
+            paper_url=arxiv_url,
+            generated_at=get_utc_now()
+        )
+        
+    except Exception as e:
+        logging.error(f"Failed to generate X post text: {e}")
+        raise Exception(f"X投稿テキストの生成に失敗しました: {str(e)}")

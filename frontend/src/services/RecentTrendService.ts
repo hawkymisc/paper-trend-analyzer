@@ -1,9 +1,9 @@
 /**
- * Weekly Trend Analysis API Service
+ * Recent Trend Analysis API Service
  */
 import { 
-  WeeklyTrendRequest, 
-  WeeklyTrendResponse, 
+  RecentTrendRequest, 
+  RecentTrendResponse, 
   TopicKeywordsRequest, 
   TopicKeywordsResponse,
   TopicSummaryRequest,
@@ -12,11 +12,11 @@ import {
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
 
-export class WeeklyTrendService {
+export class RecentTrendService {
   /**
-   * Get latest cached weekly trend overview
+   * Get latest cached recent trend overview
    */
-  static async getLatestWeeklyTrendOverview(request: WeeklyTrendRequest = {}): Promise<WeeklyTrendResponse | null> {
+  static async getLatestRecentTrendOverview(request: RecentTrendRequest = {}): Promise<RecentTrendResponse | null> {
     try {
       const queryParams = new URLSearchParams();
       
@@ -38,21 +38,21 @@ export class WeeklyTrendService {
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(`Failed to fetch latest weekly trend overview: ${response.status} ${errorData}`);
+        throw new Error(`Failed to fetch latest recent trend overview: ${response.status} ${errorData}`);
       }
 
-      const data: WeeklyTrendResponse = await response.json();
+      const data: RecentTrendResponse = await response.json();
       return data;
     } catch (error) {
-      console.error('Error fetching latest weekly trend overview:', error);
+      console.error('Error fetching latest recent trend overview:', error);
       throw error;
     }
   }
 
   /**
-   * Generate new weekly trend overview (AI analysis)
+   * Generate new recent trend overview (AI analysis)
    */
-  static async generateWeeklyTrendOverview(request: WeeklyTrendRequest = {}): Promise<WeeklyTrendResponse> {
+  static async generateRecentTrendOverview(request: RecentTrendRequest = {}): Promise<RecentTrendResponse> {
     try {
       const url = `${API_BASE_URL}/api/v1/weekly-trend/generate`;
       
@@ -75,16 +75,16 @@ export class WeeklyTrendService {
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(`Failed to fetch weekly trend overview: ${response.status} ${errorData}`);
+        throw new Error(`Failed to fetch recent trend overview: ${response.status} ${errorData}`);
       }
 
-      const data: WeeklyTrendResponse = await response.json();
+      const data: RecentTrendResponse = await response.json();
       return data;
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error('Weekly trend overview analysis timed out. Please try again.');
+        throw new Error('Recent trend overview analysis timed out. Please try again.');
       }
-      console.error('Error fetching weekly trend overview:', error);
+      console.error('Error fetching recent trend overview:', error);
       throw error;
     }
   }

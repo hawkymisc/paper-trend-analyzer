@@ -75,7 +75,7 @@ class AIServiceBase(ABC):
 class GeminiService(AIServiceBase):
     """Gemini AI Service implementation"""
     
-    def __init__(self):
+    def __init__(self, model_name: str = None):
         if not genai:
             raise ImportError("google-generativeai package not installed")
         
@@ -83,7 +83,9 @@ class GeminiService(AIServiceBase):
             raise ValueError("Gemini API key not configured")
         
         genai.configure(api_key=settings.gemini_api_key)
-        self.model = genai.GenerativeModel(settings.gemini_model)
+        self.model_name = model_name or settings.gemini_model
+        self.model = genai.GenerativeModel(self.model_name)
+        logger.info(f"Initialized Gemini service with model: {self.model_name}")
     
     def _create_generation_config(self):
         """Create generation config with thinking budget support"""
@@ -685,7 +687,7 @@ Topic Summary:"""
 class OpenAIService(AIServiceBase):
     """OpenAI Service implementation (placeholder)"""
     
-    def __init__(self):
+    def __init__(self, model_name: str = None):
         if not openai:
             raise ImportError("openai package not installed")
         
@@ -693,6 +695,7 @@ class OpenAIService(AIServiceBase):
             raise ValueError("OpenAI API key not configured")
         
         self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        self.model_name = model_name or settings.openai_model
     
     async def generate_summary(self, text: str, language: str = "auto") -> str:
         # Implementation would go here
@@ -718,7 +721,7 @@ class OpenAIService(AIServiceBase):
 class AnthropicService(AIServiceBase):
     """Anthropic Service implementation (placeholder)"""
     
-    def __init__(self):
+    def __init__(self, model_name: str = None):
         if not anthropic:
             raise ImportError("anthropic package not installed")
         
@@ -726,6 +729,7 @@ class AnthropicService(AIServiceBase):
             raise ValueError("Anthropic API key not configured")
         
         self.client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+        self.model_name = model_name or settings.anthropic_model
     
     async def generate_summary(self, text: str, language: str = "auto") -> str:
         # Implementation would go here
@@ -752,16 +756,16 @@ class AIServiceFactory:
     """Factory for creating AI service instances"""
     
     @staticmethod
-    def create_service() -> AIServiceBase:
+    def create_service(provider: str = None, model_name: str = None) -> AIServiceBase:
         """Create AI service based on configuration"""
-        provider = settings.ai_provider
+        provider = provider or settings.ai_provider
         
         if provider == "gemini":
-            return GeminiService()
+            return GeminiService(model_name)
         elif provider == "openai":
-            return OpenAIService()
+            return OpenAIService(model_name)
         elif provider == "anthropic":
-            return AnthropicService()
+            return AnthropicService(model_name)
         else:
             raise ValueError(f"Unsupported AI provider: {provider}")
 

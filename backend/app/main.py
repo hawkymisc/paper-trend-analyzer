@@ -159,7 +159,7 @@ async def get_hot_topics_summary(
     try:
         # Validate parameters
         days = min(max(request.days or 30, 1), 90)  # 1-90 days
-        max_topics = min(max(request.max_topics or 10, 1), 20)  # 1-20 topics
+        max_topics = min(max(request.max_topics or 20, 1), 50)  # 1-50 topics
         language = request.language or "auto"
         
         # Call service function
@@ -183,7 +183,7 @@ async def get_hot_topics_summary(
 async def get_hot_topics_summary_get(
     language: str = Query("auto", description="Summary language (auto, en, ja, zh, ko, de)"),
     days: int = Query(30, ge=1, le=90, description="Analysis period in days"),
-    max_topics: int = Query(10, ge=1, le=20, description="Maximum number of topics"),
+    max_topics: int = Query(20, ge=1, le=50, description="Maximum number of topics"),
     db: Session = Depends(get_db)
 ):
     """Generate hot topics summary using AI analysis (GET version)"""
@@ -517,4 +517,29 @@ def get_paper_summary_endpoint(
         raise HTTPException(
             status_code=500,
             detail=f"論文要約の取得に失敗しました: {str(e)}"
+        )
+
+# X (Twitter) Post Generation Endpoints
+@app.post("/api/v1/papers/{paper_id}/x-post", response_model=schemas.XPostResponse)
+async def generate_x_post_endpoint(
+    paper_id: int,
+    request: schemas.XPostRequest = Body(...),
+    db: Session = Depends(get_db)
+):
+    """Generate X (Twitter) post text from paper summary"""
+    try:
+        response = await services.generate_x_post_text(
+            db=db,
+            paper_id=paper_id,
+            language=request.language,
+            custom_prompt=request.custom_prompt,
+            ai_provider=request.ai_provider,
+            ai_model=request.ai_model
+        )
+        return response
+    except Exception as e:
+        logging.error(f"Failed to generate X post text: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"X投稿テキストの生成に失敗しました: {str(e)}"
         )

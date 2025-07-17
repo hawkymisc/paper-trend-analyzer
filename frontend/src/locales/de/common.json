@@ -4,7 +4,7 @@
     "dashboard": "Dashboard",
     "trendAnalysis": "Trend-Analyse",
     "paperSearch": "Paper-Suche",
-    "weeklyTrends": "Wöchentliche Trends",
+    "weeklyTrends": "Aktuelle Forschungstrends",
     "readingList": "Leseliste",
     "settings": "Einstellungen",
     "languageSwitch": "Sprache"
@@ -232,6 +232,30 @@
       "import": "Importieren",
       "exportKeywords": "Schlüsselwort-Wörterbuch exportieren",
       "resetToDefaults": "Auf Standard-Wörterbuch zurücksetzen"
+    },
+    "twitterPost": {
+      "title": "X (Twitter) Post-Prompt",
+      "prompt": "Post-Generierungsprompt",
+      "placeholder": "Geben Sie einen Prompt für die Twitter-Post-Generierung ein...",
+      "description": "Prompt zur Generierung von X (Twitter) Post-Text aus Papier-Abstracts. Kann Zeichenbegrenzungen und Hashtag-Anweisungen enthalten.",
+      "preparing": "X-Post wird vorbereitet...",
+      "generating": "X-Post-Text wird aus Papier-Abstract generiert.",
+      "generatingButton": "X-Post wird generiert...",
+      "popupBlocked": "Popup blockiert. Bitte verwenden Sie die Schaltfläche unten, um Twitter zu öffnen.",
+      "summaryNotFound": "Zusammenfassung für dieses Papier nicht gefunden",
+      "summaryRequired": "Zusammenfassung nicht gefunden"
+    },
+    "modelSelection": {
+      "title": "Modellauswahl",
+      "description": "Wählen Sie das Modell aus, das mit Ihrem gewählten KI-Anbieter verwendet werden soll."
+    },
+    "trendSummary": {
+      "title": "Trendanalyse-Zusammenfassung",
+      "createNew": "Neue Zusammenfassung erstellen",
+      "loading": "Laden...",
+      "noSummaries": "Noch keine Trendzusammenfassungen. Bitte erstellen Sie eine neue Zusammenfassung.",
+      "weeklyAnalysis": "Wöchentliche Trendanalyse",
+      "allFieldsRequired": "Bitte füllen Sie alle erforderlichen Felder aus"
     }
   },
   "hotTopics": {
