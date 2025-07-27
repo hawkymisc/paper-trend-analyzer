@@ -207,13 +207,13 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Dark mode card body support */
-@media (prefers-color-scheme: dark) {
-  .card-body {
-    background-color: #ffffff !important;
-    color: #212529 !important;
-  }
+/* Dark mode card body support - updated to use data-bs-theme */
+[data-bs-theme="dark"] .card-body {
+  background-color: var(--bs-card-bg) !important;
+  color: var(--bs-body-color) !important;
 }
+
+/* Remove old prefers-color-scheme rule that forced white background */
 
 /* Reading list item animations */
 .reading-list-item {

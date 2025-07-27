@@ -253,11 +253,106 @@
 
 [data-bs-theme="dark"] .hot-topic-card {
   transition: all 0.2s;
+  background-color: var(--bs-card-bg) !important;
+  border-color: var(--bs-border-color) !important;
+  color: var(--bs-body-color) !important;
 }
 
 [data-bs-theme="dark"] .hot-topic-card:hover {
   background-color: rgba(255, 255, 255, 0.05) !important;
   transform: translateY(-2px);
+  border-color: #0d6efd !important;
+}
+
+/* Hot Topics specific styles */
+[data-bs-theme="dark"] .trend-score.text-success {
+  background-color: rgba(25, 135, 84, 0.4) !important;
+  color: #95d7b8 !important;
+  border-color: rgba(25, 135, 84, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .trend-score.text-warning {
+  background-color: rgba(255, 193, 7, 0.2) !important;
+  color: #ffda6a !important;
+  border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .trend-score.text-info {
+  background-color: rgba(13, 202, 240, 0.2) !important;
+  color: #6edff6 !important;
+  border-color: rgba(13, 202, 240, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .trend-score.text-muted {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #adb5bd !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+[data-bs-theme="dark"] .filters-panel {
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
+  border-color: var(--bs-border-color) !important;
+}
+
+[data-bs-theme="dark"] .hot-topics-empty {
+  color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .hot-topics-header {
+  border-bottom-color: var(--bs-border-color) !important;
+}
+
+[data-bs-theme="dark"] .hot-topics-header h1 {
+  color: var(--bs-body-color) !important;
+}
+
+[data-bs-theme="dark"] .hot-topics-header .subtitle {
+  color: #adb5bd !important;
+}
+
+/* Paper Summary Content */
+[data-bs-theme="dark"] .paper-summary-content {
+  background-color: var(--bs-card-bg) !important;
+  border-left-color: #0d6efd !important;
+  color: var(--bs-body-color) !important;
+}
+
+/* Reading List specific styles */
+[data-bs-theme="dark"] .reading-list-items::-webkit-scrollbar-track {
+  background: #495057 !important;
+}
+
+[data-bs-theme="dark"] .reading-list-items::-webkit-scrollbar-thumb {
+  background: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .reading-list-items::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .reading-list-empty i {
+  color: #495057 !important;
+}
+
+[data-bs-theme="dark"] .reading-list-empty h3 {
+  color: #adb5bd !important;
+}
+
+[data-bs-theme="dark"] .reading-list-empty p {
+  color: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .filter-panel {
+  background: var(--bs-card-bg) !important;
+  color: var(--bs-body-color) !important;
+}
+
+[data-bs-theme="dark"] .filter-panel .form-label {
+  color: var(--bs-body-color) !important;
+}
+
+[data-bs-theme="dark"] .bulk-actions-bar {
+  background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
 }
 
 /* Form Check (Checkboxes and Radios) */

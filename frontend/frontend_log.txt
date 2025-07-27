@@ -2,11 +2,11 @@
 > frontend@2.2.0 start
 > react-scripts start
 
-(node:44057) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(node:70526) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
 (Use `node --trace-deprecation ...` to show where the warning was created)
 [HPM] Proxy created: /  -> http://localhost:8000
-(node:44057) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
-(node:44057) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:70526) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:70526) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
 Starting the development server...
 
 Compiled successfully!
@@ -22,46 +22,21 @@ To create a production build, use npm run build.
 webpack compiled successfully
 Files successfully emitted, waiting for typecheck results...
 Issues checking in progress...
-(node:44057) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(node:70526) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
 No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
+[HPM] Error occurred while proxying request localhost:3000/api/v1/trend-summary/latest?language=ja to http://localhost:8000/ [ECONNRESET] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/trend-summary/latest?language=ja to http://localhost:8000/ [ECONNRESET] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNRESET] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/trend-summary/latest?language=ja to http://localhost:8000/ [ECONNRESET] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/trend-summary/latest?language=ja to http://localhost:8000/ [ECONNRESET] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNRESET] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/trend-summaries?skip=0&limit=10 to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/trend-summaries?skip=0&limit=10 to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
+[HPM] Error occurred while proxying request localhost:3000/api/v1/dashboard/summary to http://localhost:8000/ [ECONNREFUSED] (https://nodejs.org/api/errors.html#errors_common_system_errors)
 Compiling...
 Compiled successfully!
 webpack compiled successfully
@@ -90,677 +65,53 @@ Compiling...
 Compiled successfully!
 webpack compiled successfully
 No issues found.
-Failed to compile.
-
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-ERROR in ./src/App.tsx 21:0-67
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-
-webpack compiled with 1 error
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-Failed to compile.
-
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-ERROR in ./src/App.tsx 21:0-67
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-
-webpack compiled with 1 error
-ERROR in src/App.tsx:16:33
-TS2307: Cannot find module './components/WeeklyTrendAnalysis' or its corresponding type declarations.
-    14 | import PaperSearch from './components/PaperSearch';
-    15 | import ReadingList from './components/ReadingList';
-  > 16 | import WeeklyTrendAnalysis from './components/WeeklyTrendAnalysis';
-       |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    17 | import TrendSummary from './components/TrendSummary';
-    18 | import Settings from './components/Settings';
-    19 | import LanguageSwitcher from './components/LanguageSwitcher';
-
 Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-ERROR in ./src/App.tsx 21:0-67
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-
-webpack compiled with 1 error
-ERROR in src/App.tsx:16:33
-TS2307: Cannot find module './components/WeeklyTrendAnalysis' or its corresponding type declarations.
-    14 | import PaperSearch from './components/PaperSearch';
-    15 | import ReadingList from './components/ReadingList';
-  > 16 | import WeeklyTrendAnalysis from './components/WeeklyTrendAnalysis';
-       |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    17 | import TrendSummary from './components/TrendSummary';
-    18 | import Settings from './components/Settings';
-    19 | import LanguageSwitcher from './components/LanguageSwitcher';
-
-Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-ERROR in ./src/App.tsx 21:0-67
-Module not found: Error: Can't resolve './components/WeeklyTrendAnalysis' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src'
-
-webpack compiled with 1 error
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-ERROR in src/App.tsx:16:33
-TS2307: Cannot find module './components/WeeklyTrendAnalysis' or its corresponding type declarations.
-    14 | import PaperSearch from './components/PaperSearch';
-    15 | import ReadingList from './components/ReadingList';
-  > 16 | import WeeklyTrendAnalysis from './components/WeeklyTrendAnalysis';
-       |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    17 | import TrendSummary from './components/TrendSummary';
-    18 | import Settings from './components/Settings';
-    19 | import LanguageSwitcher from './components/LanguageSwitcher';
-
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
+Compiled successfully!
+webpack compiled successfully
 No issues found.
-Failed to compile.
-
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-ERROR in ./src/components/RecentTrendAnalysis.tsx 8:0-68
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-
-webpack compiled with 1 error and 1 warning
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-ERROR in src/components/RecentTrendAnalysis.tsx:4:36
-TS2307: Cannot find module '../services/WeeklyTrendService' or its corresponding type declarations.
-    2 | import { useTranslation } from 'react-i18next';
-    3 | import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-  > 4 | import { WeeklyTrendService } from '../services/WeeklyTrendService';
-      |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    5 | import { useSettings } from '../contexts/SettingsContext';
-    6 | import MarkdownRenderer from './MarkdownRenderer';
-    7 | import ReadingListButton from './ReadingListButton';
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
 Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-ERROR in ./src/components/RecentTrendAnalysis.tsx 8:0-68
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-
-webpack compiled with 1 error and 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:4:36
-TS2307: Cannot find module '../services/WeeklyTrendService' or its corresponding type declarations.
-    2 | import { useTranslation } from 'react-i18next';
-    3 | import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-  > 4 | import { WeeklyTrendService } from '../services/WeeklyTrendService';
-      |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    5 | import { useSettings } from '../contexts/SettingsContext';
-    6 | import MarkdownRenderer from './MarkdownRenderer';
-    7 | import ReadingListButton from './ReadingListButton';
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
+Compiled successfully!
+webpack compiled successfully
+No issues found.
 Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-ERROR in ./src/components/RecentTrendAnalysis.tsx 8:0-68
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-
-webpack compiled with 1 error and 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:4:36
-TS2307: Cannot find module '../services/WeeklyTrendService' or its corresponding type declarations.
-    2 | import { useTranslation } from 'react-i18next';
-    3 | import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-  > 4 | import { WeeklyTrendService } from '../services/WeeklyTrendService';
-      |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    5 | import { useSettings } from '../contexts/SettingsContext';
-    6 | import MarkdownRenderer from './MarkdownRenderer';
-    7 | import ReadingListButton from './ReadingListButton';
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
+Compiled successfully!
+webpack compiled successfully
+No issues found.
 Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-ERROR in ./src/components/RecentTrendAnalysis.tsx 8:0-68
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-
-webpack compiled with 1 error and 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:4:36
-TS2307: Cannot find module '../services/WeeklyTrendService' or its corresponding type declarations.
-    2 | import { useTranslation } from 'react-i18next';
-    3 | import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-  > 4 | import { WeeklyTrendService } from '../services/WeeklyTrendService';
-      |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    5 | import { useSettings } from '../contexts/SettingsContext';
-    6 | import MarkdownRenderer from './MarkdownRenderer';
-    7 | import ReadingListButton from './ReadingListButton';
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
+Compiled successfully!
+webpack compiled successfully
+No issues found.
 Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-ERROR in ./src/components/RecentTrendAnalysis.tsx 8:0-68
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-
-webpack compiled with 1 error and 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:4:36
-TS2307: Cannot find module '../services/WeeklyTrendService' or its corresponding type declarations.
-    2 | import { useTranslation } from 'react-i18next';
-    3 | import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-  > 4 | import { WeeklyTrendService } from '../services/WeeklyTrendService';
-      |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    5 | import { useSettings } from '../contexts/SettingsContext';
-    6 | import MarkdownRenderer from './MarkdownRenderer';
-    7 | import ReadingListButton from './ReadingListButton';
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
+Compiled successfully!
+webpack compiled successfully
+No issues found.
 Compiling...
-Failed to compile.
-
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-ERROR in ./src/components/RecentTrendAnalysis.tsx 8:0-68
-Module not found: Error: Can't resolve '../services/WeeklyTrendService' in '/Users/hwaka/Projects/paper-trend-analyzer/frontend/src/components'
-
-webpack compiled with 1 error and 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:4:36
-TS2307: Cannot find module '../services/WeeklyTrendService' or its corresponding type declarations.
-    2 | import { useTranslation } from 'react-i18next';
-    3 | import { Container, Row, Col, Card, Button, Form, Alert, Spinner, Modal, Badge } from 'react-bootstrap';
-  > 4 | import { WeeklyTrendService } from '../services/WeeklyTrendService';
-      |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    5 | import { useSettings } from '../contexts/SettingsContext';
-    6 | import MarkdownRenderer from './MarkdownRenderer';
-    7 | import ReadingListButton from './ReadingListButton';
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
+Compiled successfully!
+webpack compiled successfully
+No issues found.
 Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 4:10:   'RecentTrendService' is defined but never used              @typescript-eslint/no-unused-vars
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 4:10:   'RecentTrendService' is defined but never used              @typescript-eslint/no-unused-vars
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:139:30
-TS2304: Cannot find name 'WeeklyTrendService'.
-    137 |
-    138 |   // Supported languages
-  > 139 |   const supportedLanguages = WeeklyTrendService.getSupportedLanguages();
-        |                              ^^^^^^^^^^^^^^^^^^
-    140 |
-    141 |
-    142 |   // Generate Weekly Overview with custom configuration
-
-ERROR in src/components/RecentTrendAnalysis.tsx:223:30
-TS2304: Cannot find name 'WeeklyTrendService'.
-    221 |       setError(null);
-    222 |       
-  > 223 |       const response = await WeeklyTrendService.getTopicKeywords({
-        |                              ^^^^^^^^^^^^^^^^^^
-    224 |         language: language,
-    225 |         max_keywords: maxKeywords,
-    226 |         system_prompt: settings.systemPrompt,
-
-ERROR in src/components/RecentTrendAnalysis.tsx:252:30
-TS2304: Cannot find name 'WeeklyTrendService'.
-    250 |       setError(null);
-    251 |       
-  > 252 |       const response = await WeeklyTrendService.getTopicSummary({
-        |                              ^^^^^^^^^^^^^^^^^^
-    253 |         keywords: selectedKeywords,
-    254 |         language: language,
-    255 |         system_prompt: settings.systemPrompt,
-
-ERROR in src/components/RecentTrendAnalysis.tsx:483:55
-TS2304: Cannot find name 'WeeklyTrendService'.
-    481 |                       {t('weeklyTrends.analysisPeriod')}: {summaryState.data.analysis_period} | 
-    482 |                       {t('weeklyTrends.papersAnalyzed')}: {summaryState.data.total_papers_analyzed} | 
-  > 483 |                       {t('weeklyTrends.generated')}: {WeeklyTrendService.getRelativeTime(summaryState.data.generated_at)}
-        |                                                       ^^^^^^^^^^^^^^^^^^
-    484 |                     </small>
-    485 |                   </div>
-    486 |                   <MarkdownRenderer
-
-ERROR in src/components/RecentTrendAnalysis.tsx:669:57
-TS2304: Cannot find name 'WeeklyTrendService'.
-    667 |                                 {keyword.paper_count} {t('common.papers')}
-    668 |                               </small>
-  > 669 |                               <span className={`badge ${WeeklyTrendService.getRelevanceScoreColor(keyword.relevance_score).replace('text-', 'bg-')}`}>
-        |                                                         ^^^^^^^^^^^^^^^^^^
-    670 |                                 <i className={`${WeeklyTrendService.getRelevanceScoreIcon(keyword.relevance_score)} me-1`}></i>
-    671 |                                 {WeeklyTrendService.formatRelevanceScore(keyword.relevance_score)}
-    672 |                               </span>
-
-ERROR in src/components/RecentTrendAnalysis.tsx:670:50
-TS2304: Cannot find name 'WeeklyTrendService'.
-    668 |                               </small>
-    669 |                               <span className={`badge ${WeeklyTrendService.getRelevanceScoreColor(keyword.relevance_score).replace('text-', 'bg-')}`}>
-  > 670 |                                 <i className={`${WeeklyTrendService.getRelevanceScoreIcon(keyword.relevance_score)} me-1`}></i>
-        |                                                  ^^^^^^^^^^^^^^^^^^
-    671 |                                 {WeeklyTrendService.formatRelevanceScore(keyword.relevance_score)}
-    672 |                               </span>
-    673 |                             </div>
-
-ERROR in src/components/RecentTrendAnalysis.tsx:671:34
-TS2304: Cannot find name 'WeeklyTrendService'.
-    669 |                               <span className={`badge ${WeeklyTrendService.getRelevanceScoreColor(keyword.relevance_score).replace('text-', 'bg-')}`}>
-    670 |                                 <i className={`${WeeklyTrendService.getRelevanceScoreIcon(keyword.relevance_score)} me-1`}></i>
-  > 671 |                                 {WeeklyTrendService.formatRelevanceScore(keyword.relevance_score)}
-        |                                  ^^^^^^^^^^^^^^^^^^
-    672 |                               </span>
-    673 |                             </div>
-    674 |                           </div>
-
-ERROR in src/components/RecentTrendAnalysis.tsx:738:53
-TS2304: Cannot find name 'WeeklyTrendService'.
-    736 |                   <small className="text-muted">
-    737 |                     {t('weeklyTrends.relatedPapers')}: {topicSummaryResponse.related_paper_count} | 
-  > 738 |                     {t('weeklyTrends.generated')}: {WeeklyTrendService.getRelativeTime(topicSummaryResponse.generated_at)}
-        |                                                     ^^^^^^^^^^^^^^^^^^
-    739 |                   </small>
-    740 |                 </div>
-    741 |                 
-
-ERROR in src/components/RecentTrendAnalysis.tsx:944:41
-TS7006: Parameter 'lang' implicitly has an 'any' type.
-    942 |                 onChange={(e) => setLanguage(e.target.value)}
-    943 |               >
-  > 944 |                 {supportedLanguages.map(lang => (
-        |                                         ^^^^
-    945 |                   <option key={lang.code} value={lang.code}>
-    946 |                     {lang.name}
-    947 |                   </option>
-
+Compiled successfully!
+webpack compiled successfully
+No issues found.
 Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
+Compiled successfully!
+webpack compiled successfully
 No issues found.
 Compiling...
 Compiled with warnings.
 
 [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
+src/App.tsx
+  Line 13:8:  'TrendAnalysis' is defined but never used  @typescript-eslint/no-unused-vars
 
 Search for the keywords to learn more about each warning.
 To ignore, add // eslint-disable-next-line to the line before.
 
 WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
+src/App.tsx
+  Line 13:8:  'TrendAnalysis' is defined but never used  @typescript-eslint/no-unused-vars
 
 webpack compiled with 1 warning
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-ERROR in src/components/RecentTrendAnalysis.tsx:9:3
-TS2305: Module '"../types"' has no exported member 'WeeklyTrendResponse'.
-     7 | import ReadingListButton from './ReadingListButton';
-     8 | import { 
-  >  9 |   WeeklyTrendResponse, 
-       |   ^^^^^^^^^^^^^^^^^^^
-    10 |   TopicKeywordsResponse, 
-    11 |   TopicSummaryResponse, 
-    12 |   TopicKeyword 
-
-ERROR in src/services/RecentTrendService.ts:5:3
-TS2305: Module '"../types"' has no exported member 'WeeklyTrendRequest'.
-    3 |  */
-    4 | import { 
-  > 5 |   WeeklyTrendRequest, 
-      |   ^^^^^^^^^^^^^^^^^^
-    6 |   WeeklyTrendResponse, 
-    7 |   TopicKeywordsRequest, 
-    8 |   TopicKeywordsResponse,
-
-ERROR in src/services/RecentTrendService.ts:6:3
-TS2305: Module '"../types"' has no exported member 'WeeklyTrendResponse'.
-    4 | import { 
-    5 |   WeeklyTrendRequest, 
-  > 6 |   WeeklyTrendResponse, 
-      |   ^^^^^^^^^^^^^^^^^^^
-    7 |   TopicKeywordsRequest, 
-    8 |   TopicKeywordsResponse,
-    9 |   TopicSummaryRequest,
-
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-ERROR in src/components/RecentTrendAnalysis.tsx:9:3
-TS2305: Module '"../types"' has no exported member 'WeeklyTrendResponse'.
-     7 | import ReadingListButton from './ReadingListButton';
-     8 | import { 
-  >  9 |   WeeklyTrendResponse, 
-       |   ^^^^^^^^^^^^^^^^^^^
-    10 |   TopicKeywordsResponse, 
-    11 |   TopicSummaryResponse, 
-    12 |   TopicKeyword 
-
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:90:35
-TS2304: Cannot find name 'WeeklyTrendResponse'.
-    88 |           if (summaryData) {
-    89 |             // Convert to WeeklyTrendResponse format for compatibility
-  > 90 |             const weeklyResponse: WeeklyTrendResponse = {
-       |                                   ^^^^^^^^^^^^^^^^^^^
-    91 |               trend_overview: summaryData.summary,
-    92 |               analysis_period: `${summaryData.period_start.split('T')[0]} to ${summaryData.period_end.split('T')[0]}`,
-    93 |               total_papers_analyzed: summaryData.paper_count,
-
-ERROR in src/components/RecentTrendAnalysis.tsx:181:29
-TS2304: Cannot find name 'WeeklyTrendResponse'.
-    179 |       
-    180 |       // Convert to WeeklyTrendResponse format for compatibility
-  > 181 |       const weeklyResponse: WeeklyTrendResponse = {
-        |                             ^^^^^^^^^^^^^^^^^^^
-    182 |         trend_overview: summaryData.summary,
-    183 |         analysis_period: `${configForm.period_start} to ${configForm.period_end}`,
-    184 |         total_papers_analyzed: summaryData.paper_count,
-
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 27:10:  'isLoadingKeywords' is assigned a value but never used      @typescript-eslint/no-unused-vars
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-ERROR in src/components/RecentTrendAnalysis.tsx:220:7
-TS2304: Cannot find name 'setIsLoadingKeywords'.
-    218 |   const handleExtractKeywords = async (forceRegenerate: boolean = false) => {
-    219 |     try {
-  > 220 |       setIsLoadingKeywords(true);
-        |       ^^^^^^^^^^^^^^^^^^^^
-    221 |       setError(null);
-    222 |       
-    223 |       const response = await RecentTrendService.getTopicKeywords({
-
-ERROR in src/components/RecentTrendAnalysis.tsx:237:7
-TS2304: Cannot find name 'setIsLoadingKeywords'.
-    235 |       setError(error instanceof Error ? error.message : 'Failed to extract topic keywords');
-    236 |     } finally {
-  > 237 |       setIsLoadingKeywords(false);
-        |       ^^^^^^^^^^^^^^^^^^^^
-    238 |     }
-    239 |   };
-    240 |
-
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 218:9:  'handleExtractKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 44:10:  'maxKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/RecentTrendAnalysis.tsx
-  Line 44:10:  'maxKeywords' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
 No issues found.
 Compiling...
 Compiled successfully!
@@ -771,14 +122,28 @@ Compiled with warnings.
 
 [eslint] 
 src/components/TrendSummary.tsx
-  Line 3:10:  'useTranslation' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  Line 47:30:  'setShowEditTitleModal' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 50:10:  'summaryToEdit' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 50:25:  'setSummaryToEdit' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  Line 51:10:  'editingTitle' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  Line 51:24:  'setEditingTitle' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 54:25:  'setUpdatingTitle' is assigned a value but never used       @typescript-eslint/no-unused-vars
 
 Search for the keywords to learn more about each warning.
 To ignore, add // eslint-disable-next-line to the line before.
 
 WARNING in [eslint] 
 src/components/TrendSummary.tsx
-  Line 3:10:  'useTranslation' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  Line 47:30:  'setShowEditTitleModal' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 50:10:  'summaryToEdit' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 50:25:  'setSummaryToEdit' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  Line 51:10:  'editingTitle' is assigned a value but never used           @typescript-eslint/no-unused-vars
+  Line 51:24:  'setEditingTitle' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 54:25:  'setUpdatingTitle' is assigned a value but never used       @typescript-eslint/no-unused-vars
 
 webpack compiled with 1 warning
 No issues found.
@@ -787,14 +152,24 @@ Compiled with warnings.
 
 [eslint] 
 src/components/TrendSummary.tsx
-  Line 39:11:  't' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  Line 50:10:  'summaryToEdit' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 51:10:  'editingTitle' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 54:25:  'setUpdatingTitle' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  Line 183:9:  'handleEditTitleClick' is assigned a value but never used  @typescript-eslint/no-unused-vars
 
 Search for the keywords to learn more about each warning.
 To ignore, add // eslint-disable-next-line to the line before.
 
 WARNING in [eslint] 
 src/components/TrendSummary.tsx
-  Line 39:11:  't' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  Line 50:10:  'summaryToEdit' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 51:10:  'editingTitle' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 54:25:  'setUpdatingTitle' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  Line 183:9:  'handleEditTitleClick' is assigned a value but never used  @typescript-eslint/no-unused-vars
 
 webpack compiled with 1 warning
 No issues found.
@@ -803,14 +178,20 @@ Compiled with warnings.
 
 [eslint] 
 src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 183:9:  'handleEditTitleClick' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 220:9:  'handleUpdateTitle' is assigned a value but never used     @typescript-eslint/no-unused-vars
 
 Search for the keywords to learn more about each warning.
 To ignore, add // eslint-disable-next-line to the line before.
 
 WARNING in [eslint] 
 src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 183:9:  'handleEditTitleClick' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 220:9:  'handleUpdateTitle' is assigned a value but never used     @typescript-eslint/no-unused-vars
 
 webpack compiled with 1 warning
 No issues found.
@@ -819,121 +200,86 @@ Compiled with warnings.
 
 [eslint] 
 src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  Line 220:9:  'handleUpdateTitle' is assigned a value but never used   @typescript-eslint/no-unused-vars
 
 Search for the keywords to learn more about each warning.
 To ignore, add // eslint-disable-next-line to the line before.
 
 WARNING in [eslint] 
 src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-webpack compiled with 1 warning
-No issues found.
-Compiling...
-Compiled with warnings.
-
-[eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
-
-Search for the keywords to learn more about each warning.
-To ignore, add // eslint-disable-next-line to the line before.
-
-WARNING in [eslint] 
-src/components/TrendSummary.tsx
-  Line 87:6:  React Hook useEffect has a missing dependency: 't'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  Line 47:10:  'showEditTitleModal' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  Line 54:10:  'updatingTitle' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  Line 220:9:  'handleUpdateTitle' is assigned a value but never used   @typescript-eslint/no-unused-vars
 
 webpack compiled with 1 warning
 No issues found.
 Compiling...
 Compiled successfully!
 webpack compiled successfully
-No issues found.
+ERROR in src/components/TrendSummary.tsx:852:9
+TS2322: Type '"md"' is not assignable to type '"sm" | "lg" | "xl" | undefined'.
+    850 |         show={showEditTitleModal} 
+    851 |         onHide={() => setShowEditTitleModal(false)}
+  > 852 |         size="md"
+        |         ^^^^
+    853 |         centered
+    854 |       >
+    855 |         <Modal.Header closeButton>
+
 Compiling...
 Compiled successfully!
 webpack compiled successfully
-No issues found.
+ERROR in src/components/TrendSummary.tsx:852:9
+TS2322: Type '"md"' is not assignable to type '"sm" | "lg" | "xl" | undefined'.
+    850 |         show={showEditTitleModal} 
+    851 |         onHide={() => setShowEditTitleModal(false)}
+  > 852 |         size="md"
+        |         ^^^^
+    853 |         centered={true}
+    854 |       >
+    855 |         <Modal.Header closeButton>
+
 Compiling...
 Compiled successfully!
 webpack compiled successfully
-No issues found.
+ERROR in src/components/TrendSummary.tsx:852:9
+TS2322: Type '"md"' is not assignable to type '"sm" | "lg" | "xl" | undefined'.
+    850 |         show={showEditTitleModal} 
+    851 |         onHide={() => setShowEditTitleModal(false)}
+  > 852 |         size="md"
+        |         ^^^^
+    853 |         centered={true}
+    854 |       >
+    855 |         <Modal.Header closeButton>
+
 Compiling...
 Compiled successfully!
 webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-No issues found.
+ERROR in src/components/TrendSummary.tsx:852:9
+TS2322: Type '"md"' is not assignable to type '"sm" | "lg" | "xl" | undefined'.
+    850 |         show={showEditTitleModal} 
+    851 |         onHide={() => setShowEditTitleModal(false)}
+  > 852 |         size="md"
+        |         ^^^^
+    853 |       >
+    854 |         <Modal.Header closeButton>
+    855 |           <Modal.Title>
+
 Compiling...
 Compiled successfully!
 webpack compiled successfully
-Files successfully emitted, waiting for typecheck results...
-Issues checking in progress...
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
-Compiling...
-Compiled successfully!
-webpack compiled successfully
-No issues found.
+ERROR in src/components/TrendSummary.tsx:852:9
+TS2322: Type '"md"' is not assignable to type '"sm" | "lg" | "xl" | undefined'.
+    850 |         show={showEditTitleModal} 
+    851 |         onHide={() => setShowEditTitleModal(false)}
+  > 852 |         size="md"
+        |         ^^^^
+    853 |       >
+    854 |         <Modal.Header closeButton>
+    855 |           <Modal.Title>
+
 Compiling...
 Compiled successfully!
 webpack compiled successfully

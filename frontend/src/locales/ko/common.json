@@ -255,8 +255,13 @@
       "loading": "로딩 중...",
       "noSummaries": "아직 트렌드 요약이 없습니다. 새 요약을 생성해주세요.",
       "weeklyAnalysis": "주간 트렌드 분석",
-      "allFieldsRequired": "모든 필수 필드를 입력해주세요"
+      "allFieldsRequired": "모든 필수 필드를 입력해주세요",
+      "postToX": "X에 게시",
+      "openTwitter": "Twitter 열기"
     }
+  },
+  "paperReference": {
+    "openInArxiv": "클릭하여 arXiv에서 열기 →"
   },
   "hotTopics": {
     "title": "핫 토픽",

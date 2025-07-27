@@ -3,6 +3,7 @@ AI Service for paper summarization and analysis
 """
 import asyncio
 import logging
+import os
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
@@ -236,13 +237,16 @@ Analysis:"""
     def _format_papers_for_analysis(self, papers_data: List[Dict[str, Any]]) -> str:
         """Format papers data for AI analysis"""
         formatted_papers = []
-        for i, paper in enumerate(papers_data[:50]):  # Limit to avoid token overflow
+        # Import settings here to avoid circular imports
+        from .config import settings
+        max_papers = settings.get_default_analysis_limit()
+        for i, paper in enumerate(papers_data[:max_papers]):  # Configurable limit to avoid token overflow
             formatted_paper = f"""
 Paper {i+1}:
 Title: {paper.get('title', 'N/A')}
 Authors: {', '.join(paper.get('authors', []))}
 Published: {paper.get('published_at', 'N/A')}
-Summary: {paper.get('summary', 'N/A')[:500]}...
+Summary: {paper.get('summary', 'N/A')[:settings.ai_summary_char_limit]}...
 Keywords: {', '.join(paper.get('keywords', []))}
 """
             formatted_papers.append(formatted_paper)
@@ -275,7 +279,7 @@ Keywords: {', '.join(paper.get('keywords', []))}
                 hot_topic = HotTopic(
                     topic=topic_data.get("topic", "Unknown Topic"),
                     paper_count=len(related_papers),
-                    recent_papers=related_papers[:5],  # Show top 5 recent papers
+                    recent_papers=related_papers[:settings.ai_related_papers_display_limit],  # Configurable recent papers
                     summary=topic_data.get("summary", ""),
                     keywords=topic_data.get("keywords", []),
                     trend_score=topic_data.get("trend_score", 0)
@@ -325,7 +329,7 @@ Keywords: {', '.join(paper.get('keywords', []))}
                 hot_topic = HotTopic(
                     topic=keyword,
                     paper_count=count,
-                    recent_papers=related_papers[:5],
+                    recent_papers=related_papers[:settings.ai_related_papers_display_limit],
                     summary=f"Research area focusing on {keyword}",
                     keywords=[keyword],
                     trend_score=max(0, 100 - i * 10)  # Decreasing score
@@ -343,7 +347,7 @@ Keywords: {', '.join(paper.get('keywords', []))}
         """Generate weekly trend overview using Gemini"""
         try:
             language_instruction = self._get_language_instruction(language)
-            papers_text = self._format_papers_for_analysis(papers_data[:30])  # Limit for overview
+            papers_text = self._format_papers_for_analysis(papers_data[:settings.ai_overview_analysis_papers])  # Configurable overview limit
             
             # Use custom system prompt if provided
             base_instruction = system_prompt if system_prompt else """Analyze the following academic papers from the past week and provide a comprehensive overview of the research trends. 
@@ -390,13 +394,19 @@ Weekly Trend Overview:"""
         self, 
         papers_data: List[Dict[str, Any]], 
         language: str = "auto", 
-        max_keywords: int = 30,
+        max_keywords: int = None,
         system_prompt: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Extract trending topic keywords using Gemini"""
         try:
+            # Import settings here to avoid circular imports
+            from .config import settings
+            if max_keywords is None:
+                max_keywords = settings.ai_max_keywords_default
+            
             language_instruction = self._get_language_instruction(language)
-            papers_text = self._format_papers_for_analysis(papers_data[:50])
+            max_papers = settings.get_default_analysis_limit()
+            papers_text = self._format_papers_for_analysis(papers_data[:max_papers])
             
             # Use custom system prompt if provided
             base_instruction = system_prompt if system_prompt else f"""Analyze the following academic papers and extract the most trending and relevant topic keywords.
@@ -457,7 +467,7 @@ Topic Keywords:"""
             
             # Find papers related to the selected keywords
             related_papers = self._find_papers_by_keywords(keywords, papers_data)
-            papers_text = self._format_papers_for_analysis(related_papers[:20])
+            papers_text = self._format_papers_for_analysis(related_papers[:settings.ai_topic_analysis_papers])
             
             keywords_str = ", ".join(keywords)
             topic_name = " & ".join(keywords) if len(keywords) > 1 else keywords[0]
@@ -647,6 +657,9 @@ Topic Summary:"""
         import io
         
         try:
+            # Import settings for configuration
+            from .config import settings
+            
             # Construct PDF URL
             pdf_url = f"https://arxiv.org/pdf/{arxiv_id}.pdf"
             
@@ -659,13 +672,13 @@ Topic Summary:"""
                     pdf_content = await response.read()
             
             # Extract text from PDF
-            import PyPDF2
+            from pypdf import PdfReader
             
             pdf_file = io.BytesIO(pdf_content)
-            pdf_reader = PyPDF2.PdfReader(pdf_file)
+            pdf_reader = PdfReader(pdf_file)
             
             text_content = ""
-            for page_num in range(min(len(pdf_reader.pages), 10)):  # First 10 pages only
+            for page_num in range(min(len(pdf_reader.pages), settings.ai_pdf_max_pages)):  # Configurable page limit
                 page = pdf_reader.pages[page_num]
                 text_content += page.extract_text() + "\n"
             
@@ -673,7 +686,7 @@ Topic Summary:"""
                 raise Exception("PDFからテキストを抽出できませんでした")
             
             # Limit text length to avoid token limits
-            max_chars = 15000  # Reasonable limit for Gemini
+            max_chars = settings.ai_text_max_characters  # Configurable limit for AI processing
             if len(text_content) > max_chars:
                 text_content = text_content[:max_chars] + "..."
             
@@ -708,7 +721,7 @@ class OpenAIService(AIServiceBase):
     async def generate_weekly_trend_overview(self, papers_data: List[Dict[str, Any]], language: str = "auto") -> str:
         raise NotImplementedError("OpenAI service not yet implemented")
     
-    async def extract_topic_keywords(self, papers_data: List[Dict[str, Any]], language: str = "auto", max_keywords: int = 30) -> List[Dict[str, Any]]:
+    async def extract_topic_keywords(self, papers_data: List[Dict[str, Any]], language: str = "auto", max_keywords: int = None) -> List[Dict[str, Any]]:
         raise NotImplementedError("OpenAI service not yet implemented")
     
     async def generate_topic_summary(self, keywords: List[str], papers_data: List[Dict[str, Any]], language: str = "auto") -> Dict[str, Any]:
@@ -742,7 +755,7 @@ class AnthropicService(AIServiceBase):
     async def generate_weekly_trend_overview(self, papers_data: List[Dict[str, Any]], language: str = "auto") -> str:
         raise NotImplementedError("Anthropic service not yet implemented")
     
-    async def extract_topic_keywords(self, papers_data: List[Dict[str, Any]], language: str = "auto", max_keywords: int = 30) -> List[Dict[str, Any]]:
+    async def extract_topic_keywords(self, papers_data: List[Dict[str, Any]], language: str = "auto", max_keywords: int = None) -> List[Dict[str, Any]]:
         raise NotImplementedError("Anthropic service not yet implemented")
     
     async def generate_topic_summary(self, keywords: List[str], papers_data: List[Dict[str, Any]], language: str = "auto") -> Dict[str, Any]:

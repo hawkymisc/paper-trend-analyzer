@@ -255,8 +255,13 @@
       "loading": "Laden...",
       "noSummaries": "Noch keine Trendzusammenfassungen. Bitte erstellen Sie eine neue Zusammenfassung.",
       "weeklyAnalysis": "Wöchentliche Trendanalyse",
-      "allFieldsRequired": "Bitte füllen Sie alle erforderlichen Felder aus"
+      "allFieldsRequired": "Bitte füllen Sie alle erforderlichen Felder aus",
+      "postToX": "Auf X posten",
+      "openTwitter": "Twitter öffnen"
     }
+  },
+  "paperReference": {
+    "openInArxiv": "Klicken Sie, um in arXiv zu öffnen →"
   },
   "hotTopics": {
     "title": "Hot Topics",

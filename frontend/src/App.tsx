@@ -10,7 +10,6 @@ import './styles/ReadingList.css';
 import './styles/DarkTheme.css';
 import './i18n'; // Initialize i18n
 import Dashboard from './components/Dashboard';
-import TrendAnalysis from './components/TrendAnalysis';
 import PaperSearch from './components/PaperSearch';
 import ReadingList from './components/ReadingList';
 import RecentTrendAnalysis from './components/RecentTrendAnalysis';
@@ -30,8 +29,6 @@ const PageTitleManager: React.FC = () => {
       switch (pathname) {
         case '/':
           return `${t('navigation.dashboard')} - Paper Trend Analyzer`;
-        case '/trend-analysis':
-          return `${t('navigation.trendAnalysis')} - Paper Trend Analyzer`;
         case '/paper-search':
           return `${t('navigation.paperSearch')} - Paper Trend Analyzer`;
         case '/recent-trends':
@@ -66,7 +63,6 @@ const AppNavigation: React.FC = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">{t('navigation.dashboard')}</Nav.Link>
-            <Nav.Link as={Link} to="/trend-analysis">{t('navigation.trendAnalysis')}</Nav.Link>
             <Nav.Link as={Link} to="/paper-search">{t('navigation.paperSearch')}</Nav.Link>
             <Nav.Link as={Link} to="/recent-trends">{t('navigation.weeklyTrends')}</Nav.Link>
             <Nav.Link as={Link} to="/trend-summary">{t('navigation.trendSummary')}</Nav.Link>
@@ -100,7 +96,6 @@ function App() {
           <Container className="mt-4">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/trend-analysis" element={<TrendAnalysis />} />
               <Route path="/paper-search" element={<PaperSearch />} />
               <Route path="/recent-trends" element={<RecentTrendAnalysis />} />
               <Route path="/trend-summary" element={<TrendSummary />} />

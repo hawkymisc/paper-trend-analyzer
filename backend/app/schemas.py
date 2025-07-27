@@ -204,6 +204,9 @@ class TrendSummaryListResponse(BaseModel):
     summaries: List[TrendSummaryResponse]
     total_count: int
 
+class TrendSummaryUpdateRequest(BaseModel):
+    title: str
+
 # Paper Summary Schemas
 class PaperSummaryRequest(BaseModel):
     paper_id: int

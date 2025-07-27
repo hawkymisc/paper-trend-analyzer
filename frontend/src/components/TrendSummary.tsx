@@ -44,10 +44,14 @@ const TrendSummary: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditTitleModal, setShowEditTitleModal] = useState(false);
   const [selectedSummary, setSelectedSummary] = useState<TrendSummaryData | null>(null);
   const [summaryToDelete, setSummaryToDelete] = useState<TrendSummaryData | null>(null);
+  const [summaryToEdit, setSummaryToEdit] = useState<TrendSummaryData | null>(null);
+  const [editingTitle, setEditingTitle] = useState('');
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [updatingTitle, setUpdatingTitle] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -176,6 +180,13 @@ const TrendSummary: React.FC = () => {
     setShowDeleteModal(true);
   };
 
+  const handleEditTitleClick = (summary: TrendSummaryData, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent triggering summary click
+    setSummaryToEdit(summary);
+    setEditingTitle(summary.title);
+    setShowEditTitleModal(true);
+  };
+
   const handleDeleteConfirm = async () => {
     if (!summaryToDelete) return;
 
@@ -203,6 +214,43 @@ const TrendSummary: React.FC = () => {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleUpdateTitle = async () => {
+    if (!summaryToEdit || !editingTitle.trim()) return;
+
+    setUpdatingTitle(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/v1/trend-summary/${summaryToEdit.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: editingTitle.trim()
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        throw new Error(errorData.detail || 'Failed to update title');
+      }
+
+      // Refresh the list
+      await fetchSummaries(currentPage);
+      
+      // Close modal and reset state
+      setShowEditTitleModal(false);
+      setSummaryToEdit(null);
+      setEditingTitle('');
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setUpdatingTitle(false);
     }
   };
 
@@ -273,14 +321,18 @@ const TrendSummary: React.FC = () => {
     // ユーザーイベント内で空のポップアップを作成（ポップアップブロッカーを回避）
     const newWindow = window.open('', '_blank');
     
+    // テンプレートリテラルの外で翻訳を取得
+    const preparingTitle = t('settings.twitterPost.preparing');
+    const generatingText = t('settings.twitterPost.generating');
+    
     // ローディング表示をポップアップに追加
     if (newWindow && !newWindow.closed) {
       newWindow.document.write(`
         <html>
-          <head><title>{t('settings.twitterPost.preparing')}</title></head>
+          <head><title>${preparingTitle}</title></head>
           <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2>{t('settings.twitterPost.preparing')}</h2>
-            <p>{t('settings.twitterPost.generating')}</p>
+            <h2>${preparingTitle}</h2>
+            <p>${generatingText}</p>
             <div style="margin: 20px 0;">
               <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #1da1f2; border-radius: 50%; border-top: 2px solid transparent; animation: spin 1s linear infinite;"></div>
             </div>
@@ -395,6 +447,13 @@ const TrendSummary: React.FC = () => {
                               {formatDate(summary.created_at)}
                             </small>
                             <button
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={(e) => handleEditTitleClick(summary, e)}
+                              title="タイトルを編集"
+                            >
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button
                               className="btn btn-outline-danger btn-sm"
                               onClick={(e) => handleDeleteClick(summary, e)}
                               title="削除"
@@ -420,12 +479,12 @@ const TrendSummary: React.FC = () => {
                         {summary.top_keywords.length > 0 && (
                           <div className="d-flex flex-wrap gap-1">
                             {summary.top_keywords.slice(0, 5).map((keyword, index) => (
-                              <span key={index} className="badge bg-light text-dark">
+                              <span key={index} className={`badge ${settings.uiTheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'}`}>
                                 {keyword.keyword}
                               </span>
                             ))}
                             {summary.top_keywords.length > 5 && (
-                              <span className="badge bg-light text-muted">
+                              <span className={`badge ${settings.uiTheme === 'dark' ? 'bg-dark text-muted' : 'bg-light text-muted'}`}>
                                 +{summary.top_keywords.length - 5} more
                               </span>
                             )}
@@ -583,7 +642,7 @@ const TrendSummary: React.FC = () => {
           {selectedSummary && (
             <>
               {/* Summary metadata */}
-              <div className="mb-4 p-3 bg-light rounded">
+              <div className={`mb-4 p-3 ${settings.uiTheme === 'dark' ? 'bg-dark' : 'bg-light'} rounded`}>
                 <div className="row">
                   <div className="col-md-4">
                     <small className="text-muted d-block">
@@ -764,7 +823,7 @@ const TrendSummary: React.FC = () => {
                           {paper.keywords && paper.keywords.length > 0 && (
                             <div className="d-flex flex-wrap gap-1 mt-2">
                               {paper.keywords.map((keyword, keywordIndex) => (
-                                <span key={keywordIndex} className="badge bg-light text-dark">
+                                <span key={keywordIndex} className={`badge ${settings.uiTheme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'}`}>
                                   {keyword}
                                 </span>
                               ))}
@@ -786,12 +845,67 @@ const TrendSummary: React.FC = () => {
         </Modal.Footer>
       </Modal>
 
+      {/* Edit Title Modal */}
+      <Modal 
+        show={showEditTitleModal} 
+        onHide={() => setShowEditTitleModal(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <i className="bi bi-pencil me-2"></i>
+            タイトルを編集
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>新しいタイトル</Form.Label>
+              <Form.Control
+                type="text"
+                value={editingTitle}
+                onChange={(e) => setEditingTitle(e.target.value)}
+                placeholder="トレンド要約のタイトルを入力してください"
+                maxLength={200}
+              />
+              <Form.Text className="text-muted">
+                最大200文字まで入力できます
+              </Form.Text>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button 
+            variant="secondary" 
+            onClick={() => setShowEditTitleModal(false)}
+            disabled={updatingTitle}
+          >
+            キャンセル
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={handleUpdateTitle}
+            disabled={updatingTitle || !editingTitle.trim()}
+          >
+            {updatingTitle ? (
+              <>
+                <Spinner animation="border" size="sm" className="me-2" />
+                更新中...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check me-1"></i>
+                更新
+              </>
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* Delete Confirmation Modal */}
       <Modal 
         show={showDeleteModal} 
         onHide={() => setShowDeleteModal(false)}
         size="sm"
-        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>削除確認</Modal.Title>
@@ -802,7 +916,7 @@ const TrendSummary: React.FC = () => {
             <p className="mb-3">
               以下のトレンド要約を削除しますか？
             </p>
-            <div className="p-2 bg-light rounded mb-3">
+            <div className={`p-2 ${settings.uiTheme === 'dark' ? 'bg-dark' : 'bg-light'} rounded mb-3`}>
               <strong>{summaryToDelete?.title}</strong>
               <br />
               <small className="text-muted">
@@ -859,7 +973,7 @@ const TrendSummary: React.FC = () => {
         <Modal.Body>
           {selectedPaper && (
             <>
-              <div className="mb-3 p-3 bg-light rounded">
+              <div className={`mb-3 p-3 ${settings.uiTheme === 'dark' ? 'bg-dark' : 'bg-light'} rounded`}>
                 <h6 className="mb-2">
                   <a 
                     href={selectedPaper.arxiv_url} 
@@ -918,7 +1032,7 @@ const TrendSummary: React.FC = () => {
                   ) : (
                     <>
                       <i className="bi bi-twitter me-2"></i>
-                      Xに投稿
+                      {t('trendSummary.postToX')}
                     </>
                   )}
                 </Button>
@@ -932,7 +1046,7 @@ const TrendSummary: React.FC = () => {
                   rel="noopener noreferrer"
                 >
                   <i className="bi bi-box-arrow-up-right me-1"></i>
-                  Twitterを開く
+                  {t('trendSummary.openTwitter')}
                 </Button>
               )}
             </div>

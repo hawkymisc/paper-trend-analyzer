@@ -353,14 +353,18 @@ const RecentTrendAnalysis: React.FC = () => {
     // ユーザーイベント内で空のポップアップを作成（ポップアップブロッカーを回避）
     const newWindow = window.open('', '_blank');
     
+    // テンプレートリテラルの外で翻訳を取得
+    const preparingTitle = t('settings.twitterPost.preparing');
+    const generatingText = t('settings.twitterPost.generating');
+    
     // ローディング表示をポップアップに追加
     if (newWindow && !newWindow.closed) {
       newWindow.document.write(`
         <html>
-          <head><title>{t('settings.twitterPost.preparing')}</title></head>
+          <head><title>${preparingTitle}</title></head>
           <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h2>{t('settings.twitterPost.preparing')}</h2>
-            <p>{t('settings.twitterPost.generating')}</p>
+            <h2>${preparingTitle}</h2>
+            <p>${generatingText}</p>
             <div style="margin: 20px 0;">
               <div style="display: inline-block; width: 20px; height: 20px; border: 2px solid #1da1f2; border-radius: 50%; border-top: 2px solid transparent; animation: spin 1s linear infinite;"></div>
             </div>
@@ -643,7 +647,7 @@ const RecentTrendAnalysis: React.FC = () => {
                   {topicKeywords.keywords.map((keyword: TopicKeyword, index: number) => (
                     <div key={index} className="col-md-6 col-lg-4 mb-3">
                       <div 
-                        className={`card h-100 keyword-card ${selectedKeywords.includes(keyword.keyword) ? 'border-primary bg-light' : ''}`}
+                        className={`card h-100 keyword-card ${selectedKeywords.includes(keyword.keyword) ? `border-primary ${settings.uiTheme === 'dark' ? 'bg-dark' : 'bg-light'}` : ''}`}
                         style={{ cursor: 'pointer', transition: 'all 0.2s' }}
                         onClick={() => handleKeywordToggle(keyword.keyword)}
                       >
@@ -855,7 +859,7 @@ const RecentTrendAnalysis: React.FC = () => {
                   ) : (
                     <>
                       <i className="bi bi-twitter me-2"></i>
-                      Xに投稿
+                      {t('trendSummary.postToX')}
                     </>
                   )}
                 </Button>
@@ -869,7 +873,7 @@ const RecentTrendAnalysis: React.FC = () => {
                   rel="noopener noreferrer"
                 >
                   <i className="bi bi-box-arrow-up-right me-1"></i>
-                  Twitterを開く
+                  {t('trendSummary.openTwitter')}
                 </Button>
               )}
             </div>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { ReadingListItem } from '../types';
 import { useReadingList } from '../contexts/ReadingListContext';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface ReadingListItemProps {
   item: ReadingListItem;
@@ -18,6 +19,7 @@ const ReadingListItemComponent: React.FC<ReadingListItemProps> = ({
 }) => {
   const { t } = useTranslation();
   const { updateReadingListItem, removeFromReadingList } = useReadingList();
+  const { settings } = useSettings();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [notes, setNotes] = useState(item.notes || '');
@@ -158,7 +160,7 @@ const ReadingListItemComponent: React.FC<ReadingListItemProps> = ({
             {item.notes && !isEditing && (
               <div className="mb-2">
                 <strong>{t('readingList.notes')}:</strong>
-                <p className="mt-1 p-2 bg-light rounded small">{item.notes}</p>
+                <p className={`mt-1 p-2 ${settings.uiTheme === 'dark' ? 'bg-dark text-light' : 'bg-light'} rounded small`}>{item.notes}</p>
               </div>
             )}
 

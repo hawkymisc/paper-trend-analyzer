@@ -68,6 +68,9 @@
       "page": "Page {{current}} of {{total}}"
     }
   },
+  "paperReference": {
+    "openInArxiv": "Click to open in arXiv →"
+  },
   "readingList": {
     "title": "Reading List",
     "addToList": "Add to Reading List",
@@ -275,7 +278,9 @@
     "loading": "Loading...",
     "noSummaries": "No trend summaries yet. Please create a new summary.",
     "weeklyAnalysis": "Weekly Trend Analysis",
-    "allFieldsRequired": "Please fill in all required fields"
+    "allFieldsRequired": "Please fill in all required fields",
+    "postToX": "Post to X",
+    "openTwitter": "Open Twitter"
   },
   "trendAnalysis": {
     "title": "Trend Analysis",

@@ -18,14 +18,15 @@ from .ai_service import get_ai_service
 from .config import settings
 
 # 定数
-MIN_RECENT_COUNT = 2
-TRENDING_KEYWORDS_LIMIT = 10
-RECENT_DAYS = 8 * 7  # 8 weeks
-PREVIOUS_DAYS = 16 * 7  # 16 weeks (for comparison)
+# MIN_RECENT_COUNT = 2  # Moved to settings
+# Configuration constants - now using settings
+# TRENDING_KEYWORDS_LIMIT = 10  # Moved to settings
+# RECENT_DAYS = 8 * 7  # Moved to settings
+# PREVIOUS_DAYS = 16 * 7  # Moved to settings
 
 # シンプルなインメモリキャッシュ
 cache = {}
-CACHE_TTL = 300 # 5分
+# CACHE_TTL = 300 # Moved to settings
 
 def get_utc_now():
     return datetime.now(timezone.utc)
@@ -35,15 +36,15 @@ def get_time_ago(days: int = 0, hours: int = 0):
 
 def get_trending_keywords_data(db: Session) -> list[schemas.TrendingKeyword]:
     cache_key = "trending_keywords"
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < CACHE_TTL:
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < settings.cache_ttl_seconds:
         logging.info("Returning trending keywords from cache.")
         return cache[cache_key]["data"]
 
     start_time = time.time()
     logging.info("Fetching trending keywords from DB...")
 
-    recent_threshold = get_time_ago(days=RECENT_DAYS)
-    previous_threshold = get_time_ago(days=PREVIOUS_DAYS)
+    recent_threshold = get_time_ago(days=settings.recent_analysis_weeks * 7)
+    previous_threshold = get_time_ago(days=settings.comparison_weeks * 7)
 
     # 1段階のクエリで必要なデータをすべて取得
     query_results = (
@@ -65,7 +66,7 @@ def get_trending_keywords_data(db: Session) -> list[schemas.TrendingKeyword]:
         .join(models.Paper, models.PaperKeyword.paper_id == models.Paper.id)
         .filter(models.Paper.published_at >= previous_threshold)
         .group_by(models.Keyword.name)
-        .having(func.sum(case((models.Paper.published_at >= recent_threshold, 1), else_=0)) >= MIN_RECENT_COUNT)
+        .having(func.sum(case((models.Paper.published_at >= recent_threshold, 1), else_=0)) >= 2)
         .all()
     )
 
@@ -91,7 +92,7 @@ def get_trending_keywords_data(db: Session) -> list[schemas.TrendingKeyword]:
     # 成長数と最近のカウントでソート
     trending_keywords.sort(key=lambda k: (k.growth_count, k.recent_count), reverse=True)
     
-    result = trending_keywords[:TRENDING_KEYWORDS_LIMIT]
+    result = trending_keywords[:settings.trending_keywords_limit]
 
     cache[cache_key] = {"data": result, "timestamp": time.time()}
     logging.info(f"Fetched trending keywords in {time.time() - start_time:.2f} seconds.")
@@ -208,15 +209,15 @@ def search_papers(db: Session, query: str, skip: int = 0, limit: int = 100, star
 
 def get_word_cloud_data(db: Session) -> list[schemas.WordData]:
     cache_key = "word_cloud"
-    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < CACHE_TTL:
+    if cache_key in cache and time.time() - cache[cache_key]["timestamp"] < settings.cache_ttl_seconds:
         logging.info("Returning word cloud data from cache.")
         return cache[cache_key]["data"]
 
     start_time = time.time()
     logging.info("Fetching word cloud data from DB...")
 
-    # 期間を16週間に延長してより多くのキーワードを取得
-    sixteen_weeks_ago = get_time_ago(days=16*7)  # 16 weeks
+    # 設定可能な期間でキーワードを取得
+    sixteen_weeks_ago = get_time_ago(days=settings.comparison_weeks*7)  # Configurable weeks
 
     results = (
         db.query(models.Keyword.name, func.count(models.PaperKeyword.paper_id).label('count'))
@@ -251,7 +252,7 @@ def get_word_cloud_data_with_dictionary(db: Session, dictionary: list[schemas.Di
         .filter(models.Paper.published_at >= sixteen_weeks_ago)
         .group_by(models.Keyword.name)
         .order_by(func.count(models.PaperKeyword.paper_id).desc())
-        .limit(200)  # より多くのキーワードを取得
+        .limit(settings.keyword_fetch_limit)  # Configurable keyword fetch limit
         .all()
     )
 
@@ -269,11 +270,11 @@ def get_word_cloud_data_with_dictionary(db: Session, dictionary: list[schemas.Di
         if keyword_lower in dict_importance:
             importance = dict_importance[keyword_lower]
             if importance == 'high':
-                weighted_value = int(base_value * 2.0)  # 2倍の重み
+                weighted_value = int(base_value * settings.importance_weight_high)  # Configurable high weight
             elif importance == 'medium':
-                weighted_value = int(base_value * 1.5)  # 1.5倍の重み
+                weighted_value = int(base_value * settings.importance_weight_medium)  # Configurable medium weight
             else:  # low
-                weighted_value = int(base_value * 1.2)  # 1.2倍の重み
+                weighted_value = int(base_value * settings.importance_weight_low)  # Configurable low weight
         else:
             weighted_value = base_value
         
@@ -281,7 +282,7 @@ def get_word_cloud_data_with_dictionary(db: Session, dictionary: list[schemas.Di
 
     # 重み付け後に再ソート
     word_cloud_data.sort(key=lambda x: x.value, reverse=True)
-    word_cloud_data = word_cloud_data[:100]  # 上位100件に制限
+    word_cloud_data = word_cloud_data[:settings.word_cloud_items_limit]  # Configurable word cloud limit
 
     logging.info(f"Fetched weighted word cloud data in {time.time() - start_time:.2f} seconds.")
     return word_cloud_data
@@ -307,7 +308,7 @@ def get_keyword_suggestions(dictionary: list[schemas.DictionaryKeyword], query: 
          for dk in dictionary if dk.keyword == kw), 0
     ), reverse=True)
     
-    return suggestions[:10]  # 上位10件
+    return suggestions[:settings.suggestions_limit]  # Configurable suggestions limit
 
 # arXivカテゴリコードとキーワードのマッピング
 ARXIV_CATEGORY_KEYWORDS = {
@@ -712,9 +713,9 @@ def update_keywords_from_papers_improved(db: Session, limit: int = 1000) -> int:
     new_keywords_added = 0
     for keyword, count in keyword_counts.most_common():
         # 高品質キーワードのみをフィルタリング
-        if (count >= 5 and  # 闾値を上げて品質を向上
+        if (count >= settings.keyword_min_occurrence_threshold and  # Configurable threshold
             keyword not in existing_keywords and 
-            len(keyword) > 3 and  # 最小長を増加
+            len(keyword) > settings.keyword_min_length and  # Configurable minimum length
             is_high_quality_keyword(keyword)):
             
             # 新しいキーワードを追加
@@ -987,7 +988,7 @@ def rebuild_paper_keyword_associations(db: Session) -> int:
     recent_papers = (
         db.query(models.Paper)
         .order_by(models.Paper.published_at.desc())
-        .limit(5000)  # 最新5000件
+        .limit(settings.latest_papers_fetch_limit)  # Configurable latest papers limit
         .all()
     )
     
@@ -1592,7 +1593,7 @@ async def get_topic_summary(
         )
         .distinct()
         .order_by(models.Paper.published_at.desc())
-        .limit(50)
+        .limit(settings.get_topic_analysis_limit())
     )
     
     related_papers = related_papers_query.all()
@@ -1640,7 +1641,7 @@ async def get_topic_summary(
         
         # Convert papers to response format
         paper_responses = []
-        for paper in related_papers[:20]:  # Limit to first 20 papers for UI
+        for paper in related_papers[:settings.ui_papers_display_limit]:  # Configurable UI papers limit
             # Get keywords for this paper
             paper_keywords = (
                 db.query(models.Keyword.name)
@@ -1682,7 +1683,7 @@ async def get_topic_summary(
         
         # Convert papers to response format for fallback
         paper_responses = []
-        for paper in related_papers[:20]:  # Limit to first 20 papers for UI
+        for paper in related_papers[:settings.ui_papers_display_limit]:  # Configurable UI papers limit
             # Get keywords for this paper
             paper_keywords = (
                 db.query(models.Keyword.name)
@@ -1749,7 +1750,7 @@ async def fetch_papers_from_arxiv(
             capture_output=True,
             text=True,
             cwd=backend_dir,
-            timeout=3600  # 1 hour timeout
+            timeout=settings.script_execution_timeout  # Configurable script timeout
         )
         
         if result.returncode != 0:
@@ -1934,7 +1935,7 @@ async def create_trend_summary(
                     cleaned_summary = json_data['summary']
                     # Also extract AI-generated insights if available
                     if 'key_insights' in json_data and isinstance(json_data['key_insights'], list):
-                        ai_insights = json_data['key_insights'][:3]  # Take first 3
+                        ai_insights = json_data['key_insights'][:settings.key_insights_limit]  # Configurable insights limit
                     else:
                         ai_insights = []
                 else:
@@ -2015,7 +2016,7 @@ async def create_trend_summary(
             period_start=period_start,
             period_end=period_end,
             paper_count=actual_paper_count,
-            summary=cleaned_summary[:5000],  # Use cleaned summary, increased limit for comprehensive analysis
+            summary=cleaned_summary[:settings.summary_max_length],  # Configurable summary length limit
             key_insights=key_insights,
             top_keywords=top_keywords,
             language=request.language
@@ -2153,7 +2154,7 @@ def get_trend_summary_by_id(
             models.Paper.published_at <= summary.period_end
         )
         .order_by(models.Paper.published_at.desc())
-        .limit(50)  # Match AI processing limit
+        .limit(settings.get_trend_summary_limit())  # Configurable paper limit
         .all()
     )
     
@@ -2221,6 +2222,26 @@ def delete_trend_summary(db: Session, summary_id: int) -> bool:
         return True
     except Exception as e:
         logging.error(f"Failed to delete trend summary {summary_id}: {e}")
+        db.rollback()
+        raise e
+
+def update_trend_summary_title(db: Session, summary_id: int, new_title: str) -> schemas.TrendSummaryResponse:
+    """Update the title of a trend summary"""
+    summary = db.query(models.TrendSummary).filter(models.TrendSummary.id == summary_id).first()
+    
+    if not summary:
+        raise Exception("指定されたトレンド要約が見つかりません")
+    
+    try:
+        summary.title = new_title
+        db.commit()
+        db.refresh(summary)
+        logging.info(f"Updated trend summary {summary_id} title to: {new_title}")
+        
+        # Return updated summary with full data
+        return get_trend_summary_by_id(db=db, summary_id=summary_id)
+    except Exception as e:
+        logging.error(f"Failed to update trend summary {summary_id} title: {e}")
         db.rollback()
         raise e
 

@@ -14,6 +14,7 @@ import time
 
 from . import models, schemas, services
 from .database import engine, get_db
+from .config import settings
 
 # データベースとテーブルを作成
 models.Base.metadata.create_all(bind=engine)
@@ -41,6 +42,32 @@ def read_root():
         "status": "running",
         "api_version": "v1",
         "endpoints": "/docs"
+    }
+
+# 設定確認エンドポイント - デバッグとモニタリング用
+@app.get("/api/v1/config/analysis-limits")
+def get_analysis_limits():
+    """Get current analysis limits configuration for debugging and monitoring"""
+    return {
+        "active_limits": {
+            "topic_analysis_max_papers": settings.get_topic_analysis_limit(),
+            "trend_summary_max_papers": settings.get_trend_summary_limit(),
+            "default_analysis_max_papers": settings.get_default_analysis_limit(),
+            "hot_topics_max_papers": settings.get_hot_topics_limit(),
+        },
+        "configured_values": {
+            "topic_analysis_max_papers": settings.topic_analysis_max_papers,
+            "trend_summary_max_papers": settings.trend_summary_max_papers,
+            "default_analysis_max_papers": settings.default_analysis_max_papers,
+            "hot_topics_max_papers": settings.hot_topics_max_papers,
+        },
+        "maximum_limits": {
+            "max_topic_analysis_papers": settings.max_topic_analysis_papers,
+            "max_trend_summary_papers": settings.max_trend_summary_papers,
+            "max_analysis_papers": settings.max_analysis_papers,
+            "max_hot_topics_papers": settings.max_hot_topics_papers,
+        },
+        "note": "Active limits are the minimum of configured values and maximum limits"
     }
 
 @app.get("/api/v1/trends", response_model=list[schemas.TrendResult])
@@ -91,7 +118,7 @@ def get_summary(db: Session = Depends(get_db)):
 def search_papers(
     query: str = Query(..., min_length=1, description="検索キーワード"),
     skip: int = Query(0, ge=0, description="スキップする件数"),
-    limit: int = Query(100, ge=1, le=200, description="取得する最大件数"),
+    limit: int = Query(settings.paper_search_default_limit, ge=1, le=settings.paper_search_max_limit, description="取得する最大件数"),
     start_date: str | None = Query(None, description="開始日 (YYYY-MM-DD)"),
     end_date: str | None = Query(None, description="終了日 (YYYY-MM-DD)"),
     sort_by: str = Query("date", regex="^(date|relevance)$", description="並び順 (date: 新しい順, relevance: 関連度順)"),
@@ -158,8 +185,8 @@ async def get_hot_topics_summary(
     """Generate hot topics summary using AI analysis"""
     try:
         # Validate parameters
-        days = min(max(request.days or 30, 1), 90)  # 1-90 days
-        max_topics = min(max(request.max_topics or 20, 1), 50)  # 1-50 topics
+        days = min(max(request.days or settings.hot_topics_analysis_days, 1), 90)  # Configurable default days
+        max_topics = min(max(request.max_topics or settings.hot_topics_max_topics, 1), 50)  # Configurable default topics
         language = request.language or "auto"
         
         # Call service function
@@ -296,10 +323,10 @@ async def get_topic_summary_endpoint(
                 detail="At least one keyword must be provided"
             )
         
-        if len(keywords) > 10:
+        if len(keywords) > settings.topic_summary_max_keywords:
             raise HTTPException(
                 status_code=400,
-                detail="Maximum 10 keywords allowed"
+                detail=f"Maximum {settings.topic_summary_max_keywords} keywords allowed"
             )
         
         response = await services.get_topic_summary(
@@ -383,7 +410,7 @@ async def create_trend_summary_endpoint(
 @app.get("/api/v1/trend-summaries", response_model=schemas.TrendSummaryListResponse)
 def get_trend_summaries_endpoint(
     skip: int = Query(0, ge=0, description="スキップする件数"),
-    limit: int = Query(20, ge=1, le=100, description="取得する最大件数"),
+    limit: int = Query(settings.trend_summary_default_limit, ge=1, le=settings.trend_summary_max_limit, description="取得する最大件数"),
     db: Session = Depends(get_db)
 ):
     """Get list of trend summaries with pagination"""
@@ -470,6 +497,29 @@ def delete_trend_summary_endpoint(
         raise HTTPException(
             status_code=500,
             detail=f"トレンド要約の削除に失敗しました: {str(e)}"
+        )
+
+@app.put("/api/v1/trend-summary/{summary_id}", response_model=schemas.TrendSummaryResponse)
+def update_trend_summary_endpoint(
+    summary_id: int,
+    request: schemas.TrendSummaryUpdateRequest,
+    db: Session = Depends(get_db)
+):
+    """Update a trend summary title"""
+    try:
+        response = services.update_trend_summary_title(
+            db=db, 
+            summary_id=summary_id, 
+            new_title=request.title
+        )
+        return response
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Failed to update trend summary: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"トレンド要約の更新に失敗しました: {str(e)}"
         )
 
 # Paper Summary Endpoints

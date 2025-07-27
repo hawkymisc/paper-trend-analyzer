@@ -334,12 +334,11 @@ const Dashboard: React.FC = () => {
               </div>
             )}
             <div 
+              className={`${settings.uiTheme === 'dark' ? 'bg-dark border-secondary' : 'bg-light border-light'}`}
               style={{ 
                 height: '400px', 
                 width: '100%',
                 padding: '20px',
-                backgroundColor: '#fff',
-                border: '1px solid #ddd',
                 overflow: 'hidden',
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -401,10 +400,12 @@ const Dashboard: React.FC = () => {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'scale(1.15) rotate(1deg)';
-                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.9)';
+                        e.currentTarget.style.backgroundColor = settings.uiTheme === 'dark' 
+                          ? 'rgba(33, 37, 41, 0.9)' 
+                          : 'rgba(255,255,255,0.9)';
                         e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.3)';
-                        e.currentTarget.style.border = '2px solid #007bff';
-                        e.currentTarget.style.color = '#007bff';
+                        e.currentTarget.style.border = '2px solid #ffffff';
+                        e.currentTarget.style.color = settings.uiTheme === 'dark' ? '#ffffff' : '#000000';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'scale(1) rotate(0deg)';

@@ -287,7 +287,12 @@
     "loading": "加载中...",
     "noSummaries": "尚无趋势总结。请创建新的总结。",
     "weeklyAnalysis": "周度趋势分析",
-    "allFieldsRequired": "请填写所有必填字段"
+    "allFieldsRequired": "请填写所有必填字段",
+    "postToX": "发布到X",
+    "openTwitter": "打开Twitter"
+  },
+  "paperReference": {
+    "openInArxiv": "点击在arXiv中打开 →"
   },
   "trendAnalysis": {
     "title": "趋势分析",
