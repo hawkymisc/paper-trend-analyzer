@@ -4,19 +4,42 @@ A comprehensive research paper trend analysis platform that provides insights in
 
 ## ✨ Recent Updates
 
+### Version 2.5.0 - Configuration Management, Dark Mode & UI Improvements (January 27, 2025)
+- **🛠️ System Configuration Overhaul**: Comprehensive migration from hardcoded values to centralized configuration
+  - Identified and analyzed 69 hardcoded values across 8 backend modules
+  - Migrated 25 high-priority items to type-safe Pydantic settings
+  - Added 32 environment variables for runtime configuration flexibility
+  - Implemented regression prevention tests to avoid future issues
+- **🎨 Complete Dark Mode Implementation**: Full accessibility-compliant theme system
+  - Achieved 95% WCAG AA compliance (20/21 contrast tests passing)
+  - Bootstrap data-bs-theme integration for consistent theming
+  - Dynamic component styling with theme context awareness
+  - Fixed all contrast ratio issues in dark mode
+- **📝 Trend Summary Enhancements**: Improved user experience and functionality
+  - Added post-creation title editing with modal interface
+  - Implemented PUT API endpoint for seamless updates
+  - Removed unused keyword-based trend analysis for cleaner navigation
+  - Enhanced UI with edit/delete buttons and real-time validation
+- **🔧 Technical Infrastructure**: Modernization and stability improvements
+  - PyPDF2 → pypdf migration for better PDF processing
+  - Comprehensive testing suite for configuration limits
+  - Performance optimization through centralized settings management
+  - Enhanced documentation with detailed audit reports
+
+### Version 2.4.0 - Recent Trend Analysis Rename & Complete Internationalization (January 17, 2025)
+- **🚀 Feature Naming Update**: "Weekly Trend Analysis" → "Recent Research Trends"
+  - Reality-based naming reflecting actual 1-3 day analysis periods
+  - Consistent multi-language updates across all 5 supported languages
+- **🌐 Complete Settings Internationalization**: Full localization of configuration interface
+  - AI provider settings, model selection, and custom prompts
+  - Fixed property display bugs in settings components
+- **🏗️ Technical Architecture**: Component and service renaming for clarity
+  - Updated routes, TypeScript definitions, and service interfaces
+
 ### Version 2.3.0 - Language-Specific Trend Analysis & UI Improvements (January 15, 2025)
 - **🌐 Language-Specific Latest Summaries**: Fixed critical issue where language-specific trend summaries were not displayed correctly
-  - API now supports language parameter for retrieving latest summaries by language
-  - Users can now reliably access Japanese summaries even when Auto Detect summaries exist
-  - Eliminates confusing "summary not found" messages for existing language-specific content
 - **⚡ Performance Optimization**: Resolved duplicate API calls causing unnecessary server load
-  - Removed redundant useEffect hooks and conflicting state management
-  - Implemented atomic state updates to prevent race conditions
-  - Reduced API calls from multiple per page load to single optimized request
 - **🔧 React State Management Improvements**: Enhanced component reliability
-  - Consolidated multiple related states into unified state objects
-  - Eliminated flickering between "loading", "not found", and "found" states
-  - Improved user experience with stable, predictable UI behavior
 
 ### Version 2.2.0 - AI-Powered Paper Summarization (January 13, 2025)
 - **🤖 Paper Summary Generation**: New AI-powered feature to generate comprehensive paper summaries

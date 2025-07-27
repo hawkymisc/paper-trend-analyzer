@@ -1,5 +1,123 @@
 # Release Notes - Paper Trend Analyzer
 
+## Version 2.5.0 - Configuration Management, Dark Mode & UI Improvements
+**Release Date**: January 27, 2025
+
+### 🛠️ Major System Configuration Overhaul
+
+#### 📊 Hardcoded Values Analysis & Migration
+- **Comprehensive Audit**: Identified 69 hardcoded values across 8 backend modules
+- **Priority-Based Migration**: Moved 25 high-priority items to centralized configuration
+- **Environment Variable Support**: 32 configurable settings now available via .env
+- **Type-Safe Configuration**: Pydantic-based settings with validation and defaults
+
+#### 🔧 Configuration Categories Added
+- **AI Analysis Settings**: Paper limits, keyword counts, processing parameters
+- **API Endpoint Limits**: Search limits, pagination, timeout configurations  
+- **Quality Thresholds**: Keyword filtering, occurrence minimums, scoring weights
+- **Display & UI Limits**: Pagination, suggestions, UI element counts
+- **Services Settings**: Cache TTL, analysis periods, fetch limits
+- **Fetch Script Settings**: arXiv limits, delays, retry configurations
+
+### 🎨 Complete Dark Mode Implementation
+
+#### 🌓 Theme System Enhancement
+- **Full Dark Mode Support**: All components now support light/dark theme switching
+- **WCAG Compliance**: Achieved 95% AA compliance (20/21 contrast tests passing)
+- **Bootstrap Integration**: Proper data-bs-theme attribute usage for consistent theming
+- **Dynamic Styling**: Theme-aware component styling with settings context
+
+#### 🎯 Accessibility Improvements  
+- **Contrast Ratio Optimization**: Fixed low-contrast elements in dark mode
+- **Color Scheme Consistency**: Unified color palette across all components
+- **Visual Hierarchy**: Improved readability and navigation clarity
+
+### 📝 Trend Summary Feature Enhancement
+
+#### ✏️ Title Editing Capability
+- **Post-Creation Editing**: Users can now edit trend summary titles after creation
+- **Modal Interface**: Clean edit modal with validation and real-time feedback
+- **API Integration**: PUT endpoint for seamless title updates
+- **List Auto-Refresh**: Immediate UI updates after successful edits
+
+#### 🧹 Menu Optimization
+- **Feature Removal**: Eliminated unused keyword-based trend analysis
+- **Navigation Simplification**: Cleaner menu structure with focused features
+- **Route Cleanup**: Removed /trend-analysis route and related components
+
+### 🔧 Technical Infrastructure Improvements
+
+#### 📚 Library Updates
+- **PyPDF2 → pypdf Migration**: Updated to modern, maintained PDF processing library
+- **Dependency Security**: Addressed deprecated package warnings
+- **Performance Optimization**: More efficient PDF text extraction
+
+#### 🛡️ Regression Prevention
+- **50-Item Limit Fix**: Permanently resolved paper analysis limit regression
+- **Comprehensive Testing**: Added test_analysis_limits.py with 5 test cases
+- **Configuration Validation**: Runtime checks for limit consistency
+- **Future-Proof Design**: Centralized configuration prevents similar issues
+
+### 🌐 Internationalization Continuity
+- **Multi-Language Support**: Maintained support for 5 languages (ja, en, zh, ko, de)
+- **UI Text Updates**: Updated translation keys for new features
+- **Consistent Naming**: Proper localization across all new components
+
+### 📊 Documentation & Monitoring
+
+#### 📋 Comprehensive Documentation
+- **hardcoded-values-audit.md**: Complete audit report with 69 identified values
+- **analysis-limits-fix.md**: Technical details of limit fixes and testing
+- **deployment-concerns.md**: Production deployment considerations
+- **theme-i18n-issues.md**: Theme and internationalization investigation results
+
+#### 🔍 Configuration Monitoring
+- **Debug Endpoint**: /api/v1/config/analysis-limits for runtime configuration inspection
+- **Validation System**: Automatic limit validation and boundary enforcement
+- **Environment Detection**: Clear separation of development vs production settings
+
+### 🐛 Bug Fixes & Stability
+
+#### 🛠️ UI/UX Fixes
+- **TypeScript Compliance**: Resolved Modal component type errors
+- **Component Stability**: Fixed React state management issues
+- **Responsive Design**: Improved mobile and tablet compatibility
+
+#### ⚡ Performance Enhancements
+- **Configuration Caching**: Optimized settings access with singleton pattern
+- **Database Query Optimization**: More efficient limit handling in queries
+- **Memory Usage**: Reduced memory footprint through better resource management
+
+### 📈 Impact Assessment
+
+#### 🎯 Immediate Benefits
+- **Operational Flexibility**: Environment-specific configuration without code changes
+- **User Experience**: Complete dark mode support improves accessibility
+- **Developer Productivity**: Centralized configuration simplifies maintenance
+- **System Reliability**: Comprehensive testing prevents regression issues
+
+#### 🚀 Long-term Value
+- **Scalability**: Easy adjustment of limits based on usage patterns
+- **Maintainability**: Single source of truth for all configuration values
+- **Extensibility**: Framework for future configuration requirements
+- **Quality Assurance**: Robust testing infrastructure for continued reliability
+
+### 🔄 Migration Guide
+
+#### 🛠️ For Developers
+- Configuration values now centralized in backend/app/config.py
+- Environment variables available in backend/.env
+- New test suite in backend/test_analysis_limits.py
+- Updated documentation in docs/ directory
+
+#### 🖥️ For Users
+- Dark mode toggle available in Settings
+- Trend summary titles can be edited post-creation
+- Improved menu navigation with focused features
+- Enhanced visual consistency across themes
+
+---
+
 ## Version 2.4.0 - Recent Trend Analysis Rename & Complete Internationalization
 **Release Date**: January 17, 2025
 
